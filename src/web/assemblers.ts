@@ -24,6 +24,7 @@
 
 import { rasmAssemble } from "@/core/assembler/rasm/web/rasm.mjs";
 import { assembleCreator } from "@/core/assembler/creatorAssembler/web/creatorAssembler.mjs";
+import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 
 /**
  * Assembler function type - flexible to accommodate different assembler signatures
@@ -36,6 +37,7 @@ type AssemblerFunction = (...args: any[]) => Promise<any>;
  */
 export const assemblerMap: Record<string, AssemblerFunction> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Sail: SailCompile as any,
     CreatorAssembler: assembleCreator as any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RASM: rasmAssemble as any,

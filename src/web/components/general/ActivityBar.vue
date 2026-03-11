@@ -36,112 +36,113 @@ export default defineComponent({
 <template>
   <div class="activity-bar-container" :class="{ 'autohide': autohide }">
     <div class="activity-bar" :class="{ 'dark-mode': dark }">
-    <div class="activity-bar-content">
-      <hr/>
-      <div
-        class="activity-item"
-        :class="{ active: modelValue === 'assembly' }"
-        @click="selectMode('assembly')"
-        title="Editor"
-      >
-        <font-awesome-icon :icon="['fas', 'hashtag']" size="lg" />
-      </div>
-
-      <div
-        class="activity-item"
-        :class="{ active: modelValue === 'simulator' }"
-        @click="selectMode('simulator')"
-        title="Simulator"
-      >
-        <font-awesome-icon :icon="['fas', 'gears']" size="lg" />
-      </div>
-
-      <!-- <div
-        class="activity-item"
-        :class="{ active: modelValue === 'architecture' }"
-        @click="selectMode('architecture')"
-        title="Architecture"
-      >
-        <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" size="lg" />
-      </div> -->
-      <hr/>
-      <div v-if="modelValue === 'assembly'">
-        <div
-          class="activity-item"
-          v-b-modal.examples-assembly
-          title="Examples"
-          >
-          <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
-        </div>
+      <div class="activity-bar-content">
         <hr/>
         <div
           class="activity-item"
-          v-b-modal.load_assembly
-          title="Load file"
-          >
-          <font-awesome-icon :icon="['fas', 'upload']" size="lg" />
-        </div>
-        <div
-          class="activity-item"
-          v-b-modal.save_assembly
-          title="Save file"
-          >
-          <font-awesome-icon :icon="['fas', 'download']" size="lg" />
-        </div>
-        <div
-          class="activity-item"
-          v-b-modal.make_uri
-          title="Share as url"
-          >
-          <font-awesome-icon :icon="['fas', 'link']" size="lg" />
-        </div>
-        <hr/>
-        <div
-          class="activity-item"
-          v-b-modal.load_binary
-          title="Load library"
-          >
-          <font-awesome-icon :icon="['fas', 'file-arrow-up']" size="lg" />
-        </div>
-        <div
-          class="activity-item"
-          @click="removeLibrary"
-          title="Remove library"
-          >
-          <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-        </div>
-      </div>
-
-
-      <div v-if="modelValue === 'simulator'">
-        <div
-          class="activity-item"
-          v-b-modal.examples-simulator
-          title="Examples"
+          :class="{ active: modelValue === 'assembly' }"
+          @click="selectMode('assembly')"
+          title="Editor"
         >
-          <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
+          <font-awesome-icon :icon="['fas', 'hashtag']" size="lg" />
         </div>
-        <hr/>
+
         <div
           class="activity-item"
-          v-b-modal.flash
-          title="Flash"
+          :class="{ active: modelValue === 'simulator' }"
+          @click="selectMode('simulator')"
+          title="Simulator"
         >
-          <font-awesome-icon :icon="['fab', 'usb']" size="lg" />
-        </div>
-        <div
-          class="activity-item"
-          v-b-modal.calculator
-          title="IEEE754 Calculator"
-        >
-          <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
+          <font-awesome-icon :icon="['fas', 'gears']" size="lg" />
         </div>
 
         <hr/>
 
 
+        <div v-if="modelValue === 'assembly'">
+          <div
+            class="activity-item"
+            v-b-modal.examples_assembly
+            title="Examples"
+            >
+            <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
+          </div>
+          <hr/>
+          <div
+            class="activity-item"
+            v-b-modal.load_assembly
+            title="Load file"
+            >
+            <font-awesome-icon :icon="['fas', 'upload']" size="lg" />
+          </div>
+          <div
+            class="activity-item"
+            v-b-modal.save_assembly
+            title="Save file"
+            >
+            <font-awesome-icon :icon="['fas', 'download']" size="lg" />
+          </div>
+          <div
+            class="activity-item"
+            v-b-modal.make_uri
+            title="Share as url"
+            >
+            <font-awesome-icon :icon="['fas', 'link']" size="lg" />
+          </div>
+          <hr/>
+          <div
+            class="activity-item"
+            v-b-modal.load_binary
+            title="Load library"
+            >
+            <font-awesome-icon :icon="['fas', 'file-arrow-up']" size="lg" />
+          </div>
+          <div
+            class="activity-item"
+            @click="removeLibrary"
+            title="Remove library"
+            >
+            <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+          </div>
+          <hr/>
+          <div
+            class="activity-item"
+            v-b-modal.calculator_assembly
+            title="IEEE754 Calculator"
+          >
+            <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
+          </div>
+          <hr/>
+        </div>
+
+
+        <div v-if="modelValue === 'simulator'">
+          <div
+            class="activity-item"
+            v-b-modal.examples_simulator
+            title="Examples"
+          >
+            <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
+          </div>
+          <hr/>
+          <div
+            class="activity-item"
+            v-b-modal.flash
+            title="Flash"
+          >
+            <font-awesome-icon :icon="['fab', 'usb']" size="lg" />
+          </div>
+          <div
+            class="activity-item"
+            v-b-modal.calculator_simulator
+            title="IEEE754 Calculator"
+          >
+            <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
+          </div>
+          <hr/>
+        </div>
+        
       </div>
-    </div>
     </div>
   </div>
 </template>

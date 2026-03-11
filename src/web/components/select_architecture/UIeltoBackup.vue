@@ -22,7 +22,8 @@ import { defineComponent } from "vue";
 import { loadArchitecture, architecture } from "@/core/core.mjs";
 import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { formatRelativeDate } from "@/web/utils.mjs";
-
+import { setAssemblyFiles } from "../assembly/MultifileEditor.mjs";
+import { load_library_sail } from "@/core/core.mjs";
 export default defineComponent({
   props: {
     id: { type: String, required: true },
@@ -56,6 +57,20 @@ export default defineComponent({
 
       // Load the last assembly code from cache
       (this.$root as any).assembly_code = localStorage.getItem("backup_asm");
+
+
+      // Check if there is a list of files on backup to multifile editor
+      if (architecture.config.name.includes("SRV")){
+        let files = JSON.parse(localStorage.getItem("backup_files")) || [];
+        if (files.length !== 0)
+          setAssemblyFiles(files);
+        let libsStr = localStorage.getItem("backup_libs");
+        if (libsStr !== "{}"){
+          let lib = JSON.parse(libsStr);
+          load_library_sail(new Uint8Array(lib.library_file), lib.name);
+        }
+
+      }
 
       this.$emit("load-architecture", this.backup_arch_name); // notify arch loaded
 

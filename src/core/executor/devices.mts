@@ -94,10 +94,10 @@ export abstract class Device {
      * @throws Error if value is too big.
      *
      */
-    protected writeValue(address: number, value: number, words: number = 1) {
+    protected writeValue(value: number, address: number, words: number = 1) {
         // transform value in bytes
         const bytes = this.memory.splitToBytes(BigInt(value));
-        bytes.unshift(...new Array(4 * words).fill(0)); // fill the w/ 0 until we reach the word number of bytes
+        bytes.unshift(...new Array(4 * words - bytes.length).fill(0)); // fill the w/ 0 until we reach the word number of bytes
 
         for (let i = 0; i < words; i++) {
             this.memory.writeWord(BigInt(address), bytes);
@@ -202,11 +202,6 @@ class ConsoleDevice extends Device {
             "execute.syscall",
             "execute.syscall.read_" + type,
         ); // google analytics
-
-        // scroll into keyboard input
-        if (document !== undefined) {
-            document.getElementById("enter_keyboard")!.scrollIntoView();
-        }
 
         // stop program to wait for read
         status.run_program = 3;
@@ -387,35 +382,36 @@ class OSDriver extends Device {
     }
 }
 
-// TODO: device handler class?
+// TODO: device handler class
 // TODO: Enable/Disable devices
+// TODO: configure devices from arch definition
 
 // { <id>: Device, ...}
 export const devices = new Map<string, Device>([
-    // [
-    //     "console",
-    //     new ConsoleDevice({
-    //         ctrl_addr: 0xf0000000,
-    //         status_addr: 0xf0000004,
-    //         data: {
-    //             start: 0xf0000008,
-    //             end: 0xf000000f,
-    //         },
-    //         enabled: true,
-    //     }),
-    // ],
-    // [
-    //     "os",
-    //     new OSDriver({
-    //         ctrl_addr: 0xf0000010,
-    //         status_addr: 0xf0000014,
-    //         data: {
-    //             start: 0xf0000018,
-    //             end: 0xf000001f,
-    //         },
-    //         enabled: true,
-    //     }),
-    // ],
+    [
+        "console",
+        new ConsoleDevice({
+            ctrl_addr: 0xf0000000,
+            status_addr: 0xf0000004,
+            data: {
+                start: 0xf0000008,
+                end: 0xf000000f,
+            },
+            enabled: true,
+        }),
+    ],
+    [
+        "os",
+        new OSDriver({
+            ctrl_addr: 0xf0000010,
+            status_addr: 0xf0000014,
+            data: {
+                start: 0xf0000018,
+                end: 0xf000001f,
+            },
+            enabled: true,
+        }),
+    ],
 ]);
 
 /* Memory */

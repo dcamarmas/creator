@@ -29,8 +29,8 @@ interface Props {
 defineProps<Props>();
 
 const contactMail = "creator.arcos.inf.uc3m.es@gmail.com";
-const projectVersion = "6.0";
-const projectLicense = "LGPL-2.1";
+const projectVersion = "6.1.0";
+const projectLicense = "LGPL-3.0";
 const repositoryUrl = "https://github.com/creatorsim/creator";
 
 const authors = ref<Record<string, any>>({});
@@ -62,10 +62,6 @@ onMounted(async () => {
     <section class="project-header mb-4">
       <div class="text-center mb-3">
         <h3 class="mb-2">CREATOR</h3>
-
-        <p class="text-muted mb-2">
-          didaCtic and geneRic assEmbly educATional simulatOR
-        </p>
 
         <div class="d-flex justify-content-center gap-3 flex-wrap">
           <b-badge variant="primary" pill>

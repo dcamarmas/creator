@@ -24,6 +24,9 @@ import { sentinel } from "../sentinel/sentinel.mjs";
 import { packExecute } from "../utils/utils.mjs";
 import { coreEvents } from "../events.mts";
 import { setRegisterGlow } from "./registerGlowState.mjs";
+import { userMode32 } from "@/core/executor/sailSimRV/wasm/riscv_sim_RV32.js";
+import { userMode32vd } from "@/core/executor/sailSimRV/wasm/riscv_sim_RV32vd.js";
+import { userMode64 } from "@/core/executor/sailSimRV/wasm/riscv_sim_RV64.js";
 
 /**
  * Notifies UI layers about a register update via event emission
@@ -118,7 +121,7 @@ export function writeRegister(value, indexComp, indexElem) {
 
         throw packExecute(
             true,
-            "The register " + elementName + " cannot be written",
+            "The register " + elementName + " is not writeable",
             "danger",
             null,
         );
@@ -132,6 +135,12 @@ export function writeRegister(value, indexComp, indexElem) {
     }
     if (typeof document !== "undefined" && document?.app) {
         // Notify UI layers about the update (CLI ignores, web UI listens)
-        notifyRegisterUpdate(indexComp, indexElem);
+        // check if in RISC-V Sail has to be glowed the register by instruction execution
+        if (architecture.config.name.includes("SRV")){
+            if (userMode32 || userMode64 || userMode32vd)
+                notifyRegisterUpdate(indexComp, indexElem);
+        }else 
+            notifyRegisterUpdate(indexComp, indexElem);
+            
     }
 }
