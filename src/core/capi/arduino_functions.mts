@@ -50,6 +50,7 @@ export function cr_digitalRead() {
     //Read from simulator
     const pinName = `GPIO${pin}`;
     // const rawValue = pinStates.value[pinName] ?? 0;
+    const rawValue = 1; // Simulamos que siempre se lee un 1 para simplificar
     const value = rawValue !== 0 ? 1 : 0;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
@@ -134,6 +135,7 @@ export function cr_analogRead() {
     //Read from simulator
     const pinName = `GPIO${pin}`;
     // const value = pinStates.value[pinName] ?? 0;
+    const value = 1023; // Simulamos que siempre se lee 1023 para simplificar
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `analogRead(${pin}) = ${value}`,
