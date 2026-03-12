@@ -175,6 +175,27 @@ export interface ArduinoPinDetachInterruptEvent {
 }
 
 /**
+ * Event is emitted when a GPIO pin is read
+ */
+export interface GpioReadEvent {
+  /** The pin number */
+  pin: string;
+
+  /** Callback to return the pin value */
+  callback: (value: number) => void;
+}
+
+/**
+ * Event is emitted when a GPIO pin is written
+ */
+export interface GpioWriteEvent {
+    /** The pin number */
+    pin: string;
+    /** The value written to the pin */
+    value: number;
+}
+
+/**
  * Global event emitter for CREATOR core events
  * Used to notify UI layers (web, future mobile app, etc.) about core state changes
  * CLI version simply doesn't subscribe to these events

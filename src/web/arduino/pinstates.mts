@@ -1,3 +1,4 @@
+import { coreEvents } from "@/core/events.mts";
 import { ref, type Ref } from "vue";
 // --- Tipado ---
 export interface PinStateMap {
@@ -139,4 +140,13 @@ export function switchBoard(boardKey: string) {
         pinStates.value = { ...BOARDS[boardKey].initialStates };
         pinLabels.value = BOARDS[boardKey].pinLabels;
     }
+}
+
+// Functions
+export function getPinState(pin: string): number {
+    return pinStates.value[pin] ?? 0;
+}
+
+export function setPinState(pin: string, value: number) {
+    pinStates.value[pin] = value;
 }

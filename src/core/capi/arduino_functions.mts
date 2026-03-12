@@ -15,7 +15,7 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-// import { pinStates, esp32vect } from "../../web/arduino/pinstates.mts";
+import { getPinState,setPinState } from "../../web/arduino/pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mts";
 
@@ -49,11 +49,8 @@ export function cr_digitalRead() {
     var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Read from simulator
     const pinName = `GPIO${pin}`;
-    // const rawValue = pinStates.value[pinName] ?? 0;
-    const rawValue = 1; // Simulamos que siempre se lee un 1 para simplificar
-    // const value = rawValue !== 0 ? 1 : 0;
-    // Cambia esto:
-    const value = (rawValue as number) !== 0 ? 1 : 0;
+    let rawValue = getPinState(pinName);
+    const value = rawValue !== 0 ? 1 : 0;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalRead(${pin}) = ${value}`,
@@ -137,7 +134,8 @@ export function cr_analogRead() {
     //Read from simulator
     const pinName = `GPIO${pin}`;
     // const value = pinStates.value[pinName] ?? 0;
-    const value = 1023; // Simulamos que siempre se lee 1023 para simplificar
+    let value = getPinState(pinName);
+    console.log(`Reading from pin ${pinName}: ${value}`);
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `analogRead(${pin}) = ${value}`,
@@ -1685,9 +1683,10 @@ export function cr_shiftIn() {
     coreEvents.emit("arduino-terminal-write", {
         text: `shiftIn(${dataPin}, ${clockPin}, ${bitOrder})`,
     });
+    let bit = 0;
     for (let i = 0; i < 8; i++) {
         // let bit = pinStates.value[`GPIO${dataPin}`] !== 0 ? 1 : 0;
-        let bit = 1; // Simulamos que siempre se lee un 1 para simplificar    
+        bit = getPinState(`GPIO${dataPin}`) ? 1 : 0;
         if (bitOrder === 1n) {
             // MSBFIRST
             value |= bit << (7 - i);
@@ -1767,6 +1766,7 @@ for (let i = 0; i < 8; i++) {
             bit = (value & (1n << BigInt(i))) ? 1n : 0n;
         }
         // pinStates.value[`GPIO${dataPin}`] = Number(bit);
+        setPinState(`GPIO${dataPin}`, Number(bit));
     }
     
 
