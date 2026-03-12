@@ -1,4 +1,5 @@
 import { ref, type Ref } from "vue";
+import { coreEvents, type ArduinoPinRead } from "@/core/events.mts";
 // --- Tipado ---
 export interface PinStateMap {
     [key: string]: number;
@@ -142,10 +143,7 @@ export function switchBoard(boardKey: string) {
 }
 
 // Functions
-export function getPinState(pin: string): number {
-    return pinStates.value[pin] ?? 0;
-}
-
-export function setPinState(pin: string, value: number) {
-    pinStates.value[pin] = value;
-}
+coreEvents.on("arduino-pin-read", (event: ArduinoPinRead) => {
+    const value = pinStates.value[event.pin] ?? 0;
+    event.callback(value);
+});

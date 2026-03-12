@@ -4,8 +4,7 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { REGISTERS, main_memory, status } from "../core.mjs";
+import { main_memory, status } from "../core.mjs";
 import {
     display_print,
     keyboard_read_find,
@@ -15,7 +14,7 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-import { getPinState,setPinState } from "../../web/arduino/pinstates.mts";
+// import { getPinState,setPinState } from "../../web/arduino/pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mts";
 
@@ -49,7 +48,13 @@ export function cr_digitalRead() {
     var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Read from simulator
     const pinName = `GPIO${pin}`;
-    let rawValue = getPinState(pinName);
+    let rawValue = 0;
+        coreEvents.emit("arduino-pin-read", {
+        pin: pinName,
+        callback: (val: number) => {
+            rawValue = val;
+        }
+    });
     const value = rawValue !== 0 ? 1 : 0;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
@@ -134,7 +139,13 @@ export function cr_analogRead() {
     //Read from simulator
     const pinName = `GPIO${pin}`;
     // const value = pinStates.value[pinName] ?? 0;
-    let value = getPinState(pinName);
+    let value = 0;
+    coreEvents.emit("arduino-pin-read", {
+        pin: pinName,
+        callback: (val: number) => {
+            value = val;
+        }
+    });
     console.log(`Reading from pin ${pinName}: ${value}`);
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
@@ -1686,7 +1697,12 @@ export function cr_shiftIn() {
     let bit = 0;
     for (let i = 0; i < 8; i++) {
         // let bit = pinStates.value[`GPIO${dataPin}`] !== 0 ? 1 : 0;
-        bit = getPinState(`GPIO${dataPin}`) ? 1 : 0;
+        coreEvents.emit("arduino-pin-read", {
+            pin: `GPIO${dataPin}`,
+            callback: (val: number) => {
+                bit = val;
+            }
+    });
         if (bitOrder === 1n) {
             // MSBFIRST
             value |= bit << (7 - i);
@@ -1766,7 +1782,10 @@ for (let i = 0; i < 8; i++) {
             bit = (value & (1n << BigInt(i))) ? 1n : 0n;
         }
         // pinStates.value[`GPIO${dataPin}`] = Number(bit);
-        setPinState(`GPIO${dataPin}`, Number(bit));
+            coreEvents.emit("arduino-pin-write", {
+        pin: Number(dataPin),
+        value: Number(value),
+    });
     }
     
 
