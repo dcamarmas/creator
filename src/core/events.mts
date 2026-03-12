@@ -133,6 +133,10 @@ export type CoreEvents = {
     "arduino-pin-interrupt":ArduinoPinInterruptEvent;
     /** Emitted when a pin is detached from an interrupt */
     "arduino-pin-detach-interrupt": ArduinoPinDetachInterruptEvent;
+        /** Emitted when the simulator requests to find a free slot in the interrupt vector table */
+    "arduino-find-vector-slot": ArduinoFindSlotEvent;
+    /** Emitted when the simulator requests to get the pin assigned to an interrupt vector slot */
+    "arduino-get-pin-from-slot": ArduinoGetPinFromSlotEvent;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal
@@ -167,6 +171,9 @@ export interface ArduinoPinMode{
 export interface ArduinoPinInterruptEvent {
   /** The pin number */
   pin: string;
+  isr: bigint;
+  mode: bigint;
+  position: bigint;   
 }
 /**
  * Emitted when a pin is detached from an interrupt
@@ -186,6 +193,19 @@ export interface ArduinoPinRead {
   /** Callback to return the pin value */
   callback: (value: number) => void;
 }
+
+/**
+ * Event is emitted when searching a interrupt vector slot
+ */ export interface ArduinoFindSlotEvent {
+    /** Callback to return the found slot index */
+    callback: (index: number) => void;
+}
+
+export interface ArduinoGetPinFromSlotEvent {
+    position: number;
+    callback: (pin: string) => void;
+}
+
 
 
 /**

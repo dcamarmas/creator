@@ -240,6 +240,11 @@ export default {
 
     coreEvents.on("arduino-pin-interrupt", pinName => {
       this.interrupt[pinName.pin] = true;
+      esp32vect.value[pinName.position] = [
+        BigInt(pinName.pin.replace(/\D/g, "")),
+        pinName.isr,
+        pinName.mode,
+      ];
     });
     coreEvents.on("arduino-pin-detach-interrupt", pinName => {
       delete this.interrupt[pinName.pin];
