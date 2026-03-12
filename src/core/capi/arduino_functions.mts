@@ -4,8 +4,7 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { REGISTERS, main_memory, status } from "../core.mjs";
+import { main_memory, status } from "../core.mjs";
 import {
     display_print,
     keyboard_read_find,
@@ -15,7 +14,7 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-import { pinStates, esp32vect } from "./pinstates.mts";
+// import { getPinState,setPinState } from "../../web/arduino/pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mts";
 
@@ -49,7 +48,13 @@ export function cr_digitalRead() {
     var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Read from simulator
     const pinName = `GPIO${pin}`;
-    const rawValue = pinStates.value[pinName] ?? 0;
+    let rawValue = 0;
+        coreEvents.emit("arduino-pin-read", {
+        pin: pinName,
+        callback: (val: number) => {
+            rawValue = val;
+        }
+    });
     const value = rawValue !== 0 ? 1 : 0;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
@@ -133,7 +138,15 @@ export function cr_analogRead() {
     var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Read from simulator
     const pinName = `GPIO${pin}`;
-    const value = pinStates.value[pinName] ?? 0;
+    // const value = pinStates.value[pinName] ?? 0;
+    let value = 0;
+    coreEvents.emit("arduino-pin-read", {
+        pin: pinName,
+        callback: (val: number) => {
+            value = val;
+        }
+    });
+    console.log(`Reading from pin ${pinName}: ${value}`);
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `analogRead(${pin}) = ${value}`,
@@ -684,7 +697,7 @@ export function cr_attachInterrupt() {
         32,
         readRegister(ret2.indexComp, ret2.indexElem),
     );
-    esp32vect.value[Number(interr_pos)]![1] = interr_isr;
+    // esp32vect.value[Number(interr_pos)]![1] = interr_isr;
     //TODO: Modes
     var ret3 = crex_findReg("a2");
     if (ret3.match === 0) {
@@ -699,9 +712,10 @@ export function cr_attachInterrupt() {
         32,
         readRegister(ret3.indexComp, ret3.indexElem),
     );
-    esp32vect.value[Number(interr_pos)]![2] = mode;
+    // esp32vect.value[Number(interr_pos)]![2] = mode;
     //TODO: Graphic retroalimentation
-    const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
+    // const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
+    const gpiopin = "GPIO" + "6"
     coreEvents.emit("arduino-terminal-write", {
         text: `attachInterrupt(${interr_pos}, 0x${interr_isr.toString(16)}, ${mode}) `,
     });
@@ -722,8 +736,9 @@ export function cr_detachInterrupt() {
         32,
         readRegister(ret1.indexComp, ret1.indexElem),
     );
-    esp32vect.value[Number(interr_pos)] = [esp32vect.value[Number(interr_pos)]![0], 0n, 0n];
-    const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
+    // esp32vect.value[Number(interr_pos)] = [esp32vect.value[Number(interr_pos)]![0], 0n, 0n];
+    // const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
+    const gpiopin = "GPIO" + "6";
     coreEvents.emit("arduino-terminal-write", {
         text: `detachInterrupt(${interr_pos})`,
     });
@@ -742,9 +757,10 @@ export function cr_digitalPinToInterrupt() {
     }
     var pin = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Find clean slot in the interrupt vector table
-    const pos = esp32vect.value.findIndex(
-        (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n,
-    );
+    // const pos = esp32vect.value.findIndex(
+    //     (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n,
+    // );
+    const pos: number = 0; // Simulamos que siempre se asigna a la posición 0 para simplificar
 
     // Si no encuentra ninguna posición libre, findIndex devuelve -1
     if (pos === -1) {
@@ -755,7 +771,7 @@ export function cr_digitalPinToInterrupt() {
             null,
         );
     }
-    esp32vect.value[pos] = [BigInt(pin), 0n, 0n]; // Mark the slot as used with the position
+    // esp32vect.value[pos] = [BigInt(pin), 0n, 0n]; // Mark the slot as used with the position
     writeRegister(BigInt(pos), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalPinToInterrupt(${pin})`,
@@ -1678,8 +1694,15 @@ export function cr_shiftIn() {
     coreEvents.emit("arduino-terminal-write", {
         text: `shiftIn(${dataPin}, ${clockPin}, ${bitOrder})`,
     });
+    let bit = 0;
     for (let i = 0; i < 8; i++) {
-        let bit = pinStates.value[`GPIO${dataPin}`] !== 0 ? 1 : 0;
+        // let bit = pinStates.value[`GPIO${dataPin}`] !== 0 ? 1 : 0;
+        coreEvents.emit("arduino-pin-read", {
+            pin: `GPIO${dataPin}`,
+            callback: (val: number) => {
+                bit = val;
+            }
+    });
         if (bitOrder === 1n) {
             // MSBFIRST
             value |= bit << (7 - i);
@@ -1758,7 +1781,11 @@ for (let i = 0; i < 8; i++) {
             // LSBFIRST: del bit 0 al 7
             bit = (value & (1n << BigInt(i))) ? 1n : 0n;
         }
-        pinStates.value[`GPIO${dataPin}`] = Number(bit);
+        // pinStates.value[`GPIO${dataPin}`] = Number(bit);
+            coreEvents.emit("arduino-pin-write", {
+        pin: Number(dataPin),
+        value: Number(value),
+    });
     }
     
 

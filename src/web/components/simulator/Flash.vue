@@ -281,6 +281,21 @@ export default defineComponent({
     handleCheckboxChange(value: boolean) {
       this.creatinoMode(value)
     },
+    creatinoMode(isChecked: boolean) {
+      LOCALLAB.gateway_monitor(this.flashURL + "/arduinoMode", {
+        state: isChecked,
+      }).then(data => {
+        this.eraseflash = false
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+      })
+
+      // Google Analytics
+      creator_ga("simulator", "simulator.arduinoMode", "simulator.arduinoMode")
+    },
+
+    handleCheckboxChange(value: boolean) {
+      this.creatinoMode(value)
+    },
 
     do_flash() {
       if (instructions.length === 0) {

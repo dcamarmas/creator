@@ -147,7 +147,7 @@ import {
   pinLabels,
   switchBoard,
   esp32vect,
-} from "../../../core/capi/pinstates.mjs";
+} from "../../arduino/pinstates.mjs";
 import {
   writeRegister,
   readRegister,

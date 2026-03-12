@@ -123,6 +123,8 @@ export type CoreEvents = {
     "arduino-terminal-write": ArduinoTerminalWriteEvent;
     /** Emitted when a Pin changes its values */
     "arduino-pin-write": ArduinoPinChangedEvent;
+    /** Emitted when a GPIO pin is read */
+    "arduino-pin-read": ArduinoPinRead;
     /** Emitted when Arduino is reset */
     "arduino-reset": void;
     /** Event is emmited when a pin in pinMode has been set to a mode */
@@ -173,6 +175,18 @@ export interface ArduinoPinDetachInterruptEvent {
     /** The pin number */
     pin: string;
 }
+
+/**
+ * Event is emitted when a GPIO pin is read
+ */
+export interface ArduinoPinRead {
+  /** The pin number */
+  pin: string;
+
+  /** Callback to return the pin value */
+  callback: (value: number) => void;
+}
+
 
 /**
  * Global event emitter for CREATOR core events
