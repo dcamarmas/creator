@@ -1,4 +1,3 @@
-import { coreEvents } from "@/core/events.mts";
 import { ref, type Ref } from "vue";
 // --- Tipado ---
 export interface PinStateMap {
