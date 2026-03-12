@@ -715,11 +715,18 @@ export function cr_attachInterrupt() {
     // esp32vect.value[Number(interr_pos)]![2] = mode;
     //TODO: Graphic retroalimentation
     // const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
-    const gpiopin = "GPIO" + "6"
+    let gpiopin = "GPIO?"; // Valor por defecto
+
+    coreEvents.emit("arduino-get-pin-from-slot", {
+        position: Number(interr_pos),
+        callback: (pin: string) => {
+            gpiopin = "GPIO" + pin; // El suscriptor nos devuelve el pin real
+        }
+    });
     coreEvents.emit("arduino-terminal-write", {
         text: `attachInterrupt(${interr_pos}, 0x${interr_isr.toString(16)}, ${mode}) `,
     });
-    coreEvents.emit("arduino-pin-interrupt", { pin: gpiopin });
+    coreEvents.emit("arduino-pin-interrupt", { pin: gpiopin, mode: mode, isr: interr_isr, position: interr_pos });
 }
 export function cr_detachInterrupt() {
     //TODO: Revise
@@ -757,10 +764,15 @@ export function cr_digitalPinToInterrupt() {
     }
     var pin = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Find clean slot in the interrupt vector table
+    let pos = -1;
     // const pos = esp32vect.value.findIndex(
     //     (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n,
     // );
-    const pos: number = 0; // Simulamos que siempre se asigna a la posición 0 para simplificar
+    coreEvents.emit("arduino-find-vector-slot", {
+        callback: (index: number) => {
+            pos = index; 
+        }
+    });
 
     // Si no encuentra ninguna posición libre, findIndex devuelve -1
     if (pos === -1) {
@@ -772,6 +784,12 @@ export function cr_digitalPinToInterrupt() {
         );
     }
     // esp32vect.value[pos] = [BigInt(pin), 0n, 0n]; // Mark the slot as used with the position
+    coreEvents.emit("arduino-pin-interrupt", {
+        position: BigInt(pos),
+        pin: pin.toString(),
+        mode: 0n,
+        isr: 0n,
+    });
     writeRegister(BigInt(pos), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalPinToInterrupt(${pin})`,

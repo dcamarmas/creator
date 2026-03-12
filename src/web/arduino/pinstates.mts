@@ -147,3 +147,14 @@ coreEvents.on("arduino-pin-read", (event: ArduinoPinRead) => {
     const value = pinStates.value[event.pin] ?? 0;
     event.callback(value);
 });
+coreEvents.on("arduino-find-vector-slot", (event) => {
+    const indexEncontrado = esp32vect.value.findIndex(
+        (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n
+    );
+    event.callback(indexEncontrado);
+});
+
+coreEvents.on("arduino-get-pin-from-slot", (event) => {
+    const pinGuardado = esp32vect.value[event.position]?.[0];
+    event.callback(pinGuardado?.toString() ?? "unknown");
+});

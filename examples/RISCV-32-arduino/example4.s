@@ -76,6 +76,8 @@ lightUp:
 
 loop:
 #read LDR
+	la t0, ledPin
+    lw a0, 0(t0)
     addi sp, sp, -4
     sw ra,0(sp)
     jal ra, analogRead #analogRead(lightSensorPin);
