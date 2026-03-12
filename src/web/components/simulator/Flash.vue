@@ -25,6 +25,7 @@ import { REMOTELAB } from "@/web/src/remoteLab.js";
 import { console_log, show_notification } from "@/web/utils.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { instructions } from "@/core/assembler/assembler.mjs";
+import { loadedCreatino } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -280,6 +281,21 @@ export default defineComponent({
     handleCheckboxChange(value: boolean) {
       this.creatinoMode(value)
     },
+    creatinoMode(isChecked: boolean) {
+      LOCALLAB.gateway_monitor(this.flashURL + "/arduinoMode", {
+        state: isChecked,
+      }).then(data => {
+        this.eraseflash = false
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+      })
+
+      // Google Analytics
+      creator_ga("simulator", "simulator.arduinoMode", "simulator.arduinoMode")
+    },
+
+    handleCheckboxChange(value: boolean) {
+      this.creatinoMode(value)
+    },
 
     do_flash() {
       if (instructions.length === 0) {
@@ -294,6 +310,8 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
+
       }).then(data => {
         this.flashing = false;
         console_log(JSON.stringify(data, null, 2), "DEBUG");
@@ -350,6 +368,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.stoprunning = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -391,6 +410,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.running = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -431,6 +451,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.debugging = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -482,6 +503,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.fullclean = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -565,7 +587,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-modal :id="id" scrollable title="Target Board Flash" no-footer>
+  <b-modal :id="id" scrollable title="Target Board Flash" no-footer modal-class="flash-zindex-modal">
     <b-tabs content-class="mt-3">
       <b-tab title="Local Device" active id="flash-tab-local">
         <div class="d-flex flex-column align-items-center mt-4 mb-2">
@@ -610,17 +632,6 @@ export default defineComponent({
           class="mt-2"
           @change="onTabChange"
         />
-
-        <b-col v-if="selectedOption === 'esp32' && targetBoard" class="mb-3">
-          <b-form-checkbox
-          class ="mt-3"
-            v-model="arduino_support"
-            @change="handleCheckboxChange(arduino_support)"
-          >
-            <span class="checkbox-label">Enable Arduino Support</span>
-          </b-form-checkbox>
-        </b-col>
-
         <div v-if="targetBoard" class="mt-3">
           <div v-if="targetBoard.startsWith('sbc')">
             <label for="target-user">
@@ -659,7 +670,7 @@ export default defineComponent({
               class="my-2"
             />
           </div>
-          <label for="flash-url"> (3) Flash URL: </label>
+          <label for="flash-url"> Flash URL: </label>
           <b-form-input
             id="flash-url"
             type="text"
@@ -901,3 +912,4 @@ export default defineComponent({
     </b-tabs>
   </b-modal>
 </template>
+

@@ -9,7 +9,7 @@
     "name": "Example 2",
     "id": "e2",
     "url": "examples/RISCV-32/example2.s",
-    "description": "ALU operations"
+    "description": "ALU Operations"
   },
   {
     "name": "Example 3",
@@ -21,7 +21,7 @@
     "name": "Example 4",
     "id": "e4",
     "url": "examples/RISCV-32/example4.s",
-    "description": "FPU operations"
+    "description": "FPU Operations"
   },
   {
     "name": "Example 5",
@@ -45,7 +45,7 @@
     "name": "Example 8",
     "id": "e8",
     "url": "examples/RISCV-32/example8.s",
-    "description": "Copy of matrices"
+    "description": "Copy of Matrices"
   },
   {
     "name": "Example 9",

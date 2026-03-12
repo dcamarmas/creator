@@ -8,7 +8,7 @@ config:
   name: RV32
   word_size: 32
   byte_size: 8
-  description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
+  description: RISC-V is a free and open standard ISA (Instruction Set Architecture) based on RISC (Reduced Instruction Set Computer) principles. It was created in 2010 at the University of California, Berkeley.
   endianness: big_endian
   memory_alignment: true
   main_function: main
@@ -20,32 +20,33 @@ config:
   plugin: riscv
   assemblers:
     - name: CreatorAssembler
-      description: Default CREATOR assembler
+      description: "Default CREATOR assembler"
+
 extensions:
   I:
-    description: RV32I Base Instruction Set
+    description: "RV32I Base Instruction Set"
     template: Base
   M:
-    description: RV32M Integer Multiply/Divide Extension
+    description: "RV32M Integer Multiply/Divide Extension"
     type: extension
   F:
-    description: RV32F Single-Precision Floating-Point Extension
+    description: "RV32F Single-Precision Floating-Point Extension"
     type: extension
     implies:
       - Zicsr
   D:
-    description: RV32D Double-Precision Floating-Point Extension
+    description: "RV32D Double-Precision Floating-Point Extension"
     type: extension
     implies:
       - F
   Zifencei:
-    description: RV32/RV64 Zifencei Standard Extension
+    description: "RV32/RV64 Zifencei Standard Extension"
     type: extension
   Zicsr:
-    description: RV32/RV64 Zicsr Standard Extension
+    description: "RV32/RV64 Zicsr Standard Extension"
     type: extension
   Priv:
-    description: RV32/RV64 Privileged instructions
+    description: "RV32/RV64 Privileged instructions"
     type: extension
 
 components:
@@ -91,6 +92,7 @@ components:
         encoding: 2
         properties:
           - read
+          - write
       - name:
           - mstatus
         nbits: 32
@@ -1489,8 +1491,8 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        if (registers[rs1] === registers[rs2]) 
-          registers.pc = registers.pc + imm;
+        if (registers[rs1] === registers[rs2])
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are equal.
 
     - name: bge
@@ -1502,7 +1504,7 @@ instructions:
           value: "101"
       definition: |
         if (CAPI.FP.uint2int(registers[rs1]) >= CAPI.FP.uint2int(registers[rs2]))
-         registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using signed comparison.
 
@@ -1515,7 +1517,7 @@ instructions:
           value: "111"
       definition: |
         if (CAPI.FP.int2uint(registers[rs1]) > CAPI.FP.int2uint(registers[rs2]))
-         registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using unsigned comparison.
 
@@ -1528,9 +1530,8 @@ instructions:
           value: "100"
       definition: |
         if (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2]))
-         registers.pc = registers.pc + imm;
-      help: Take the branch if registers rs1 is less than rs2, using signed
-        comparison.
+            registers.pc = registers.pc + imm;
+      help: Take the branch if registers rs1 is less than rs2, using signed comparison.
 
     - name: bltu
       template: B
@@ -1541,9 +1542,8 @@ instructions:
           value: "110"
       definition: |
         if (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(registers[rs2]))
-         registers.pc = registers.pc + imm;
-      help: Take the branch if registers rs1 is less than rs2, using unsigned
-        comparison.
+            registers.pc = registers.pc + imm;
+      help: Take the branch if registers rs1 is less than rs2, using unsigned comparison.
 
     - name: bne
       template: B
@@ -1553,8 +1553,8 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        if (registers[rs1] !== registers[rs2]) 
-          registers.pc = registers.pc + imm;
+        if (registers[rs1] !== registers[rs2])
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are not equal.
 
     # I-type instructions
@@ -1589,8 +1589,7 @@ instructions:
           value: "111"
       definition: |
         registers[rd] = registers[rs1] & CAPI.FP.int2uint(imm);
-      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit
-        immediate and place the result in rd.
+      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
     - name: jalr
       template: I-Offset
@@ -1616,8 +1615,7 @@ instructions:
           value: "000"
       definition: |
         registers[rd] = CAPI.MEM.read(imm + registers[rs1], 1, rd);
-      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lbu
       template: I-Offset
@@ -1631,8 +1629,7 @@ instructions:
         let addr = CAPI.FP.int2uint(registers[rs1]) + imm;
         registers[rd] = CAPI.MEM.read(addr, 1, rd);
         registers[rd] = CAPI.FP.int2uint(registers[rd]);
-      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lh
       template: I-Offset
@@ -1644,8 +1641,7 @@ instructions:
           value: "001"
       definition: |
         registers[rd] = CAPI.MEM.read(imm + registers[rs1], 2, rd);
-      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lhu
       template: I-Offset
@@ -1659,8 +1655,7 @@ instructions:
         let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
         registers[rd] = CAPI.MEM.read(addr, 2, rd);
         registers[rd] = CAPI.FP.int2uint(registers[rd]);
-      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lw
       template: I-Offset
@@ -1673,8 +1668,7 @@ instructions:
       definition: |
         let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
         registers[rd] = CAPI.MEM.read(addr, 4, rd);
-      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: ori
       template: I
@@ -1686,8 +1680,7 @@ instructions:
           value: "110"
       definition: |
         registers[rd] = registers[rs1] | imm;
-      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit
-        immediate and place the result in rd.
+      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
     - name: slli
       template: I-Shift
@@ -1701,8 +1694,7 @@ instructions:
           value: "0000000"
       definition: |
         if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] << shamt);
-      help: Performs logical left shift on the value in register rs1 by the
-        shift amount held in the lower 5 bits of the immediate.
+      help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: slti
       template: I
@@ -1713,9 +1705,8 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1 : 0;
-      help: Place the value 1 in register rd if register rs1 is less than the
-        signextended immediate when both are treated as signed numbers, else 0 is written to rd.
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1n : 0n;
+      help: Place the value 1 in register rd if register rs1 is less than the signextended immediate when both are treated as signed numbers, else 0 is written to rd.
 
     - name: sltiu
       template: I
@@ -1726,9 +1717,8 @@ instructions:
         - field: funct3
           value: "011"
       definition: |
-        registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1: 0;
-      help: Place the value 1 in register rd if register rs1 is less than the
-        immediate when both are treated as unsigned numbers, else 0 is written to rd.
+        registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1n : 0n;
+      help: Place the value 1 in register rd if register rs1 is less than the immediate when both are treated as unsigned numbers, else 0 is written to rd.
 
     - name: srai
       template: I-Shift
@@ -1742,8 +1732,7 @@ instructions:
           value: "0100000"
       definition: |
         if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] >> shamt);
-      help: Performs arithmetic right shift on the value in register rs1 by the
-        shift amount held in the lower 5 bits of the immediate.
+      help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: srli
       template: I-Shift
@@ -1757,8 +1746,7 @@ instructions:
           value: "0000000"
       definition: |
         if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] >> shamt);
-      help: Performs logical right shift on the value in register rs1 by the
-        shift amount held in the lower 5 bits of the immediate.
+      help: Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: xori
       template: I
@@ -1789,9 +1777,11 @@ instructions:
         - field: opcode
           value: "1101111"
       definition: |
-        registers[rd] = registers.pc + 4n;
-        registers.pc += imm;
-        CAPI.STACK.beginFrame();
+        if (CAPI.ARDUINO.check_arduino(imm,registers.pc) === false) {
+          registers[rd] = registers.pc + 4n;
+          registers.pc  = registers.pc + imm;
+          CAPI.STACK.beginFrame();
+        } 
       help: Jump to address and place return address in rd.
 
     # R-type instructions
@@ -1827,8 +1817,7 @@ instructions:
           value: "111"
       definition: |
         registers[rd] = registers[rs1] & registers[rs2];
-      help: Performs bitwise AND on registers rs1 and rs2 and place the result
-        in rd.
+      help: Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 
     - name: or
       template: R
@@ -1841,8 +1830,8 @@ instructions:
           value: "110"
       definition: |
         registers[rd] = registers[rs1] | registers[rs2];
-      help: Performs bitwise OR on registers rs1 and rs2 and place the result in
-        rd.
+      help: Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
+
     - name: sll
       template: R
       fields:
@@ -1855,8 +1844,7 @@ instructions:
       definition: |
         const shiftAmount = registers[rs2] & 0x1Fn;
         registers[rd] = (registers[rs1] << shiftAmount) & 0xFFFFFFFFn;
-      help: Performs logical left shift on the value in register rs1 by the
-        shift amount held in the lower 5 bits of register rs2.
+      help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
     - name: slt
       template: R
@@ -1868,9 +1856,8 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1 : 0;
-      help: Place the value 1 in register rd if register rs1 is less than
-        register rs2 when both are treated as signed numbers, else 0 is written to rd.
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1n : 0n;
+      help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as signed numbers, else 0 is written to rd.
 
     - name: sltu
       template: R
@@ -1914,8 +1901,7 @@ instructions:
       definition: |
         const shiftAmount = registers[rs2] & 0x1Fn;
         registers[rd] = (registers[rs1] >> shiftAmount) & 0xFFFFFFFFn;
-      help: Logical right shift on the value in register rs1 by the shift amount
-        held in the lower 5 bits of register rs2.
+      help: Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
     - name: sub
       template: R
@@ -1943,8 +1929,7 @@ instructions:
           value: "100"
       definition: |
         registers[rd] = (registers[rs1] ^ registers[rs2]);
-      help: Performs bitwise XOR on registers rs1 and rs2 and place the result
-        in rd.
+      help: Performs bitwise XOR on registers rs1 and rs2 and place the result in rd.
 
     # S-type instructions
     #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -2107,7 +2092,7 @@ instructions:
             (BigInt.asIntN(32, BigInt(registers[rs1])) / BigInt.asIntN(32, BigInt(registers[rs2])))
           );
         }
-        else CAPI.VALIDATION.raise('Division by registers[zero] not allowed');
+         else CAPI.VALIDATION.raise('Division by zero not allowed');
       help: Perform an XLEN bits by XLEN bits signed integer division of rs1 by
         rs2, rounding towards zero.
 
@@ -2127,7 +2112,7 @@ instructions:
             (BigInt.asUintN(32, BigInt(registers[rs1])) / BigInt.asUintN(32, BigInt(registers[rs2])))
           );
         }
-         else CAPI.VALIDATION.raise('Division by registers[zero] not allowed');
+         else CAPI.VALIDATION.raise('Division by zero not allowed');
       help: Perform an XLEN-bit by XLEN-bit unsigned integer division of rs1 by
         rs2, rounding towards zero.
 
@@ -2255,8 +2240,7 @@ instructions:
 
       postoperation: |
         registers[rd] = CAPI.ARCH.NaNBox(registers[rd]);
-      help: Load a single-precision floating-point value from memory into
-        floating-point register rd.
+      help: Load a single-precision floating-point value from memory into floating-point register rd.
 
     - name: fadd.s
       template: R-Floating
@@ -2338,8 +2322,7 @@ instructions:
         registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
       definition: |
         registers[rd] = CAPI.FP.uint2int(registers[rs1])
-      help: Converts a 32-bit signed integer, in integer register rs1 into a
-        floating-point number in floating-point register rd.
+      help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.s.wu
       template: R-IntToFloat
@@ -2357,8 +2340,7 @@ instructions:
           order: 3
       definition: |
         registers[rd] = CAPI.FP.int2uint(registers[rs1])
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
-        floating-point number in floating-point register rd.
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.w.s
       template: R-FloatToInt
@@ -2386,8 +2368,7 @@ instructions:
         }
       definition: |
         result = parseInt(registers[rs1]);
-      help: Convert a floating-point number in floating-point register rs1 to a
-        signed 32-bit in integer register rd.
+      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in integer register rd.
 
     - name: fcvt.wu.s
       template: R-FloatToInt
@@ -2415,8 +2396,7 @@ instructions:
         }
       definition: |
         registers[rd] = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Convert a floating-point number in floating-point register rs1 to a
-        signed 32-bit in unsigned integer register rd.
+      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in unsigned integer register rd.
 
     - name: fdiv.s
       template: R-Floating
@@ -2675,8 +2655,7 @@ instructions:
         }
       definition: |
         result = (rs2Number >= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is rs2's sign bit.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
     - name: fsgnjn.s
       template: R-Floating
@@ -2699,8 +2678,7 @@ instructions:
         }
       definition: |
         result = (rs2Number <= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is rs2's sign bit.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
     - name: fsgnjx.s
       template: R-Floating
@@ -2725,8 +2703,7 @@ instructions:
         let a = rs1Number < 0;
         let b = rs2Number < 0;
         result = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is XOR of sign bit of rs1 and rs2.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
 
     - name: fsqrt.s
       template: R-Floating
@@ -2788,7 +2765,7 @@ instructions:
         }
       definition: |
         result = rs1Number - rs2Number;
-      help: Perform single-precision floating-point substraction.
+      help: Perform single-precision floating-point subtraction.
 
     - name: fmadd.s
       template: R4
@@ -2910,8 +2887,7 @@ instructions:
       definition: |
         let value = registers[rs2] & 0xFFFFFFFFn;
         CAPI.MEM.write(registers[rs1] + imm, 4, value, rs2, 'float32');
-      help: Store a single-precision value from floating-point register rs2 to
-        memory.
+      help: Store a single-precision value from floating-point register rs2 to memory.
 
   D:
     #   ____ __     __ _____ ____   ____
@@ -2936,8 +2912,7 @@ instructions:
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
         registers[rd] = CAPI.MEM.read(registers[rs1] + imm, 8, rd);
-      help: Load a double-precision floating-point value from memory into
-        floating-point register rd.
+      help: Load a double-precision floating-point value from memory into floating-point register rd.
 
     - name: fadd.d
       template: R-Double
@@ -3035,8 +3010,7 @@ instructions:
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a double
-        floating-point number in floating-point register rd.
+      help: Converts double floating-point register in rs1 into a double floating-point number in floating-point register rd.
 
     - name: fcvt.d.w
       template: R-Conversion
@@ -3063,8 +3037,7 @@ instructions:
         registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
         result = CAPI.FP.uint2int(rs1Number);
-      help: Converts a 32-bit signed integer, in integer register rs1 into a
-        double-precision floating-point number in floating-point register rd.
+      help: Converts a 32-bit signed integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.d.wu
       template: R-Conversion
@@ -3096,8 +3069,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseFloat(rs1Number));
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
-        double-precision floating-point number in floating-point register rd.
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.s.d
       template: R-Conversion
@@ -3129,8 +3101,7 @@ instructions:
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a floating-point
-        number in floating-point register rd.
+      help: Converts double floating-point register in rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.w.d
       template: R-Conversion
@@ -3162,8 +3133,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Converts a double-precision floating-point number in floating-point
-        register rs1 to a signed 32-bit integer, in integer register rd.
+      help: Converts a double-precision floating-point number in floating-point register rs1 to a signed 32-bit integer, in integer register rd.
 
     - name: fcvt.wu.d
       template: R-Conversion
@@ -3195,8 +3165,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Converts a double-precision floating-point number in floating-point
-        register rs1 to a unsigned 32-bit integer, in integer register rd.
+      help: Converts a double-precision floating-point number in floating-point register rs1 to a unsigned 32-bit integer, in integer register rd.
 
     - name: fdiv.d
       template: R-Double
@@ -3676,6 +3645,7 @@ instructions:
       properties:
         - privileged
 
+
   Zicsr:
     #   _____ _
     #  |__  /(_)  ___  ___  _ __
@@ -3701,7 +3671,8 @@ instructions:
 
     # TODO: Implement rest of CSR instructions
 
-  Zifencei:
+
+Zifencei:
     #   _____ _   __                          _
     #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
     #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
@@ -3736,6 +3707,7 @@ instructions:
       help: Provides explicit synchronization between writes to instruction
         memory and instruction fetches on the same hart.
 
+
 pseudoinstructions:
   # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
 
@@ -3761,8 +3733,7 @@ pseudoinstructions:
           type: offset_bytes
       definition: |
         bge reg1, x0, off;
-      help: Take the branch if the value in register rs1 is greater or equal to
-        0.
+      help: Take the branch if the value in register rs1 is greater or equal to 0.
 
     - name: bgt
       fields:
@@ -3887,13 +3858,13 @@ pseudoinstructions:
           type: imm-unsigned
       definition: |
         no_ret_op{
-          tmp = Field.2.(31,0).int;
-          tmp_pc_offset = (reg.pc - 4) & 0xFFF;
+          tmp = Field.2.(31,0).int - (reg.pc - 4);
           tmp_low = tmp & 0x00000FFF;
-          tmp_hi = tmp >> 12;
+          tmp_low = tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;
+          tmp_hi = (tmp - tmp_low) >> 12;
         };
         auipc rd, op{tmp_hi};
-        addi rd, rd, op{tmp_low - (tmp_pc_offset)};
+        addi rd, rd, op{tmp_low};
 
     - name: li
       fields:
@@ -4111,13 +4082,12 @@ interrupts:
           CAPI.SYSCALL.read('a0', 'char');
           break;
       }
-
       CAPI.INTERRUPTS.clearHighlight();
 
     custom: |
       CAPI.INTERRUPTS.globalDisable();
       CAPI.INTERRUPTS.setKernelMode();
-      registers.epc = registers.pc;
+      registers.mepc = CAPI.REG.read("pc"); // get "real" PC (next instruction)
 
       // jump to handler
       if (registers.mtvec & 1n) { // vectored mode
@@ -4134,7 +4104,6 @@ interrupts:
     return null;
 
   is_enabled: |
-    if (!(registers.mstatus & 2n ** 3n)) return false; // MIE
     switch (type) {
       case InterruptType.Software:
       case InterruptType.EnvironmentCall:
@@ -4147,7 +4116,7 @@ interrupts:
     return false;
 
   is_global_enabled: |
-    return !(registers.mstatus & 2n ** 3n); // MIE
+    return !!(registers.mstatus & 2n ** 3n); // MIE
 
   enable: |
     switch (type) {
@@ -4236,3 +4205,4 @@ timer:
     registers.mie |= 2n ** 7n; // MTIE = 1
   disable: |
     registers.mie &= ~(2n ** 7n); // MTIE = 0
+

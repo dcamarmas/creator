@@ -48,6 +48,7 @@ import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
 import { coreEvents } from "../events.mts";
 import { clearAllRegisterGlows } from "../register/registerGlowState.mjs";
+import { architecture } from "../core.mjs";
 
 const instructionCache = new Map();
 const compiledFunctions = new Map();
@@ -94,7 +95,7 @@ function performExecutionChecks() {
 function get_entrypoint() {
     // search main tag
     const entrypoint = instructions.find(
-        i => i.Label === newArchitecture.config.main_function,
+        i => i.Label.includes(newArchitecture.config.main_function),
     )?.Address;
 
     return entrypoint
@@ -520,7 +521,10 @@ export function writeStackLimit(stackLimit) {
     // Update the stack segment in the memory layout if it exists
     if (stackSegment) {
         // Update the memory segment's start address to reflect the new stack pointer
-        stackSegment.start = Number(stackLimitBigInt);
+        if (architecture.config.name.includes("SRV64"))
+            stackSegment.start = stackLimitBigInt;
+        else
+            stackSegment.start = Number(stackLimitBigInt);
         // And update the size of the stack segment
         stackSegment.size = stackSegment.end - stackSegment.start;
     }

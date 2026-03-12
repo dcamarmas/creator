@@ -305,10 +305,10 @@
   * :technologist: [Lucas Elvira Martín](https://github.com/luelvira) (RISC-V and several improvements)
   * :technologist: [José Antonio Verde Jiménez](https://github.com/joseaverde) (Real hardware integration)
   * :technologist: [Álvaro Guerrero Espinosa](https://github.com/ALVAROPING1) (New compiler)
-  * :technologist: [Elisa Utrilla Arroyo](https://github.com/EUtrilla2002) (Real hardware integration)
+  * :technologist: [Elisa Utrilla Arroyo](https://github.com/EUtrilla2002) (Real hardware integration, Arduino integration)
   * :technologist: [Luis Daniel Casais Mezquida](https://github.com/rajayonin) (Website migration, interrupts, timers, and memory-mapped devices)
   * :technologist: [Jorge Ramos Santana](https://github.com/mjorgers) (core/tests rewrite, new web UI, new CLI, RV64 & Z80 architectures)
-  * :technologist: [Juan Carlos Cano Resa](https://github.com/Jotaceee) (SAIL integration)
+  * :technologist: [Juan Carlos Cano Resa](https://github.com/Jotaceee) (Sail integration)
 
 
 
@@ -317,6 +317,24 @@
 </div>
 
 <details open>
+<summary>:atom: 6.1.x</summary>
+
+  - [x] Sail integration:
+     * RISC-V 32 and RISC-V 64 full specification supported
+     * Cache module integrated
+  - [x] Arduino support:
+     * ESP32 Microcontroller
+     * Arduino GPIO simulation UI
+  - [x] New activity bar
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v6.1
+  - Try Version: https://creatorsim.github.io/creator-v6.1
+
+</details>
+
+<details>
 <summary>:atom: 6.0.x</summary>
 
   - [x] **BREAKING CHANGES**:

@@ -24,6 +24,8 @@ import { show_notification } from "@/web/utils.mjs";
 import { assembleCreator } from "@/core/assembler/creatorAssembler/web/creatorAssembler.mjs";
 import { architecture } from "@/core/core.mjs";
 import yaml from "js-yaml";
+import { outfile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
+import { instructions } from "@/core/assembler/assembler";
 
 export default defineComponent({
   props: {
@@ -51,6 +53,9 @@ export default defineComponent({
           returns: Record<string, string>;
         }
       >,
+
+      compiler: architecture.config.name,
+
       /*Binary data*/
       binaryHex: "",
       /*Compiling state*/
@@ -152,7 +157,7 @@ export default defineComponent({
       // Check if architecture uses Creator assembler
       if (
         !architecture?.config?.assemblers?.some(
-          (a: any) => a.name === "CreatorAssembler",
+          (a: any) => (a.name === "CreatorAssembler" || a.name === "Sail"),
         )
       ) {
         show_notification(
@@ -195,13 +200,26 @@ export default defineComponent({
      */
     async handleShown() {
       // Compile as library
-      const compiled = await this.compileAsLibrary();
-      if (!compiled) {
-        // Close modal if compilation failed
-        this.hideModal();
+      if (!this.compiler.includes("SRV")){
+        const compiled = await this.compileAsLibrary();
+        if (!compiled) {
+          // Close modal if compilation failed
+          this.hideModal();
+        } else {
+          // Prepare library data after successful compilation
+          this.prepareLibrary();
+        }
       } else {
-        // Prepare library data after successful compilation
-        this.prepareLibrary();
+        if (outfile !== null) { // preparamos la librería
+          if (instructions.findIndex(ins => ins.Label.includes("main")) !== -1) {
+            show_notification("Your library code does not have to contain main function", "danger");
+            this.hideModal();  
+          }
+        } else {
+          show_notification("You must to compile the library before save it", "danger");
+          this.hideModal();
+        }
+
       }
     },
 
@@ -210,7 +228,10 @@ export default defineComponent({
      */
     handleOk(evt: any) {
       evt.preventDefault();
-      this.library_save();
+      if (this.compiler.includes("SRV"))
+        this.library_save_sail();
+      else 
+        this.library_save();
     },
 
     /**
@@ -364,6 +385,32 @@ export default defineComponent({
 
       // Modal will auto-close after this method completes
     },
+    library_save_sail(){
+      // Check the library name
+      let fileNameToSaveAs;
+      if (this.name_binary_save === "")
+        fileNameToSaveAs = "lib.o";
+      else 
+        fileNameToSaveAs = this.name_binary_save + ".o";
+
+      // Download the library
+      if (outfile !== null){
+
+        const blob = new Blob([outfile], {type: "application/octet-stream"});
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.download = fileNameToSaveAs;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        show_notification("Library saved successfully", "success");
+      }
+
+    },
 
     /**
      * Handle modal hidden event to reset state
@@ -415,7 +462,7 @@ export default defineComponent({
           title="File name"
         />
         <small class="form-text text-muted"
-          >File will be saved as {{ name_binary_save || "library" }}.yml</small
+          >File will be saved as {{ name_binary_save || "library" }} {{ (compiler.includes("SRV")) ? ".o" : ".yml" }}</small
         >
       </b-form-group>
       <hr class="my-4" />

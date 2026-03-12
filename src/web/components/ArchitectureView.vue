@@ -29,7 +29,7 @@ import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
 import Instructions from "./architecture/instructions/Instructions.vue";
 import Directives from "./architecture/directives/Directives.vue";
 import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue";
-
+import CacheMemory from "./architecture/cache_memory/CacheMemory.vue";
 export default defineComponent({
   props: {
     browser: { type: String, required: true },
@@ -48,6 +48,7 @@ export default defineComponent({
     Instructions,
     Directives,
     Pseudoinstructions,
+    CacheMemory,
   },
 
   data() {
@@ -159,6 +160,20 @@ export default defineComponent({
               <font-awesome-icon :icon="['fas', 'database']" />
               <span>Registers</span>
             </button>
+
+
+            <!-- Pseudoinstruction Tab -->
+            <button
+              v-if="
+                architecture.config.name === 'SRV32' || architecture.config.name === 'SRV64'
+              "
+              :class="['tab', { active: activeTab === 'cache' }]"
+              @click="activeTab = 'cache'"
+            >
+              <font-awesome-icon :icon="['fas', 'memory']" />
+              <!-- <font-awesome-icon :icon="['fas', 'layer-group']" /> -->
+              <span>Cache Memory</span>
+            </button>
           </div>
         </div>
 
@@ -180,6 +195,32 @@ export default defineComponent({
           <!-- Registers -->
           <div v-if="activeTab === 'registers'">
             <RegisterFileArch :register_file="architecture.components" />
+          </div>
+          <!-- Cache Memory Configuration -->
+          <div v-if="activeTab === 'cache'">
+            <CacheMemory
+                :cachetype="$root.$data.cache_type"
+                :L1_I_num_lines="$root.$data.L1_I_num_lines"
+                :L1_I_size_block="$root.$data.L1_I_size_block"
+                :L1_I_size="$root.$data.L1_I_size"
+                :L1_D_num_lines="$root.$data.L1_D_num_lines"
+                :L1_D_size_block="$root.$data.L1_D_size_block"
+                :L1_D_size="$root.$data.L1_D_size"
+                :L1_num_lines="$root.$data.L1_num_lines"
+                :L1_size_block="$root.$data.L1_size_block"
+                :L1_size="$root.$data.L1_size"
+                :L2_I_num_lines="$root.$data.L2_I_num_lines"
+                :L2_I_size_block="$root.$data.L2_I_size_block"
+                :L2_I_size="$root.$data.L2_I_size"
+                :L2_D_num_lines="$root.$data.L2_D_num_lines"
+                :L2_D_size_block="$root.$data.L2_D_size_block"
+                :L2_D_size="$root.$data.L2_D_size"
+                :L2_num_lines="$root.$data.L2_num_lines"
+                :L2_size_block="$root.$data.L2_size_block"
+                :L2_size="$root.$data.L2_size"
+                :cache_location="$root.$data.cache_location"
+                :cache_policy="$root.$data.cache_policy"
+            ></CacheMemory>
           </div>
         </div>
       </div>

@@ -67,7 +67,6 @@ const creatorASCII = `
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-    didaCtic and geneRic assEmbly progrAmming simulaTOR
 
 ${("v." + package_json.version).padStart(58)}
 `;
@@ -208,6 +207,47 @@ export default {
 
       // Debug
       c_debug: false,
+
+      // Vector size elem
+      v_length: 64,
+
+      L1_I_num_lines : 32,
+      L1_D_num_lines : 32,
+      L1_num_lines : 32,
+      L2_num_lines : 32,
+      L2_I_num_lines : 32,
+      L2_D_num_lines : 32,
+      L1_size : 32,
+      L1_I_size : 32,
+      L1_D_size : 32,
+      L1_size_block : 32,
+      L1_I_size_block : 32,
+      L1_D_size_block : 32,
+      L2_size : 32,
+      L2_I_size : 32,
+      L2_D_size : 32,
+      L2_size_block : 32,
+      L2_I_size_block : 32,
+      L2_D_size_block : 32,
+
+      // Cache architecture
+      cache_type : 0,
+      isDirect : 0,
+      
+      // Cache Location
+      cache_location : "Associative",
+
+      // Cache policy
+      cache_policy : "FIFO",
+
+      // Execution run
+      execution_mode_run : -1,
+      
+      // Is a breakpoint instruction
+      is_breakpoint : 0,
+
+      // Integrated Kernel (exclusive to Sail Version)
+      c_kernel: true,
 
       // Dark Mode
       dark: false, // the actual dark mode state
@@ -387,9 +427,9 @@ export default {
     window.removeEventListener("resize", this.resizeHandler);
   },
 
-  /***************
+  /****************
    * Vue watchers *
-   ***************/
+   ****************/
 
   watch: {
     dark_mode_setting(newSetting: string) {
@@ -678,6 +718,7 @@ export default {
       v-model:notification_time="notification_time"
       v-model:dark_mode_setting="dark_mode_setting"
       v-model:c_debug="c_debug"
+      v-model:c_kernel="c_kernel"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
       v-model:reg_name_representation="reg_name_representation"

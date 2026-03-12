@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Example 1",
+    "id": "e1",
+    "url": "examples/RISCV-64-devices/example1.s",
+    "description": "Writting to Console"
+  },
+  {
+    "name": "Example 2",
+    "id": "e2",
+    "url": "examples/RISCV-64-devices/example2.s",
+    "description": "Echo"
+  }
+]

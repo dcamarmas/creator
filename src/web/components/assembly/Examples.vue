@@ -31,6 +31,8 @@ import {
 import example_set from "../../../../examples/example_set.json";
 
 import MakeURI from "./MakeURI.vue";
+import { architecture } from "@/core/core.mjs";
+import { assembly_files, createFile } from "./MultifileEditor.mjs";
 
 interface Props {
   id: string;
@@ -159,6 +161,16 @@ async function load_example(url: string, shouldAssemble: boolean) {
 
     const code = await response.text();
     const root = (document as any).app;
+
+    if(architecture.config.name.includes("SRV")){
+      var ex_name = url.split("/");
+      for (let i= 0; i < assembly_files.length; i++){
+        assembly_files[i].to_compile = false;
+      
+      }
+      createFile(root.assembly_code, ex_name[ex_name.length - 1], code);
+    }
+
     root.assembly_code = code;
 
     if (shouldAssemble) {

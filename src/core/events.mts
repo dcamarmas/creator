@@ -18,6 +18,7 @@
  */
 
 import mitt, { type Emitter } from "mitt";
+import { ARDUINO } from "./capi/arduino.mts";
 
 /**
  * Event types for CREATOR core events
@@ -31,6 +32,13 @@ export const CoreEventTypes = {
     LIBRARY_LOADED: "library-loaded",
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
+    PAUSE_EXEC: "pause-execution",
+    EXECUTOR_INSTRUCTIONS_UPDATE: "sail-instruction-update",
+    ASSEMBLY_FILES_UPDATE: "assembly-files-update",
+    ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
+    ARDUINO_PIN_CHANGED: "arduino-pin-write",
+    ARDUINO_RESET: "arduino-reset",
+    ARDUINO_PIN_INTERRUPT: "arduino-pin-interrupt",
 } as const;
 
 /**
@@ -75,6 +83,20 @@ export interface ExecutorButtonsUpdateEvent {
     errorMessage?: string;
 }
 
+export interface AssemblyFile {
+  filename: string;
+  code: string;
+  to_compile: boolean;
+  editing_now: boolean;
+  id: number;
+}
+
+export interface AssemblyFilesUpdatedEvent {
+  files: AssemblyFile[];
+  currentTab: number;
+}
+
+
 /**
  * Core event types mapping
  */
@@ -95,7 +117,76 @@ export type CoreEvents = {
     "library-removed": void;
     /** Emitted when executor button states should be updated */
     "executor-buttons-update": ExecutorButtonsUpdateEvent;
+    /** Emitted when assembly_files state change on Creat, rename, delete and show */
+    "assembly-files-update": AssemblyFilesUpdatedEvent;
+    /** Emitted when the simulator sends text to the Arduino Terminal */
+    "arduino-terminal-write": ArduinoTerminalWriteEvent;
+    /** Emitted when a Pin changes its values */
+    "arduino-pin-write": ArduinoPinChangedEvent;
+    /** Emitted when a GPIO pin is read */
+    "arduino-pin-read": ArduinoPinRead;
+    /** Emitted when Arduino is reset */
+    "arduino-reset": void;
+    /** Event is emmited when a pin in pinMode has been set to a mode */
+    "arduino-pin-mode":ArduinoPinMode;
+    /** Event is emmited when a pin is set up in an interrupt */
+    "arduino-pin-interrupt":ArduinoPinInterruptEvent;
+    /** Emitted when a pin is detached from an interrupt */
+    "arduino-pin-detach-interrupt": ArduinoPinDetachInterruptEvent;
 };
+/**
+ * Emitted when the simulator sends text to the Arduino Terminal
+ */
+export interface ArduinoTerminalWriteEvent {
+    /** The text to be displayed in the terminal */
+    text: string;
+}
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinChangedEvent {
+    /** The pin number */
+    pin: number;
+    /** The new value of the pin */
+    value: number;
+}
+
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinMode{
+    /** The pin number */
+    pin: number;
+    /** The mode of the pin */
+    mode: number;
+}
+
+/** 
+ * Event is emmited when a pin is set up in an interrupt 
+ */
+export interface ArduinoPinInterruptEvent {
+  /** The pin number */
+  pin: string;
+}
+/**
+ * Emitted when a pin is detached from an interrupt
+ */
+export interface ArduinoPinDetachInterruptEvent {
+    /** The pin number */
+    pin: string;
+}
+
+/**
+ * Event is emitted when a GPIO pin is read
+ */
+export interface ArduinoPinRead {
+  /** The pin number */
+  pin: string;
+
+  /** Callback to return the pin value */
+  callback: (value: number) => void;
+}
+
 
 /**
  * Global event emitter for CREATOR core events

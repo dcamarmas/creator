@@ -24,14 +24,17 @@ import {
   onBeforeUnmount,
   watch,
   type PropType,
+  onUnmounted,
 } from "vue";
 import {
+  architecture,
   set_execution_mode,
   status,
   guiVariables,
   instructions_packed,
   reset as coreReset,
   getPC,
+  setPC,
 } from "@/core/core.mjs";
 import {
   instructions as coreInstructions,
@@ -42,7 +45,8 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
 import { show_notification } from "@/web/utils.mjs";
 import type { Instruction } from "@/core/assembler/assembler";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
+import { sailexec, SailExecute } from "@/core/executor/sailSimRV/sailExecutor.mjs";
 
 const props = defineProps({
   instructions: {
@@ -78,6 +82,7 @@ const run_disable = ref(false);
 const stop_disable = ref(true);
 
 const isFinished = ref(false);
+
 const hasError = ref(false);
 const errorMessage = ref("");
 
@@ -110,6 +115,7 @@ const accesskey_prefix = computed(() => {
 onMounted(() => {
   // Enable execution buttons only if there are instructions to execute
   const prepared_for_execution = props.instructions.length > 0;
+  coreEvents.on("pause-execution", pauseExec);
 
   if (status.run_program !== 3) {
     run_disable.value = !prepared_for_execution;
@@ -136,6 +142,10 @@ onBeforeUnmount(() => {
     CoreEventTypes.EXECUTOR_BUTTONS_UPDATE,
     handleButtonStateUpdate,
   );
+});
+
+onUnmounted(() => {
+  coreEvents.off("pause-execution", pauseExec);
 });
 
 // Handler for button state updates from core
@@ -178,6 +188,13 @@ watch(
 );
 
 // Methods
+function pauseExec() {
+  reset_disable.value = false;
+  instruction_disable.value = false;
+  run_disable.value = false;
+  stop_disable.value = true;
+}
+
 function execution_UI_update(ret: ExecutionResult | undefined) {
   if (ret === undefined) {
     return;
@@ -224,6 +241,12 @@ function execution_UI_reset() {
     danger: [],
     flash: [],
   };
+  if (architecture.config.name.includes("SRV")){
+    let ind = props.instructions.findIndex(insn => insn.Address == document.app.$data.entry_elf);
+    setPC(BigInt(parseInt(instruction_values.value[ind]!.Address)));
+    draw.success.push(ind);
+    document.app.$data.execution_mode_run = -1;
+  }
 
   for (let i = 0; i < props.instructions.length; i++) {
     draw.space.push(i);
@@ -266,70 +289,87 @@ function reset() {
   coreReset();
 
   execution_UI_reset();
+
+  coreEvents.emit('arduino-reset');
 }
 
 function execute_instruction() {
   creator_ga("execute", "execute.instruction", "execute.instruction");
+  if (architecture.config.name.includes("SRV")) {
+    if (status.run_program < 0) {
+      isFinished.value = true;
+      show_notification("The program has finished", "warning");
+    } else if (document.app.$data.execution_mode_run === -1) {
+      document.app.$data.execution_mode_run = 1;
+      status.run_program = 1;
+      SailExecute(document.app.$data.binary, ["--entry-address", /*"0x80000000"*/ document.app.$data.entry_elf.toString(16), "--disable-compressed", "--cache-pol", "1", "-p", "output.elf"]);
+      // console.log("Ejecutado");
+    } else if (document.app.$data.execution_mode_run !== -1 && document.app.$data.execution_mode_run !== 2){
+      document.app.$data.execution_mode_run = 1;
+      status.run_program = 1;
+      sailexec._reanudar_ejecucion(parseInt(1,10));
+    }
+  } else {
+    set_execution_mode(0);
 
-  set_execution_mode(0);
+    let ret;
+    try {
+      ret = step() as unknown as ExecutionResult;
+    } catch (err: any) {
+      console.error("Execution error:", err);
+      errorMessage.value = `${err.message || err.msg || err}`;
 
-  let ret;
-  try {
-    ret = step() as unknown as ExecutionResult;
-  } catch (err: any) {
-    console.error("Execution error:", err);
-    errorMessage.value = `${err.message || err}`;
+      if (
+        status.execution_index >= 0 &&
+        status.execution_index < instruction_values.value.length
+      ) {
+        instruction_values.value[status.execution_index]!._rowVariant = "danger";
+      }
 
-    if (
-      status.execution_index >= 0 &&
-      status.execution_index < instruction_values.value.length
-    ) {
-      instruction_values.value[status.execution_index]!._rowVariant = "danger";
+      status.execution_index = -1;
+      status.error = true;
+      hasError.value = true;
+
+      execution_UI_update({ error: true, msg: err.message || err });
+      return;
     }
 
-    status.execution_index = -1;
-    status.error = true;
-    hasError.value = true;
-
-    execution_UI_update({ error: true, msg: err.message || err });
-    return;
-  }
-
-  if (status.run_program === 3) {
-    instruction_disable.value = true;
-    run_disable.value = true;
-  }
-
-  // Disable buttons if program has finished (execution_index === -2)
-  if (status.execution_index === -2) {
-    instruction_disable.value = true;
-    run_disable.value = true;
-    isFinished.value = true;
-  }
-
-  if (status.execution_index === -1) {
-    instruction_disable.value = true;
-    run_disable.value = true;
-    hasError.value = true;
-    if (!errorMessage.value) {
-      errorMessage.value = "The program has finished with errors";
+    if (status.run_program === 3) {
+      instruction_disable.value = true;
+      run_disable.value = true;
     }
-  }
 
-  if (typeof ret === "undefined") {
-    console.log("Something weird happened :-S");
-  }
+    // Disable buttons if program has finished (execution_index === -2)
+    if (status.execution_index === -2) {
+      instruction_disable.value = true;
+      run_disable.value = true;
+      isFinished.value = true;
+    }
 
-  if (ret.msg) {
     if (status.execution_index === -1) {
-      errorMessage.value = ret.msg;
-    } else {
-      show_notification(ret.msg, ret.type!);
+      instruction_disable.value = true;
+      run_disable.value = true;
+      hasError.value = true;
+      if (!errorMessage.value) {
+        errorMessage.value = "The program has finished with errors";
+      }
     }
-  }
 
-  if (ret.draw !== null) {
-    execution_UI_update(ret);
+    if (typeof ret === "undefined") {
+      console.log("Something weird happened :-S");
+    }
+
+    if (ret.msg) {
+      if (status.execution_index === -1) {
+        errorMessage.value = ret.msg;
+      } else {
+        show_notification(ret.msg, ret.type!);
+      }
+    }
+
+    if (ret.draw !== null) {
+      execution_UI_update(ret);
+    }
   }
 }
 
@@ -366,114 +406,129 @@ function execute_program() {
 }
 
 function execute_program_packed() {
-  let ret = undefined;
+  if ( architecture.config.name.includes("SRV")) {
+    if (status.run_program < 0) {
+      isFinished.value = true;
+      show_notification("The program has finished", "warning");
+    } else if (document.app.$data.execution_mode_run === -1){
+      status.run_program = 1;
+      document.app.$data.execution_mode_run = 0;
+      SailExecute(document.app.$data.binary, ["--entry-address", /*"0x80000000"*/ document.app.$data.entry_elf.toString(16), "--disable-compressed", "--cache-pol", "1", "-p", "output.elf"]);
+    } else if (document.app.$data.execution_mode_run !== -1 && document.app.$data.execution_mode_run !== 2){
+      document.app.$data.execution_mode_run = 0;
+      sailexec._reanudar_ejecucion(parseInt(0,10));
+    }
+  } else {
+  
+    let ret = undefined;
 
-  for (let i = 0; i < instructions_packed && status.execution_index >= 0; i++) {
-    if (
-      status.run_program === 0 ||
-      status.run_program === 3 ||
-      (coreInstructions[status.execution_index]?.Break === true &&
-        status.run_program !== 2)
-    ) {
-      execution_UI_update(ret);
-
-      reset_disable.value = false;
-      instruction_disable.value = false;
-      run_disable.value = false;
-      stop_disable.value = true;
-
-      if (coreInstructions[status.execution_index]?.Break === true) {
-        status.run_program = 2;
-      }
-      return;
-    } else {
-      if (status.run_program === 2) {
-        status.run_program = 1;
-      }
-
-      try {
-        ret = step() as unknown as ExecutionResult;
-      } catch (err: any) {
-        console.error("Execution error:", err);
-        errorMessage.value = `${err.message || err}`;
-
-        if (
-          status.execution_index >= 0 &&
-          status.execution_index < instruction_values.value.length
-        ) {
-          instruction_values.value[status.execution_index]!._rowVariant =
-            "danger";
-        }
-
-        status.run_program = 0;
-        status.execution_index = -1;
-        status.error = true;
-        hasError.value = true;
-
-        execution_UI_update({ error: true, msg: err.message || err });
-
-        reset_disable.value = false;
-        instruction_disable.value = true;
-        run_disable.value = true;
-        stop_disable.value = true;
-
-        return;
-      }
-
-      if (typeof ret === "undefined") {
-        console.log("Something weird happened :-S");
-        status.run_program = 0;
-
+    for (let i = 0; i < instructions_packed && status.execution_index >= 0; i++) {
+      if (
+        status.run_program === 0 ||
+        status.run_program === 3 ||
+        (coreInstructions[status.execution_index]?.Break === true &&
+          status.run_program !== 2)
+      ) {
         execution_UI_update(ret);
 
         reset_disable.value = false;
-        instruction_disable.value = true;
-        run_disable.value = true;
+        instruction_disable.value = false;
+        run_disable.value = false;
         stop_disable.value = true;
 
+        if (coreInstructions[status.execution_index]?.Break === true) {
+          status.run_program = 2;
+        }
         return;
-      }
-
-      if (ret.msg) {
-        if (status.execution_index === -1) {
-          errorMessage.value = ret.msg;
-        } else {
-          show_notification(ret.msg, ret.type!);
+      } else {
+        if (status.run_program === 2) {
+          status.run_program = 1;
         }
 
-        execution_UI_update(ret);
+        try {
+          ret = step() as unknown as ExecutionResult;
+        } catch (err: any) {
+          console.error("Execution error:", err);
+          errorMessage.value = `${err.message || err}`;
 
-        reset_disable.value = false;
-        instruction_disable.value = true;
-        run_disable.value = true;
-        stop_disable.value = true;
+          if (
+            status.execution_index >= 0 &&
+            status.execution_index < instruction_values.value.length
+          ) {
+            instruction_values.value[status.execution_index]!._rowVariant =
+              "danger";
+          }
 
-        if (status.execution_index === -2) {
-          isFinished.value = true;
-        } else if (status.execution_index === -1) {
+          status.run_program = 0;
+          status.execution_index = -1;
+          status.error = true;
           hasError.value = true;
+
+          execution_UI_update({ error: true, msg: err.message || err });
+
+          reset_disable.value = false;
+          instruction_disable.value = true;
+          run_disable.value = true;
+          stop_disable.value = true;
+
+          return;
+        }
+
+        if (typeof ret === "undefined") {
+          console.log("Something weird happened :-S");
+          status.run_program = 0;
+
+          execution_UI_update(ret);
+
+          reset_disable.value = false;
+          instruction_disable.value = true;
+          run_disable.value = true;
+          stop_disable.value = true;
+
+          return;
+        }
+
+        if (ret.msg) {
+          if (status.execution_index === -1) {
+            errorMessage.value = ret.msg;
+          } else {
+            show_notification(ret.msg, ret.type!);
+          }
+
+          execution_UI_update(ret);
+
+          reset_disable.value = false;
+          instruction_disable.value = true;
+          run_disable.value = true;
+          stop_disable.value = true;
+
+          if (status.execution_index === -2) {
+            isFinished.value = true;
+          } else if (status.execution_index === -1) {
+            hasError.value = true;
+          }
         }
       }
     }
-  }
 
-  if (status.execution_index >= 0) {
-    setTimeout(execute_program_packed, 15, ret);
-  } else {
-    execution_UI_update(ret);
-    reset_disable.value = false;
-    instruction_disable.value = true;
-    run_disable.value = true;
-    stop_disable.value = true;
+    if (status.execution_index >= 0) {
+      setTimeout(execute_program_packed, 15, ret);
+    } else {
+      execution_UI_update(ret);
+      reset_disable.value = false;
+      instruction_disable.value = true;
+      run_disable.value = true;
+      stop_disable.value = true;
 
-    if (status.execution_index === -2) {
-      isFinished.value = true;
-    } else if (status.execution_index === -1) {
-      hasError.value = true;
-      errorMessage.value =
-        ret?.msg ||
-        errorMessage.value ||
-        "The program has finished with errors";
+      if (status.execution_index === -2) {
+        isFinished.value = true;
+      } else if (status.execution_index === -1) {
+        hasError.value = true;
+        errorMessage.value =
+          ret?.msg ||
+          errorMessage.value ||
+          "The program has finished with errors";
+      }
     }
   }
 }

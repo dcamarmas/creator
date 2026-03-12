@@ -7,6 +7,29 @@
     "description": "RISC-V (RV32IMFD) Examples"
   },
   {
+    "name": "RISC-V (RV32IM) Arduino Examples",
+    "id": "arduino",
+    "architecture": "RISC-V (RV32IMFD)",
+    "url": "examples/RISCV-32-arduino/list.json",
+    "description": "RISC-V (RV32IM, Interrupts) Arduino Examples"
+  },
+  {
+    "name": "RISC-V (RV32IMFD, Interrupts) Examples",
+    "id": "interrupts",
+    "architecture": "RISC-V (RV32IMFD)",
+    "url": "examples/RISCV-32-interrupts/list.json",
+    "description": "RISC-V (RV32IMFD, Interrupts) Examples"
+  },
+  {
+    "name": "RISC-V (RV32IMFD, Interrupts) Devices Examples",
+    "id": "devices",
+    "architecture": "RISC-V (RV32IMFD)",
+    "url": "examples/RISCV-32-devices/list.json",
+    "description": "RISC-V (RV32IMFD, Interrupts) Devices Examples"
+  },
+
+
+  {
     "name": "RISC-V (RV64IMFD) Examples",
     "id": "default",
     "architecture": "RISC-V (RV64IMFD)",
@@ -14,26 +37,21 @@
     "description": "RISC-V (RV64IMFD) Examples"
   },
   {
-    "name": "RISC-V (RV32IMFD, Interrupts) Examples",
-    "id": "default",
-    "architecture": "RISC-V (RV32IMFD, Interrupts)",
-    "url": "examples/RISCV-32-interrupts/list.json",
-    "description": "RISC-V (RV32IMFD, Interrupts) Examples"
+    "name": "RISC-V (RV64IMFD, Interrupts) Examples",
+    "id": "interrupts",
+    "architecture": "RISC-V (RV64IMFD)",
+    "url": "examples/RISCV-64-interrupts/list.json",
+    "description": "RISC-V (RV64IMFD, Interrupts) Examples"
   },
   {
-    "name": "RISC-V (RV32IM) Arduino Examples",
+    "name": "RISC-V (RV64IMFD, Interrupts) Devices Examples",
     "id": "devices",
-    "architecture": "RISC-V (RV32IMFD)",
-    "url": "examples/RISCV-32-arduino/list.json",
-    "description": "RISC-V (RV32IM, Interrupts) Arduino Examples"
+    "architecture": "RISC-V (RV64IMFD)",
+    "url": "examples/RISCV-64-devices/list.json",
+    "description": "RISC-V (RV64IMFD, Interrupts) Devices Examples"
   },
-  {
-    "name": "RISC-V (RV32IMFD, Interrupts) Devices Examples",
-    "id": "devices",
-    "architecture": "RISC-V (RV32IMFD, Interrupts)",
-    "url": "examples/RISCV-32-devices/list.json",
-    "description": "RISC-V (RV32IMFD, Interrupts) Devices Examples"
-  },
+
+
   {
     "name": "MIPS-32 Examples",
     "id": "default",
@@ -41,18 +59,22 @@
     "url": "examples/MIPS-32/list.json",
     "description": "MIPS-32 Examples"
   },
+
+
   {
-    "name": "MIPS-32 from UC3M-OCW",
-    "id": "uc3m-ec",
-    "architecture": "MIPS-32",
-    "url": "examples/ocw-uc3m-ec/list.json",
-    "description": "MIPS-32 examples from UC3M course"
+    "name": "RISC-V Sail 32 Examples",
+    "id": "default",
+    "architecture": "RISC-V Sail 32 - Full Specification",
+    "url": "examples/RISCV-Sail/list32.json",
+    "description": "RISC-V Sail 32 examples"
   },
+
+
   {
-    "name": "RISC-V (RV32IMFD) from UC3M-AG",
-    "id": "uc3m-ec-ag",
-    "architecture": "RISC-V (RV32IMFD)",
-    "url": "examples/ag-uc3m-ec/list.json",
-    "description": "RISC-V (RV32IMFD) examples for Aula Global at UC3M"
+    "name": "RISC-V Sail 64 Examples",
+    "id": "default",
+    "architecture": "RISC-V Sail 64 - Full Specification",
+    "url": "examples/RISCV-Sail/list64.json",
+    "description": "RISC-V Sail 64 examples"
   }
 ]

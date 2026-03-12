@@ -7,68 +7,99 @@
   },
   {
     "name": "Example 1",
-    "id": "example1",
+    "id": "e1",
     "url": "examples/RISCV-32-arduino/example1.s",
     "description": "ESP32-C3 Blink LED example"
   },
+    {
+    "name": "Example 1_b",
+    "id": "e1_b",
+    "url": "examples/RISCV-32-arduino/example1_b.s",
+    "description": "ESP32-C6 Blink LED example"
+  },
   {
     "name": "Example 2",
-    "id": "example2",
+    "id": "e2",
     "url": "examples/RISCV-32-arduino/example2.s",
     "description": "Button + LED example"
   },
   {
     "name": "Example 3",
-    "id": "example3",
+    "id": "e3",
     "url": "examples/RISCV-32-arduino/example3.s",
     "description": "Serial communication example"
   },
   {
     "name": "Example 4",
-    "id": "example4",
+    "id": "e4",
     "url": "examples/RISCV-32-arduino/example4.s",
     "description": "LDR example"
   },
   {
     "name": "Example 5",
-    "id": "example5",
+    "id": "e5",
     "url": "examples/RISCV-32-arduino/example5.s",
     "description": "Piano using interruptions example"
   },
   {
     "name": "Example 6",
-    "id": "example6",
+    "id": "e6",
     "url": "examples/RISCV-32-arduino/example6.s",
     "description": "Math functions (min.max, map, constrain) example"
   },
   {
     "name": "Example 7",
-    "id": "example7",
+    "id": "e7",
     "url": "examples/RISCV-32-arduino/example7.s",
     "description": "Check if a char is a number example"
   },
   {
     "name": "Example 8",
-    "id": "example8",
+    "id": "e8",
     "url": "examples/RISCV-32-arduino/example8.s",
     "description": "Random function example"
   },
     {
     "name": "Example 9",
-    "id": "example9",
+    "id": "e9",
     "url": "examples/RISCV-32-arduino/example9.s",
     "description": "Serial Find example"
   },
   {
     "name": "Example 10",
-    "id": "example10",
+    "id": "e10",
     "url": "examples/RISCV-32-arduino/example10.s",
     "description": "Serial FindUntil example"
   },
   {
     "name": "Example 11",
-    "id": "example11",
+    "id": "e11",
     "url": "examples/RISCV-32-arduino/example11.s",
     "description": "Serial Flush example"
+  },
+  {
+    "name": "Example 12",
+    "id": "e12",
+    "url": "examples/RISCV-32-arduino/example12.s",
+    "description": "Serial parseInt example"
+  },
+  {
+    "name": "Example 13",
+    "id": "e13",
+    "url": "examples/RISCV-32-arduino/example13.s",
+    "description": "Serial readBytes example"
+  },
+  {
+    "name": "Example 14",
+    "id": "e14",
+    "url": "examples/RISCV-32-arduino/example14.s",
+    "description": "Serial readBytesUntil example"
+  },
+    {
+    "name": "Example 15",
+    "id": "e15",
+    "url": "examples/RISCV-32-arduino/example15.s",
+    "description": "High level interrupts example"
   }
+
 ]

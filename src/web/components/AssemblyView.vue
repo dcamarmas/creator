@@ -28,6 +28,7 @@ import MakeURI from "./assembly/MakeURI.vue";
 import LoadLibrary from "./assembly/LoadLibrary.vue";
 import SaveLibrary from "./assembly/SaveLibrary.vue";
 import LibraryTags from "./assembly/LibraryTags.vue";
+import Calculator from "./simulator/Calculator.vue";
 
 export default defineComponent({
   props: {
@@ -58,6 +59,7 @@ export default defineComponent({
     LoadLibrary,
     SaveLibrary,
     LibraryTags,
+    Calculator,
   },
 });
 </script>
@@ -81,7 +83,7 @@ export default defineComponent({
 
     <!-- Examples modal -->
     <Examples
-      id="examples-assembly"
+      id="examples_assembly"
       :architecture_name="architecture_name"
       :compile="false"
     />
@@ -101,6 +103,9 @@ export default defineComponent({
 
     <!-- Library tags modal -->
     <LibraryTags id="library_tags" />
+
+    <!-- Calculator -->
+    <Calculator id="calculator_assembly" />
 
     <!-- Assembly textarea-->
     <TextareaAssembly
