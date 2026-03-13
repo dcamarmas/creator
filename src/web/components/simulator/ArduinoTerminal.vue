@@ -154,6 +154,7 @@ import {
 } from "../../../core/register/registerOperations.mjs";
 import { crex_findReg } from "../../../core/register/registerLookup.mjs";
 
+
 export default {
   setup() {
     return {
@@ -180,6 +181,7 @@ export default {
       isResizing: false,
       chipStyles: {},
       interrupt: {},
+      isInterruptsEnabled: true,
     };
   },
 
@@ -239,6 +241,7 @@ export default {
     });
 
     coreEvents.on("arduino-pin-interrupt", pinName => {
+      if (!this.isInterruptsEnabled) return; 
       this.interrupt[pinName.pin] = true;
       esp32vect.value[pinName.position] = [
         BigInt(pinName.pin.replace(/\D/g, "")),
@@ -247,7 +250,11 @@ export default {
       ];
     });
     coreEvents.on("arduino-pin-detach-interrupt", pinName => {
+      if (!this.isInterruptsEnabled) return; 
       delete this.interrupt[pinName.pin];
+    });
+    coreEvents.on("arduino-interrupts-enabled", enabled => {
+      this.isInterruptsEnabled = enabled;
     });
   },
 
