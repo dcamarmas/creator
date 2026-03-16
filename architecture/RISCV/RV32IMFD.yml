@@ -166,8 +166,8 @@ components:
           - x1
           - ra
         nbits: 32
-        value: 0xFFFFFF00
-        default_value: 0xFFFFFF00
+        value: 0xFFFFFFFF
+        default_value: 0xFFFFFFFF
         encoding: 1
         properties:
           - read
@@ -1601,8 +1601,10 @@ instructions:
           value: "000"
       definition: |
         registers[rd] = registers.pc + 4n;
-        registers.pc = (registers[rs1] + imm) & ~1n;
-        CAPI.STACK.endFrame();
+        const pc = registers[rs1] + imm;
+        registers.pc = pc & ~1n;
+        if (BigInt.asIntN(32, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
 
     - name: lb

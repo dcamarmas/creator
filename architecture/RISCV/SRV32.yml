@@ -2160,9 +2160,11 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        registers[rd] = registers["PC"] + 4n;
-        registers["PC"] = (registers[rs1] + imm) & ~1n;
-        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(registers["PC"]);
+        registers[rd] = registers.pc + 4n;
+        const pc = registers[rs1] + imm;
+        registers.pc = pc & ~1n;
+        if (BigInt.asIntN(32, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
     - name: lb
       extension: I

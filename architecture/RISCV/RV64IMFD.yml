@@ -1619,8 +1619,10 @@ instructions:
           value: "000"
       definition: |
         registers[rd] = registers.pc + 4n;
-        registers.pc = (registers[rs1] + imm) & ~1n;
-        CAPI.STACK.endFrame();
+        const pc = registers[rs1] + imm;
+        registers.pc = pc & ~1n;
+        if (BigInt.asIntN(64, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
 
     - name: lb

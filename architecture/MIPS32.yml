@@ -2279,8 +2279,10 @@ instructions:
           stopbit: 0
           value: "001000"
       definition: |-
-        registers.PC = registers[rs];
-        CAPI.STACK.endFrame();
+        const pc = registers[rs]
+        registers.PC = pc;
+        if (BigInt.asIntN(32, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
     - name: lb
       template: Custom
       type: Memory access
