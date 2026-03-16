@@ -4,7 +4,7 @@ space: .zero 100
 
 .text
 setup:
-    li a0, 11520
+    li a0, 115200
     addi sp, sp, -4
     sw   ra, 0(sp)
     jal ra, serial_begin
