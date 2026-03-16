@@ -125,7 +125,7 @@ export function kbd_read_double(keystroke, params) {
     const value = parseFloat(keystroke, 10);
 
     // validate input
-    if (typeof document.app !== "undefined" && isNaN(value)) {
+    if (typeof document !== "undefined" && document.app && isNaN(value)) {
         show_notification(
             `Invalid input: '${keystroke}' is not a double`,
             "danger",
