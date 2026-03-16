@@ -137,6 +137,8 @@ export type CoreEvents = {
     "arduino-find-vector-slot": ArduinoFindSlotEvent;
     /** Emitted when the simulator requests to get the pin assigned to an interrupt vector slot */
     "arduino-get-pin-from-slot": ArduinoGetPinFromSlotEvent;
+    /** Emitted when interrupts are enabled/disabled */
+    "arduino-interrupts-enabled": boolean;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal

@@ -1,10 +1,12 @@
-#Template for Arduino proyects
+# Creatino example:readBytes
 .data
-space: .zero 100
+    space:   .zero 100 #Buffer to place the string
+    print:  .string "%s\n"
+    char: .byte 65 #A
 
 .text
 setup:
-    li a0, 11520
+    li a0, 115200
     addi sp, sp, -4
     sw   ra, 0(sp)
     jal ra, serial_begin
@@ -13,22 +15,27 @@ setup:
     jr ra
 loop:
 
+    # read int
+    la a0, char
+    lb a0, 0(a0)
+    la a1, space
+    la a2, 5 # number of letters it will have
+
     addi sp, sp, -4
-    sw ra, 0(sp)
-    la a0, space
-    li a1, 5
-    jal ra, serial_readBytes
-    lw ra, 0(sp)
+    sw   ra, 0(sp)
+    jal ra, serial_readBytesUntil
+    lw   ra, 0(sp)
     addi sp, sp, 4
 
-
-    addi sp, sp, -4
-    sw ra, 0(sp)
+    # print: 
     la a0, space
+    addi sp, sp, -4
+    sw   ra, 0(sp)
     jal ra, serial_printf
-    lw ra, 0(sp)
-    addi sp, sp, 4
+    lw   ra, 0(sp)
+    addi sp, sp, 4 
 
+    # return
     j loop
 main:
     addi sp, sp, -16       

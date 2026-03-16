@@ -623,6 +623,9 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
             );
         }
         length = readRegister(ret2.indexComp, ret2.indexElem);
+        if (length <= 0) {
+            length = Infinity; // No length limit
+        }
     }
 
 
@@ -666,18 +669,19 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
     if (typeof Deno !== "undefined") {
         let keystroke = rawPrompt();
 
-        if (until && typeof until === "string") {
+        if (until && typeof until === "string" && until !== "" ) {
             const idx = keystroke.indexOf(until);
             if (idx !== -1) {
                 keystroke = keystroke.substring(0, idx);
             }
         }
-
-        if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+        if (keystroke.includes(target) && keystroke.length <= length) {
             writeRegister(1n, ret1.indexComp, ret1.indexElem);
         } else {
             writeRegister(0n, ret1.indexComp, ret1.indexElem);
         }
+
+
 
         status.run_program = 0;
         return packExecute(
@@ -706,7 +710,13 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
     // Find logic
     // console.log("keystroke:", `"${keystroke}"`, keystroke.length);
     // console.log("until:", `"${until}"`, until.length);
-    if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+    if (until && typeof until === "string" && until !== "" ) {
+        const idx = keystroke.indexOf(until);
+        if (idx !== -1) {
+            keystroke = keystroke.substring(0, idx);
+        }
+    }
+    if (keystroke.includes(target) && keystroke.length <= length) {
         writeRegister(1n, ret1.indexComp, ret1.indexElem);
     } else {
         writeRegister(0n, ret1.indexComp, ret1.indexElem);
