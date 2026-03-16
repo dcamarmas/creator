@@ -98,24 +98,13 @@ export function getByteAtAddress(address: bigint): bigint {
 }
 
 /**
- * Setup function to initialize simulator state with architecture from YAML file
- * @param testAssembly - Assembly code to compile and load
+ * Load an architecture from YAML file into the simulator
  * @param yamlPath - Path to the YAML architecture configuration file
- * @returns Setup results including architecture and compilation status
+ * @returns Architecture loading result
  */
-export async function setupSimulator(
-    testAssembly: string,
-    yamlPath: string,
-    assembler: string = "default",
-): Promise<{
-    archResult: ArchResult;
-    compileResult: CompileResult;
-}> {
-    logger.disable();
-
+export function loadArchitecture(yamlPath: string|URL): ArchResult {
     // Load architecture configuration from file synchronously
-    const archPath = new URL(yamlPath, import.meta.url);
-    const architectureConfigContent = fs.readFileSync(archPath, "utf8");
+    const architectureConfigContent = fs.readFileSync(yamlPath, "utf8");
     // yaml.load returns unknown; narrow its type and validate at runtime
     const archObject = yaml.load(architectureConfigContent) as
         | { config?: { plugin?: string } }
@@ -145,6 +134,19 @@ export async function setupSimulator(
             `Failed to load architecture from ${yamlPath}: ${archResult.token}`,
         );
     }
+    return archResult;
+}
+
+/**
+ * Setup function to initialize simulator state with architecture from YAML file
+ * @param testAssembly - Assembly code to compile and load
+ * @param assembler - Name of the assembler to use
+ * @returns Setup results including architecture and compilation status
+ */
+export async function compileAssembly(
+    testAssembly: string,
+    assembler: string = "default",
+): Promise<CompileResult> {
     const compilerKey = assembler || "default";
 
     if (!isValidCompilerKey(compilerKey)) {
@@ -152,6 +154,8 @@ export async function setupSimulator(
             `Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
         );
     }
+
+    creator.reset();
 
     const compilerFunction = compiler_map[compilerKey];
     // Compile assembly code
@@ -165,6 +169,27 @@ export async function setupSimulator(
 
     creator.reset();
 
+    return compileResult;
+}
+
+/**
+ * Setup function to initialize simulator state with architecture from YAML file
+ * @param testAssembly - Assembly code to compile and load
+ * @param yamlPath - Path to the YAML architecture configuration file
+ * @returns Setup results including architecture and compilation status
+ */
+export async function setupSimulator(
+    testAssembly: string,
+    yamlPath: string,
+    assembler: string = "default",
+): Promise<{
+    archResult: ArchResult;
+    compileResult: CompileResult;
+}> {
+    logger.disable();
+    const archPath = new URL(yamlPath, import.meta.url);
+    const archResult = loadArchitecture(archPath)
+    const compileResult = await compileAssembly(testAssembly, assembler)
     return { archResult, compileResult };
 }
 
