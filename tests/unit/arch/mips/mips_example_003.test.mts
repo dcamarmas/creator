@@ -36,6 +36,7 @@ main:
     sw $t3, w2		#$t3 -> Memory[w2]
     sb $t5, b2		#$t5 -> Memory[b2]
     sh $t7, h2		#$t7 -> Memory[h2]
+    jr $ra
 `;
 
 Deno.test(

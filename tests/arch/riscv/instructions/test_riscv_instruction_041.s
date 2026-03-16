@@ -15,3 +15,5 @@ main:
     remu x10, x6, x5
     remu x11, x7, x8
     remu x12, x8, x7
+
+    jr ra

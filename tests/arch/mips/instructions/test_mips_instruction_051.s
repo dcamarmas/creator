@@ -8,8 +8,6 @@
       li  $t0, 1
       li  $t1, 0
       li  $t2, -1
-      beqz $t0, jump1
-      beqz $t2, jump1
       beqz $t1, jump1
 
     jump2:

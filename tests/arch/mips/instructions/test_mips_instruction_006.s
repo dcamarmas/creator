@@ -19,5 +19,5 @@ main:
     sub $t7, $t3, $t4 
 
 end:
-	li $a0, 10
+	li $v0, 10
 	syscall

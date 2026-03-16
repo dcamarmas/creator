@@ -5,3 +5,4 @@ main:
     slli s4, s3, 1     
     srli s5, s4, 1     
     srai s6, s4, 1     
+    jr ra

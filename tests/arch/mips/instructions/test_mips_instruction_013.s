@@ -39,3 +39,5 @@ main:
 
     la $t9, h2
     sh $t7, 0($t9)	
+
+    jr $ra

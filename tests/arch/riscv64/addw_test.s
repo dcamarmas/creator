@@ -21,3 +21,4 @@ main:
     # Test 4: Edge case - max 32-bit signed + 0x10000
     lui s8, 0x7FFF0        # s8 = 0x0000000007FFF0000
     addw s9, s8, s1        # Expected s9 = 0x0000000080000000
+    jr ra

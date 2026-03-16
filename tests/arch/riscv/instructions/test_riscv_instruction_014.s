@@ -28,4 +28,4 @@ main:
     la x14, h2		  # h2 address -> x14
     sh x12, 0(x14)	  # x12 -> Memory[h2]
 
-
+    jr ra

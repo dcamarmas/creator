@@ -1,0 +1,39 @@
+export const snapshot = {};
+
+snapshot[`mips/sentinel/test_mips_sentinels_018.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 29,
+    "11": 10,
+    "15": 12,
+    "16": 35,
+    "17": 189,
+    "19": 4,
+    "20": 3,
+    "21": 224,
+    "23": 8,
+    "3": 5,
+    "4": 12,
+    "7": 16,
+    "8": 32,
+    "9": 2,
+  },
+  registers: {
+    "2,v0": "0xa",
+    "29,sp": "0x9",
+    "31,ra": "0x8",
+    PC: "0x10",
+  },
+  sentinel_errors: [
+    {
+      function: "test",
+      msg: "Calling convention violations in test:
+  - Stack pointer not restored: entered at 0x5, exited at 0x9",
+    },
+  ],
+}
+`;

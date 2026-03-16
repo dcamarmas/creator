@@ -13,5 +13,5 @@ main:
     srai x8, x5, 2
     srai x9, x6, 4
   	srai x10, x7, 15
-    
-    
+
+    jr ra

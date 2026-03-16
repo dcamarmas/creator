@@ -15,3 +15,5 @@ main:
     rem $t5, $t1, $t0
     rem $t6, $t2, $t3
     rem $t7, $t3, $t2
+
+    jr $ra

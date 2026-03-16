@@ -14,3 +14,4 @@ main:
     xori $t4, $t1, 0x222
     xori $t5, $t2, 0xFFF
     
+    jr $ra

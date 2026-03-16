@@ -15,3 +15,5 @@ sltu $t4, $t1, $t0
 sltu $t5, $t1, $t1
 sltu $t6, $t1, $t2
 sltu $t7, $t1, $t3
+
+jr $ra

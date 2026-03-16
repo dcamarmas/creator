@@ -24,7 +24,7 @@
             sw   $fp, 4($sp)
             addu $fp, $sp, 4
 
-			li $t2 2
+			li $t2, 2
 
 	b_efs:  lw   $ra, 8($sp)
             lw   $fp, 4($sp)

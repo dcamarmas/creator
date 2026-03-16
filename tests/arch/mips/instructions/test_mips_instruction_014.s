@@ -26,3 +26,5 @@ main:
 
     la $t6, h2
     sh $t7, 0($t6)
+
+    jr $ra

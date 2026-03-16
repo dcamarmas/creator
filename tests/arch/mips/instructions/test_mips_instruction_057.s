@@ -5,11 +5,10 @@
 
 .text
     main:
-      li  $t0, 0xAAB
-      li  $t1, 0xBBA
-      li  $t2, 0xAAB
-      bnez $t0, $t2, jump1
-      bnez $t0, $t1, jump1
+      li  $t0, 1
+      li  $t1, 0
+      li  $t2, -1
+      bnez $t0, jump1
 
     jump2:
       li $t6, 34
@@ -19,4 +18,4 @@
     jump1:
       li $t4, 235363
       li $t5, 0xAA
-      bnez $t4, $t5, jump2
+      bnez $t4, jump2

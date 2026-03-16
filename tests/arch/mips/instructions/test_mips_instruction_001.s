@@ -14,3 +14,5 @@ main:
     add $t4, $t0, $t1 
     add $t5, $t1, $t2 
     add $t6, $t2, $t3
+
+    jr $ra

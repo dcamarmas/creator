@@ -1,0 +1,24 @@
+export const snapshot = {};
+
+snapshot[`riscv/correct/syscalls/test_riscv_syscall_012.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: " a",
+  memory: {
+    "1": 192,
+    "10": 128,
+    "11": 103,
+    "2": 8,
+    "3": 147,
+    "7": 115,
+  },
+  registers: {
+    "x10,a0": "0x61",
+    "x17,a7": "0xc",
+    mtime: "0x3",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

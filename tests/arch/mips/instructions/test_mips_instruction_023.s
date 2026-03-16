@@ -13,3 +13,5 @@ main:
   sll $t3, $t0, 2
   sll $t4, $t1, 4
   sll $t5, $t2, 15
+
+  jr $ra

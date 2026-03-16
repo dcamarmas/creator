@@ -15,3 +15,5 @@ main:
     divu $t1, $t0
     divu $t2, $t3
     divu $t3, $t2
+
+    jr $ra

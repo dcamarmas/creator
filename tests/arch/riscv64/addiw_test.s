@@ -27,3 +27,4 @@ main:
     # Test 6: Negative overflow
     lui s10, 0x80000          # s10 = 0x80000000
     addiw s11, s10, -1        # Expected s11 = 0x7FFFFFFF
+    jr ra

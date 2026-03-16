@@ -15,3 +15,5 @@ main:
     div $t1, $t0
     div $t2, $t3
     div $t3, $t2
+
+    jr $ra

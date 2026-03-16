@@ -14,3 +14,5 @@ main:
 
   mfhi $t3
   mflo $t4
+
+  jr $ra

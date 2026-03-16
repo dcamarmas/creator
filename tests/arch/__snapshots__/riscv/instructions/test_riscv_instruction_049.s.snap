@@ -1,0 +1,40 @@
+export const snapshot = {};
+
+snapshot[`riscv/instructions/test_riscv_instruction_049.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 16,
+    "10": 3,
+    "11": 19,
+    "13": 64,
+    "14": 52,
+    "15": 51,
+    "17": 80,
+    "18": 52,
+    "19": 179,
+    "2": 2,
+    "21": 96,
+    "22": 53,
+    "23": 51,
+    "26": 128,
+    "27": 103,
+    "3": 19,
+    "6": 2,
+    "7": 147,
+    "8": 255,
+    "9": 240,
+  },
+  registers: {
+    "x10,a0": "0x1",
+    "x4,tp": "0x1",
+    "x6,t1": "0xffffffff",
+    "x8,fp,s0": "0x1",
+    mtime: "0x7",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

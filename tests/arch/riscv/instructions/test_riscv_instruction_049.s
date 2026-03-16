@@ -13,5 +13,5 @@ main:
     snez x8, x4
     snez x9, x5
     snez x10, x6
-    
-    
+
+    jr ra

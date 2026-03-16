@@ -17,5 +17,5 @@ main:
     srl x11, x5, x8
     srl x12, x6, x9
   	srl x13, x7, x10
-    
-    
+
+    jr ra

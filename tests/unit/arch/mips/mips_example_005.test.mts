@@ -19,6 +19,7 @@ const testAssembly = `
 
 	end_while: 	li $v0, 1
 				syscall	#print_int
+        jr $ra
 `;
 
 Deno.test(

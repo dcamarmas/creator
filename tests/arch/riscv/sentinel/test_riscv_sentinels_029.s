@@ -19,7 +19,7 @@
     test:
             # crear "stack frame" para ra, fp y una variable local
             
-            addi sp, sp, 4
+            addi sp, sp, -4
 
             # return a7
            jr ra

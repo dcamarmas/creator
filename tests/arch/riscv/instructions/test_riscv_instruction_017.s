@@ -13,4 +13,5 @@ main:
     xori x8, x5, 0x455
     xori x9, x6, 0x222
     xori x10, x7, 0x7FF
-    
+
+    jr ra
