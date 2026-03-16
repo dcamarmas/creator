@@ -71,6 +71,7 @@ export class StackTracker {
     public reset() {
         this.frames.length = 0;
         this.hints.clear();
+        this.newFrame("main");
     }
 
     /**

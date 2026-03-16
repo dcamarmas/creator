@@ -367,16 +367,6 @@ function executeInstructionCycle() {
     logger.debug("Execution Index:" + status.execution_index);
     logger.debug("PC Register: " + getPC());
 
-    // Special check for stack visualization purposes
-    if (
-        status.execution_index ===
-        instructions.findIndex(
-            i => parseInt(i.Address, 16) === get_entrypoint(),
-        )
-    ) {
-        stackTracker.newFrame(tag_instructions[getPC()]?.tag || "");
-    }
-
     // Check for conditions that would stop execution
     const inLoopCheckResult = performExecutionChecks();
     if (inLoopCheckResult !== null) {
