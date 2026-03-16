@@ -1035,13 +1035,36 @@ instructions:
       fields:
         - field: function
           value: "000101"
+        - field: fmt
+          type: cop
+          value: "00000"
         - field: ft
           order: null
           value: "00000"
       preoperation: |
-        let fsValue = CAPI.FS.uint2float32(registers[fs]);
+        let fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
+      definition: |
+        let result = Math.abs(fsValue);
+    - name: abs.d
+      type: Arithmetic floating point
+      template: FPU_R
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000101"
+        - field: fmt
+          type: cop
+          value: "00001"
+        - field: ft
+          order: null
+          value: "00000"
+      preoperation: |
+        let fsValue = CAPI.ARCH.readDouble(fs);
+      postoperation: |
+        CAPI.ARCH.writeDouble(result, fd)
       definition: |
         let result = Math.abs(fsValue);
 
@@ -1074,10 +1097,10 @@ instructions:
           value: "00000"
           type: cop
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(registers[fs]);
-        ftValue = CAPI.FS.uint2float32(registers[ft]);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |
         let result = fsValue + ftValue;
 
@@ -1167,7 +1190,7 @@ instructions:
         - field: opcode
           value: "001100"
       definition: |
-        registers[rt] = registers[rs] & (imm & 0xFFFF);
+        registers[rt] = registers[rs] & (imm & 0xFFFFn);
 
     - name: bc
       template: Custom
@@ -1337,8 +1360,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
+        const pc = registers.PC
+        registers.ra = pc
         if (CAPI.FP.uint2int(registers[rs]) >= 0) {
-          registers.PC = registers.PC - 4n + imm;
+          registers.PC = pc - 4n + imm;
           CAPI.STACK.beginFrame(registers[rs]);
         }
 
@@ -1691,7 +1716,9 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100001"
-      definition: registers[fd] = registers[fs];
+      definition: |
+        let val = CAPI.FP.uint2float32(registers[fs]);
+        CAPI.ARCH.writeDouble(val, fd);
     - name: cvt.d.w
       template: Custom
       type: Arithmetic floating point
@@ -1712,7 +1739,7 @@ instructions:
           stopbit: 21
           value: "00001"
         - field: fs
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 2
@@ -1730,7 +1757,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100001"
-      definition: registers[fd] = registers[fs];
+      definition: CAPI.ARCH.writeDouble(Number(CAPI.FP.uint2int(registers[fs])), fd);
     - name: cvt.s.d
       template: Custom
       type: Arithmetic floating point
@@ -1770,8 +1797,8 @@ instructions:
           stopbit: 0
           value: "100000"
       definition: |
-        let val = CAPI.FS.uint2float32(registers[fs]);
-        CAPI.ARCH.writeDouble(val, fd);
+        let val = CAPI.ARCH.readDouble(fs);
+        registers[fd] = CAPI.FP.float322uint(val, fd);
     - name: cvt.s.w
       template: Custom
       type: Arithmetic floating point
@@ -1792,7 +1819,7 @@ instructions:
           stopbit: 21
           value: "00010"
         - field: fs
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 2
@@ -1810,7 +1837,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100000"
-      definition: registers[fd] = parseFloat(float2int_v2(registers[fs]));
+      definition: registers[fd] = CAPI.FP.float322uint(Number(CAPI.FP.uint2int(registers[fs])));
     - name: cvt.w.d
       template: Custom
       type: Arithmetic floating point
@@ -1838,7 +1865,7 @@ instructions:
           prefix: $
           suffix: ","
         - field: fd
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 10
           stopbit: 6
           order: 1
@@ -1851,7 +1878,7 @@ instructions:
           value: "100100"
       definition: |
         let val = CAPI.ARCH.readDouble(fs);
-        CAPI.REG.write(BigInt(Math.trunc(val)), fd);
+        CAPI.REG.write(CAPI.FP.int2uint(BigInt(Math.trunc(val))), fd);
     - name: cvt.w.s
       template: Custom
       type: Arithmetic floating point
@@ -1879,7 +1906,7 @@ instructions:
           prefix: $
           suffix: ","
         - field: fd
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 10
           stopbit: 6
           order: 1
@@ -1890,7 +1917,9 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100100"
-      definition: registers[fd] = parseInt(registers[fs]);
+      definition: |
+        let val = CAPI.FP.uint2float32(registers[fs]);
+        CAPI.REG.write(CAPI.FP.int2uint(BigInt(Math.trunc(val))), fd);
     - name: div
       template: Custom
       type: Arithmetic integer
@@ -2093,10 +2122,10 @@ instructions:
           stopbit: 0
           value: "000011"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        fd = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (ftValue != 0)
@@ -2148,7 +2177,7 @@ instructions:
           value: "011011"
       definition: |-
         if (registers[rt] != 0)
-         { registers[rd] = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt])); }
+         { registers[rd] = CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -2184,9 +2213,9 @@ instructions:
           value: "011011"
       definition: |-
         if (registers[rt] != 0)
-         { registers.LO = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]));
-        registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
-         else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
+         { registers.LO = CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]);
+           registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
+        else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: j
       template: Custom
       type: Unconditional bifurcation
@@ -2839,9 +2868,9 @@ instructions:
           stopbit: 0
           value: "000110"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(fs);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: let result = fsValue;
     - name: mtc1
       template: Custom
@@ -2875,7 +2904,7 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
-      definition: registers[fs] = CAPI.FP.uint2float32(registers[rt]);
+      definition: registers[fs] = registers[rt];
     - name: mthi
       template: Custom
       type: Transfer between registers
@@ -3064,10 +3093,10 @@ instructions:
           stopbit: 0
           value: "000010"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |
         let result = fsValue * ftValue;
     - name: mult
@@ -3104,8 +3133,8 @@ instructions:
           value: "011000"
       definition: |-
         let result = CAPI.FP.uint2int(registers[rs]) * CAPI.FP.uint2int(registers[rt]);
-        registers.HI = Math.floor(result / Math.pow (2, 32));
-        registers.LO = result % Math.pow(2, 32);
+        registers.HI = CAPI.FP.int2uint(result >> 32n);
+        registers.LO = CAPI.FP.int2uint(result & 0xFFFFFFFFn);
     - name: multu
       template: Custom
       type: Arithmetic integer
@@ -3140,10 +3169,8 @@ instructions:
           value: "011001"
       definition: |-
         let result = CAPI.FP.int2uint(registers[rs]) * CAPI.FP.int2uint(registers[rt]);
-        registers.HI = Math.floor(result / Math.pow(2, 32));
-        registers.HI = registers.HI >>> 0; // TODO: This is broken with bigints.
-        registers.LO = result % Math.pow(2, 32);
-        registers.LO = registers.LO >>> 0;
+        registers.HI = CAPI.FP.int2uint(result >> 32n);
+        registers.LO = CAPI.FP.int2uint(result & 0xFFFFFFFFn);
     - name: nop
       template: Custom
       type: Logic
@@ -3322,7 +3349,7 @@ instructions:
           stopbit: 0
           value: "000010"
       definition: |
-        registers[rd] = CAPI.FP.int2uint((registers[rt] >>> sa) | (registers[rt] << (32 - sa))); // TODO: This is broken with bigints.
+        registers[rd] = CAPI.FP.int2uint((CAPI.FP.int2uint(registers[rt]) >> sa) | (registers[rt] << (32n - sa)));
     - name: rsqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3409,9 +3436,9 @@ instructions:
           stopbit: 0
           value: "010110"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (fsValue >= 0) { 
@@ -3495,8 +3522,8 @@ instructions:
         if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
-        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[0]), ft);
-        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[1]));
+        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[1]), ft);
+        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[0]));
     - name: sh
       template: Custom
       type: Memory access
@@ -3570,7 +3597,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "111111"
-      definition: rd = CAPI.FP.int2uint(registers[rt] << sa);
+      definition: registers[rd] = CAPI.FP.int2uint(registers[rt] << sa);
     - name: slt
       template: Custom
       type: Logic
@@ -3805,9 +3832,9 @@ instructions:
           stopbit: 0
           value: "000100"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (fsValue >= 0) {
@@ -3854,7 +3881,7 @@ instructions:
           stopbit: 0
           value: "000011"
       definition: |
-        registers[rd] = CAPI.FP.int2uint(registers[rt] >> sa);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[rt]) >> sa);
     - name: srl
       template: Custom
       type: Arithmetic integer
@@ -3899,7 +3926,7 @@ instructions:
           stopbit: 0
           value: "000010"
       definition: |
-        registers[rd] = registers[rt] >>> sa; // TODO:broken with bigints.
+        registers[rd] = CAPI.FP.int2uint(registers[rt]) >> sa;
     - name: sub
       template: Custom
       type: Arithmetic integer
@@ -4037,10 +4064,10 @@ instructions:
           stopbit: 0
           value: "000001"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: let result = fsValue - ftValue;
     - name: subu
       template: Custom
@@ -4174,6 +4201,7 @@ instructions:
           value: "001100"
       definition: |-
         let FP0 = CAPI.ARCH.readDouble('f0');
+        let f12 = CAPI.FP.uint2float32(registers.f12);
         let FP12 = CAPI.ARCH.readDouble('f12');
         switch(registers["v0"]) {
           case 1n:
@@ -4192,10 +4220,10 @@ instructions:
             CAPI.SYSCALL.read('v0', 'int32');
             break;
           case 6n:
-            CAPI.SYSCALL.read(f0, 'float');
+            CAPI.SYSCALL.read('f0', 'float');
             break;
           case 7n:
-            CAPI.SYSCALL.read(FP0, 'double');
+            CAPI.SYSCALL.read('FP0', 'double');
             break;
           case 8n:
             CAPI.SYSCALL.read('a0', 'string', 'a1');
@@ -4999,18 +5027,24 @@ pseudoinstructions:
         - field: val
           type: imm-signed
       definition: |-
-        no_ret_op{tmp0=Field.2.(63,32).double;
-        tmp_low0=tmp0&0x0000FFFF;
-        tmp_hi0=tmp0>>>16;
-        tmp1=Field.2.(31,0).double;
-        tmp_low1=tmp1&0x0000FFFF;
-        tmp_hi1=tmp1>>>16};
+        no_ret_op{
+          tmp0=Field.2.(63,32).double;
+          tmp_low0=tmp0&0x0000FFFF;
+          tmp_hi0=tmp0>>>16;
+          tmp1=Field.2.(31,0).double;
+          tmp_low1=tmp1&0x0000FFFF;
+          tmp_hi1=tmp1>>>16;
+          tmp_reg=reg_name{1};
+          regNumber=parseInt(tmp_reg.substring(2), 10);
+          reg0="f" + regNumber;
+          reg1="f" + (regNumber + 1);
+        };
         lui $at, op{tmp_hi1};
         ori $at, $at, op{tmp_low1};
-        mtc1 $at, $aliasDouble(rd;1);
+        mtc1 $at, $op{reg1};
         lui $at, op{tmp_hi0};
         ori $at, $at, op{tmp_low0};
-        mtc1 $at, $aliasDouble(rd;0);
+        mtc1 $at, $op{reg0};
     - name: li.s
       help: ""
       properties: []
