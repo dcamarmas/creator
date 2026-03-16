@@ -682,11 +682,10 @@ export function getRegisterInfo(regName) {
 }
 
 export function getPC() {
-    const pc_address = readRegister(
+    return readRegister(
         PC_REG_INDEX.indexComp,
         PC_REG_INDEX.indexElem,
     );
-    return BigInt(pc_address);
 }
 
 export function getSP() {
