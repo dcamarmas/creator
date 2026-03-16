@@ -1301,11 +1301,9 @@ export function cr_serial_flush() {
     });
     if (serial_begin != 0 && initArduino != 0) {
         status.keyboard = "";
-        status.display = "";
         const root = (document as any).app;
         if (root) {
             root.keyboard = "";
-            root.display = "";
             root.enter = null;
         }
     }
