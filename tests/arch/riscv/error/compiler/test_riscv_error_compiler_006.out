@@ -1,11 +1,26 @@
 
 
-Error at line 7 (0x123):
-Number '0x123' is too big
+[E09] Error: Incorrect instruction syntax
+    ╭─[ assembly:11:7 ]
+    │
+ 11 │    li t0, 0xhello
+    │       ─────┬─────  
+    │            ╰─────── Incorrect syntax
+    │ 
+    │ Note: Allowed formats:
+    │       li rd,val
+────╯
 
-  6  .data
-->7     a:      .byte 0x123
-  8     
+The syntax `li rd,val` failed with the following reason:
+Error: found `identifier (xhello)` but expected `\n`, `binary operator`, or `end of input`
+    ╭─[ assembly:11:12 ]
+    │
+ 11 │    li t0, 0xhello
+    │           ┬───┬──  
+    │           ╰──────── While parsing this `expression`
+    │               │    
+    │               ╰──── Unexpected input
+────╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
