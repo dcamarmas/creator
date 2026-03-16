@@ -4033,6 +4033,7 @@ interrupts:
           break;
       }
       CAPI.INTERRUPTS.clearHighlight();
+      CAPI.STACK.endFrame();
 
     custom: |
       CAPI.INTERRUPTS.globalDisable();
