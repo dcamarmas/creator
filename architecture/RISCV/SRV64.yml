@@ -2282,7 +2282,7 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1 : 0;
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1n : 0n;
 
       help: Place the value 1 in register rd if register rs1 is less than the signextended immediate when both are treated as signed numbers, else 0 is written to rd.
     - name: sltiu
@@ -2295,7 +2295,7 @@ instructions:
         - field: funct3
           value: "011"
       definition: |
-      registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1: 0;
+        registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1n: 0n;
       help: Place the value 1 in register rd if register rs1 is less than the immediate when both are treated as unsigned numbers, else 0 is written to rd.
     - name: srai
       extension: I
@@ -2309,7 +2309,7 @@ instructions:
         - field: funct7
           value: "0100000"
       definition: |
-        if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] >> shamt);
+        if (shamt > 0) registers[rd] = (BigInt.asIntN(64, registers[rs1]) >> shamt);
 
       help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
     - name: srli
@@ -2419,7 +2419,7 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1 : 0;
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1n : 0n;
 
       help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as signed numbers, else 0 is written to rd.
     - name: sltu
@@ -2655,13 +2655,14 @@ instructions:
         - field: funct3
           value: "101"
       definition: |
-        if (registers[rs2] != 0) {
+        const div = registers[rs2]
+        if (div != 0) {
           registers[rd] = BigInt.asIntN(
             32,
-            (BigInt.asUintN(32, BigInt(registers[rs1])) / BigInt.asUintN(32, BigInt(registers[rs2])))
+            (BigInt.asUintN(32, registers[rs1]) / BigInt.asUintN(32, div))
           );
         }
-         else CAPI.VALIDATION.raise('Division by registers[zero] not allowed');
+         else CAPI.VALIDATION.raise('Division by zero not allowed');
       help: Perform an XLEN-bit by XLEN-bit unsigned integer division of rs1 by rs2, rounding towards zero.
     - name: mul
       extension: M
@@ -2688,11 +2689,11 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        registers[rd] = BigInt.asIntN(
+        registers[rd] = BigInt.asUintN(
           32,
           BigInt.asIntN(
             64,
-            BigInt.asIntN(32, BigInt(registers[rs1])) * BigInt.asIntN(32, BigInt(registers[rs2])),
+            BigInt.asIntN(32, registers[rs1]) * BigInt.asIntN(32, registers[rs2]),
           ) >> 32n,
         );
       help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by signed rs2 and places the lower XLEN bits in the destination register.
@@ -2711,7 +2712,7 @@ instructions:
           32,
           BigInt.asIntN(
             64,
-            BigInt.asIntN(32, BigInt(registers[rs1])) * BigInt.asUintN(32, BigInt(registers[rs2])),
+            BigInt.asIntN(32, registers[rs1]) * BigInt.asUintN(32, registers[rs2]),
           ) >> 32n,
         );
       help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
@@ -2730,7 +2731,7 @@ instructions:
           32,
           BigInt.asUintN(
             64,
-            BigInt.asUintN(32, BigInt(registers[rs1])) * BigInt.asUintN(32, BigInt(registers[rs2])),
+            BigInt.asUintN(32, registers[rs1]) * BigInt.asUintN(32, registers[rs2]),
           ) >> 32n,
         );
       help: Performs an XLEN-bit by XLEN-bit multiplication of unsigned rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
@@ -2863,9 +2864,9 @@ instructions:
           optional: true
           order: 3
       postoperation: |
-        registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
+        registers[rd] = CAPI.ARCH.toBigInt(result,'NaNBfloat32_64');
       definition: |
-        registers[rd] = CAPI.FP.uint2int(registers[rs1])
+        result = CAPI.FP.uint2int(registers[rs1])
 
       help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
     - name: fcvt.s.wu
@@ -2987,18 +2988,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
-
       definition: |
-        result = (rs1Number === rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number === rs2Number)? 1n : 0n;
 
       help: Performs a quiet equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
     - name: fle.s
@@ -3014,18 +3008,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
-
       definition: |
-        result = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number)? 1n : 0n;
 
       help: Performs a quiet less or equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
     - name: flt.s
@@ -3041,18 +3028,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
-
       definition: |
-        result = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
 
       help: Performs a quiet less comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
     - name: fmax.s
@@ -3274,9 +3254,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3289,7 +3268,7 @@ instructions:
           result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
-            'Square root of a negative number is not allowed.'
+            "Square root of a negative number is not allowed."
           );
         }
       help: Perform single-precision square root.
@@ -3338,7 +3317,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3367,7 +3346,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3396,7 +3375,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3425,7 +3404,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3585,8 +3564,8 @@ instructions:
         - field: rs1
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, type_rs1;
-        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        let result, rs1Number;
+        rs1Number = registers[rs1];
       postoperation: |
         registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
@@ -3659,7 +3638,7 @@ instructions:
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
 
       help: Converts double floating-point register in rs1 into a floating-point number in floating-point register rd.
-    - name: fcvt.w.d      
+    - name: fcvt.w.d
       extension: D
       template: R-Conversion
       fields:
@@ -3693,7 +3672,7 @@ instructions:
         result = CAPI.FP.int2uint(parseInt(rs1Number));
 
       help: Converts a double-precision floating-point number in floating-point register rs1 to a signed 32-bit integer, in integer register rd.
-    - name: fcvt.wu.d      
+    - name: fcvt.wu.d
       extension: D
       template: R-Conversion
       fields:
@@ -3727,7 +3706,7 @@ instructions:
         result = CAPI.FP.int2uint(parseInt(rs1Number));
 
       help: Converts a double-precision floating-point number in floating-point register rs1 to a unsigned 32-bit integer, in integer register rd.
-    - name: fdiv.d      
+    - name: fdiv.d
       extension: D
       template: R-Double
       fields:
@@ -3754,7 +3733,7 @@ instructions:
       definition: |
         result = rs1Number / rs2Number;
       help: Perform double-precision floating-point division.
-    - name: feq.d      
+    - name: feq.d
       extension: D
       template: R-Double
       fields:
@@ -3767,16 +3746,14 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-
       definition: |
-        registers[rd] = (rs1Number == rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number == rs2Number)? 1n : 0n;
 
       help: Performs a quiet equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
-    - name: fle.d      
+    - name: fle.d
       extension: D
       template: R-Double
       fields:
@@ -3792,13 +3769,11 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-
       definition: |
-        registers[rd] = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number) ? 1n : 0n;
 
       help: Performs a quiet less or equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
-    - name: flt.d      
+    - name: flt.d
       extension: D
       template: R-Double
       fields:
@@ -3814,13 +3789,11 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-
       definition: |
-        registers[rd] = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
 
       help: Performs a quiet less comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
-    - name: fmax.d      
+    - name: fmax.d
       extension: D
       template: R-Double
       fields:
@@ -3845,7 +3818,7 @@ instructions:
         result = Math.max(rs1Number, rs2Number);
 
       help: Write the larger of double precision data in rs1 and rs2 to rd.
-    - name: fmin.d      
+    - name: fmin.d
       extension: D
       template: R-Double
       fields:
@@ -3870,7 +3843,7 @@ instructions:
         result = Math.min(rs1Number, rs2Number);
 
       help: Write the smaller of double precision data in rs1 and rs2 to rd.
-    - name: fmul.d      
+    - name: fmul.d
       extension: D
       template: R-Double
       fields:
@@ -3898,7 +3871,7 @@ instructions:
         result = rs1Number * rs2Number;
 
       help: Perform double-precision floating-point addition.
-    - name: fsgnj.d      
+    - name: fsgnj.d
       extension: D
       template: R-Double
       fields:
@@ -3922,7 +3895,7 @@ instructions:
       definition: |
         registers[rd] = (rs2Number > 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
       help: Perform double-precision floating-point multiplication.
-    - name: fsgnjn.d      
+    - name: fsgnjn.d
       extension: D
       template: R-Double
       fields:
@@ -3944,10 +3917,10 @@ instructions:
         }
 
       definition: |
-        registers[rd] = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
+        result = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
 
       help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is opposite of rs2's sign bit.
-    - name: fsgnjx.d      
+    - name: fsgnjx.d
       extension: D
       template: R-Double
       fields:
@@ -3971,9 +3944,9 @@ instructions:
       definition: |
         let a = rs1Number < 0;
         let b = rs2Number < 0;
-        registers[rd] = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
+        result = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
       help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
-    - name: fsqrt.d      
+    - name: fsqrt.d
       extension: D
       template: R-Double
       fields:
@@ -3991,9 +3964,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
@@ -4003,14 +3975,14 @@ instructions:
 
       definition: |
         if (rs1Number >= 0) {
-          registers[rd] = Math.sqrt(rs1Number);
+          result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
             "Square root of a negative number is not allowed."
           );
         }
       help: Perform double-precision square root.
-    - name: fsub.d      
+    - name: fsub.d
       extension: D
       template: R-Double
       fields:
@@ -4038,7 +4010,7 @@ instructions:
         result = rs1Number - rs2Number;
 
       help: Perform double-precision floating-point addition.
-    - name: fmadd.d      
+    - name: fmadd.d
       extension: D
       template: R4-Double
       fields:
@@ -4068,7 +4040,7 @@ instructions:
         result = rs1Number * rs2Number + rs3Number;
 
       help: Perform double-precision fused multiply addition.
-    - name: fmsub.d      
+    - name: fmsub.d
       extension: D
       template: R4-Double
       fields:
@@ -4098,7 +4070,7 @@ instructions:
         result = rs1Number * rs2Number - rs3Number;
 
       help: Perform double-precision fused multiply subtraction.
-    - name: fnmadd.d      
+    - name: fnmadd.d
       extension: D
       template: R4-Double
       fields:
@@ -4128,7 +4100,7 @@ instructions:
         result = -rs1Number * rs2Number - rs3Number;
 
       help: Perform negated double-precision fused multiply addition.
-    - name: fnmsub.d      
+    - name: fnmsub.d
       extension: D
       template: R4-Double
       fields:
@@ -4158,7 +4130,7 @@ instructions:
         result = -rs1Number * rs2Number + rs3Number;
 
       help: Perform negated double-precision fused multiply subtraction.
-    - name: fsd      
+    - name: fsd
       extension: D
       template: S
       fields:
@@ -4176,7 +4148,7 @@ instructions:
         CAPI.MEM.addHint(registers[rs1] + imm, "float64", 64);
       help: Store a double-precision value from the floating-point registers to memory.
   Zifencei:
-    - name: fence.i      
+    - name: fence.i
       extension: D
       template: Custom
       type: Syscall

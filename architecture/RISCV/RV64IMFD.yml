@@ -1830,7 +1830,7 @@ instructions:
         - field: funct7
           value: "0000000"
       definition: |
-        if (shamt > 0) rd = (rs1 >> shamt);
+        if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] >> shamt);
       help: Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: srliw
@@ -1846,7 +1846,7 @@ instructions:
       definition: |
         if (shamt > 0) {
           const temp =
-            ((BigInt(registers[rs1]) & 0xffffffffn) >> BigInt(shamt)) & 0xffffffffn;
+            ((registers[rs1] & 0xffffffffn) >> shamt) & 0xffffffffn;
           registers[rd] = temp & 0x80000000n ? temp | 0xffffffff00000000n : temp;
           registers[rd] = CAPI.FP.int2uint(registers[rd]);
         }
@@ -2098,8 +2098,8 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        const temp = (BigInt(rs1) + BigInt(rs2)) & 0xFFFFFFFFn;
-        rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp;
+        const temp = (registers[rs1] + registers[rs2]) & 0xFFFFFFFFn;
+        registers[rd] = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp;
       help: Subtract the 32-bit of registers rs1 and 32-bit of register rs2 and
         stores the result in rd. Arithmetic overflow is ignored and the low
         32-bits of the result is sign-extended to 64-bits and written to the
@@ -2293,10 +2293,11 @@ instructions:
         - field: funct3
           value: "101"
       definition: |
-        if (registers[rs2] != 0) {
+        const div = registers[rs2]
+        if (div != 0) {
           registers[rd] = BigInt.asIntN(
             32,
-            (BigInt.asUintN(32, BigInt(registers[rs1])) / BigInt.asUintN(32, BigInt(registers[rs2])))
+            (BigInt.asUintN(32, registers[rs1]) / BigInt.asUintN(32, div))
           );
         }
          else CAPI.VALIDATION.raise('Division by zero not allowed');
@@ -2327,7 +2328,7 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        registers[rd] = BigInt.asIntN(
+        registers[rd] = BigInt.asUintN(
           32,
           BigInt.asIntN(
             64,
@@ -2503,9 +2504,9 @@ instructions:
           optional: true
           order: 3
       postoperation: |
-        registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
+        registers[rd] = CAPI.ARCH.toBigInt(result,'NaNBfloat32_64');
       definition: |
-        registers[rd] = CAPI.FP.uint2int(registers[rs1])
+        result = CAPI.FP.uint2int(registers[rs1])
       help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.s.wu
@@ -2621,17 +2622,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number === rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number === rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between floating-point registers
         rs1 and rs2 and record the Boolean result in integer register rd. Only
         signaling NaN inputs cause an Invalid Operation exception. The result is
@@ -2649,17 +2644,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between floating-point registers
         rs1 and rs2 and record the Boolean result in integer register rd. Only
         signaling NaN inputs cause an Invalid Operation exception. The result is
@@ -2677,17 +2666,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
       help: Performs a quiet less or equal comparison between floating-point
         registers rs1 and rs2 and record the Boolean result in integer register
         rd. Only signaling NaN inputs cause an Invalid Operation exception. The
@@ -2906,9 +2889,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -2920,7 +2902,7 @@ instructions:
           result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
-            'Square root of a negative number is not allowed.'
+            "Square root of a negative number is not allowed."
           );
         }
       help: Perform single-precision square root.
@@ -2967,7 +2949,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -2994,7 +2976,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3021,7 +3003,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3048,7 +3030,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3213,8 +3195,8 @@ instructions:
         - field: rs1
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, type_rs1;
-        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        let result, rs1Number;
+        rs1Number = registers[rs1];
       postoperation: |
         registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
@@ -3387,17 +3369,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number == rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number === rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3418,14 +3394,8 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number)? 1n : 0n;
       help: Performs a quiet less or equal comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3446,14 +3416,8 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
       help: Performs a quiet less comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3574,7 +3538,7 @@ instructions:
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
-        registers[rd] = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
+        result = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
       help: Produce a result that takes all bits except the sign bit from rs1.
         The result's sign bit is opposite of rs2's sign bit.
 
@@ -3600,7 +3564,7 @@ instructions:
       definition: |
         let a = rs1Number < 0;
         let b = rs2Number < 0;
-        registers[rd] = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
+        result = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
       help: Produce a result that takes all bits except the sign bit from rs1.
         The result's sign bit is XOR of sign bit of rs1 and rs2.
 
@@ -3621,9 +3585,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
@@ -3632,7 +3595,7 @@ instructions:
         }
       definition: |
         if (rs1Number >= 0) {
-          registers[rd] = Math.sqrt(rs1Number);
+          result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
             "Square root of a negative number is not allowed."
