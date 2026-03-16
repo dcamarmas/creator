@@ -467,6 +467,7 @@ components:
     elements:
       - name:
           - f0
+          - FP0
         nbits: 32
         value: 0
         default_value: 0
@@ -485,6 +486,7 @@ components:
           - write
       - name:
           - f2
+          - FP2
         nbits: 32
         value: 0
         default_value: 0
@@ -503,6 +505,7 @@ components:
           - write
       - name:
           - f4
+          - FP4
         nbits: 32
         value: 0
         default_value: 0
@@ -521,6 +524,7 @@ components:
           - write
       - name:
           - f6
+          - FP6
         nbits: 32
         value: 0
         default_value: 0
@@ -539,6 +543,7 @@ components:
           - write
       - name:
           - f8
+          - FP8
         nbits: 32
         value: 0
         default_value: 0
@@ -557,6 +562,7 @@ components:
           - write
       - name:
           - f10
+          - FP10
         nbits: 32
         value: 0
         default_value: 0
@@ -575,6 +581,7 @@ components:
           - write
       - name:
           - f12
+          - FP12
         nbits: 32
         value: 0
         default_value: 0
@@ -593,6 +600,7 @@ components:
           - write
       - name:
           - f14
+          - FP14
         nbits: 32
         value: 0
         default_value: 0
@@ -611,6 +619,7 @@ components:
           - write
       - name:
           - f16
+          - FP16
         nbits: 32
         value: 0
         default_value: 0
@@ -629,6 +638,7 @@ components:
           - write
       - name:
           - f18
+          - FP18
         nbits: 32
         value: 0
         default_value: 0
@@ -647,6 +657,7 @@ components:
           - write
       - name:
           - f20
+          - FP20
         nbits: 32
         value: 0
         default_value: 0
@@ -665,6 +676,7 @@ components:
           - write
       - name:
           - f22
+          - FP22
         nbits: 32
         value: 0
         default_value: 0
@@ -683,6 +695,7 @@ components:
           - write
       - name:
           - f24
+          - FP24
         nbits: 32
         value: 0
         default_value: 0
@@ -701,6 +714,7 @@ components:
           - write
       - name:
           - f26
+          - FP26
         nbits: 32
         value: 0
         default_value: 0
@@ -719,6 +733,7 @@ components:
           - write
       - name:
           - f28
+          - FP28
         nbits: 32
         value: 0
         default_value: 0
@@ -737,6 +752,7 @@ components:
           - write
       - name:
           - f30
+          - FP30
         nbits: 32
         value: 0
         default_value: 0
