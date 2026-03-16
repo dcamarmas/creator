@@ -47,8 +47,7 @@ export const STACK = {
         }
     },
     endFrame() {
-        // stack tracker: pop both frames
-        stackTracker.popFrame();
+        // stack tracker: pop frame
         stackTracker.popFrame();
 
         // sentinel
