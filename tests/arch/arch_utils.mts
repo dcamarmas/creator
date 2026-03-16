@@ -8,7 +8,7 @@ import {
 } from "../unit/arch/simulator-test-utils.mts";
 import { testKeyboard } from "../../src/core/executor/IO.mjs";
 import * as creator from "../../src/core/core.mjs";
-import { coreEvents } from "../../src/core/events.mts";
+import { coreEvents, CoreEventTypes } from "../../src/core/events.mts";
 import { logger } from "../../src/core/utils/creator_logger.mjs";
 
 export const ARCH = {
@@ -44,7 +44,7 @@ export function snapshot_tests(
             const errors = expect_error.has(file);
             // Record passing convention errors
             const sentinel_errors: { function: string; msg: string }[] = [];
-            coreEvents.on("sentinel-error", e =>
+            coreEvents.on(CoreEventTypes.SENTINEL_ERROR, e =>
                 sentinel_errors.push({
                     function: e.functionName,
                     msg: e.message,
