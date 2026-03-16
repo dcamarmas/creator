@@ -26,13 +26,13 @@ Deno.test(
     "MIPS Branching Instructions",
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r1: 0x1n, // at
-            r2: 0xan, // v0
-            r8: 0x4n, // t0
-            r9: 0x2n, // t1
-            r11: 0x22n, // t3
-            r24: 0x22bn, // t8
-            r25: 0xbn, // t9
+            "1": 0x1n, // at
+            "2": 0xan, // v0
+            "8": 0x4n, // t0
+            "9": 0x2n, // t1
+            "11": 0x22n, // t3
+            "24": 0x22bn, // t8
+            "25": 0xbn, // t9
         },
         display: "", // Display buffer should be empty
         keyboard: "", // Keyboard buffer should be empty

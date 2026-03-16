@@ -25,10 +25,10 @@ Deno.test(
     "MIPS Loop and Print Sum",
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r2: 0x1n, // v0
-            r4: 0x2dn, // a0 = 45
-            r8: 0xan, // t0 = 10
-            r9: 0xan, // t1 = 10
+            "2": 0x1n, // v0
+            "4": 0x2dn, // a0 = 45
+            "8": 0xan, // t0 = 10
+            "9": 0xan, // t1 = 10
         },
         display: "45", // Should display '45'
         keyboard: "", // Keyboard buffer should be empty

@@ -23,14 +23,14 @@ Deno.test(
     "MIPS Basic Arithmetic Operations",
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r8: 0xan, // t0 = 10
-            r9: 0xdn, // t1 = 13
-            r10: 0x2dn, // t2 = 45
-            r11: 0x21n, // t3 = 33
-            r12: 0x17n, // t4 = 23
-            r13: 0xcn, // t5 = 12
-            r14: 0x441n, // t6 = 1089
-            r15: 0x53n, // t7 = 83
+            "8": 0xan, // t0 = 10
+            "9": 0xdn, // t1 = 13
+            "10": 0x2dn, // t2 = 45
+            "11": 0x21n, // t3 = 33
+            "12": 0x17n, // t4 = 23
+            "13": 0xcn, // t5 = 12
+            "14": 0x441n, // t6 = 1089
+            "15": 0x53n, // t7 = 83
         },
         display: "", // Display buffer should be empty
         keyboard: "", // Keyboard buffer should be empty

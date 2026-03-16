@@ -45,13 +45,13 @@ Deno.test(
     "MIPS Matrix Copy with Floats",
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r1: 0x200040n, // at
-            r2: 0xan, // v0
-            r8: 0x200040n, // t0
-            r9: 0x200080n, // t1
-            r10: 0x4n, // t2
-            r11: 0x4n, // t3
-            r12: 0x4n, // t4
+            "1": 0x200040n, // at
+            "2": 0xan, // v0
+            "8": 0x200040n, // t0
+            "9": 0x200080n, // t1
+            "10": 0x4n, // t2
+            "11": 0x4n, // t3
+            "12": 0x4n, // t4
         },
         memory: {
             "0x20007f": 0x24n,

@@ -58,11 +58,11 @@ Deno.test(
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
             PC: 0x1cn,
-            r1: 0x1n, // at
-            r2: 0xan, // v0
-            r4: 0x78n, // a0
-            r9: 0x5n, // t1
-            r31: 0x8n, // ra
+            "1": 0x1n, // at
+            "2": 0xan, // v0
+            "4": 0x78n, // a0
+            "9": 0x5n, // t1
+            "31": 0x8n, // ra
         },
         display: "120", // Should display '120'
         keyboard: "", // Keyboard buffer should be empty

@@ -42,16 +42,16 @@ Deno.test(
     "MIPS Data Types and Memory Operations",
     assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r1: 0x20000en, // at
-            r8: 0x200000n, // t0
-            r9: 0x200004n, // t1
-            r10: 0x200006n, // t2
-            r11: 0xen, // t3
-            r12: 0xen, // t4
-            r13: 0x78n, // t5
-            r14: 0x78n, // t6
-            r15: 0x16n, // t7
-            r24: 0x16n, // t8
+            "1": 0x20000en, // at
+            "8": 0x200000n, // t0
+            "9": 0x200004n, // t1
+            "10": 0x200006n, // t2
+            "11": 0xen, // t3
+            "12": 0xen, // t4
+            "13": 0x78n, // t5
+            "14": 0x78n, // t6
+            "15": 0x16n, // t7
+            "24": 0x16n, // t8
         },
         memory: {
             "0x20000f": 0x16n,

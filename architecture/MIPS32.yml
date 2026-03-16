@@ -132,7 +132,7 @@ components:
     double_precision: false
     elements:
       - name:
-          - r0
+          - "0"
           - zero
         nbits: 32
         value: 0
@@ -141,7 +141,7 @@ components:
         properties:
           - read
       - name:
-          - r1
+          - "1"
           - at
         nbits: 32
         value: 0
@@ -151,7 +151,7 @@ components:
           - read
           - write
       - name:
-          - r2
+          - "2"
           - v0
         nbits: 32
         value: 0
@@ -161,7 +161,7 @@ components:
           - read
           - write
       - name:
-          - r3
+          - "3"
           - v1
         nbits: 32
         value: 0
@@ -171,7 +171,7 @@ components:
           - read
           - write
       - name:
-          - r4
+          - "4"
           - a0
         nbits: 32
         value: 0
@@ -181,7 +181,7 @@ components:
           - read
           - write
       - name:
-          - r5
+          - "5"
           - a1
         nbits: 32
         value: 0
@@ -191,7 +191,7 @@ components:
           - read
           - write
       - name:
-          - r6
+          - "6"
           - a2
         nbits: 32
         value: 0
@@ -201,7 +201,7 @@ components:
           - read
           - write
       - name:
-          - r7
+          - "7"
           - a3
         nbits: 32
         value: 0
@@ -211,7 +211,7 @@ components:
           - read
           - write
       - name:
-          - r8
+          - "8"
           - t0
         nbits: 32
         value: 0
@@ -221,7 +221,7 @@ components:
           - read
           - write
       - name:
-          - r9
+          - "9"
           - t1
         nbits: 32
         value: 0
@@ -231,7 +231,7 @@ components:
           - read
           - write
       - name:
-          - r10
+          - "10"
           - t2
         nbits: 32
         value: 0
@@ -241,7 +241,7 @@ components:
           - read
           - write
       - name:
-          - r11
+          - "11"
           - t3
         nbits: 32
         value: 0
@@ -251,7 +251,7 @@ components:
           - read
           - write
       - name:
-          - r12
+          - "12"
           - t4
         nbits: 32
         value: 0
@@ -261,7 +261,7 @@ components:
           - read
           - write
       - name:
-          - r13
+          - "13"
           - t5
         nbits: 32
         value: 0
@@ -271,7 +271,7 @@ components:
           - read
           - write
       - name:
-          - r14
+          - "14"
           - t6
         nbits: 32
         value: 0
@@ -281,7 +281,7 @@ components:
           - read
           - write
       - name:
-          - r15
+          - "15"
           - t7
         nbits: 32
         value: 0
@@ -291,7 +291,7 @@ components:
           - read
           - write
       - name:
-          - r16
+          - "16"
           - s0
         nbits: 32
         value: 0
@@ -302,7 +302,7 @@ components:
           - write
           - saved
       - name:
-          - r17
+          - "17"
           - s1
         nbits: 32
         value: 0
@@ -313,7 +313,7 @@ components:
           - write
           - saved
       - name:
-          - r18
+          - "18"
           - s2
         nbits: 32
         value: 0
@@ -324,7 +324,7 @@ components:
           - write
           - saved
       - name:
-          - r19
+          - "19"
           - s3
         nbits: 32
         value: 0
@@ -335,7 +335,7 @@ components:
           - write
           - saved
       - name:
-          - r20
+          - "20"
           - s4
         nbits: 32
         value: 0
@@ -346,7 +346,7 @@ components:
           - write
           - saved
       - name:
-          - r21
+          - "21"
           - s5
         nbits: 32
         value: 0
@@ -357,7 +357,7 @@ components:
           - write
           - saved
       - name:
-          - r22
+          - "22"
           - s6
         nbits: 32
         value: 0
@@ -368,7 +368,7 @@ components:
           - write
           - saved
       - name:
-          - r23
+          - "23"
           - s7
         nbits: 32
         value: 0
@@ -379,7 +379,7 @@ components:
           - write
           - saved
       - name:
-          - r24
+          - "24"
           - t8
         nbits: 32
         value: 0
@@ -389,7 +389,7 @@ components:
           - read
           - write
       - name:
-          - r25
+          - "25"
           - t9
         nbits: 32
         value: 0
@@ -399,7 +399,7 @@ components:
           - read
           - write
       - name:
-          - r26
+          - "26"
           - k0
         nbits: 32
         value: 0
@@ -409,7 +409,7 @@ components:
           - read
           - write
       - name:
-          - r27
+          - "27"
           - k1
         nbits: 32
         value: 0
@@ -419,7 +419,7 @@ components:
           - read
           - write
       - name:
-          - r28
+          - "28"
           - gp
         nbits: 32
         value: 0
@@ -430,7 +430,7 @@ components:
           - write
           - global_pointer
       - name:
-          - r29
+          - "29"
           - sp
         nbits: 32
         value: 268435452
@@ -441,7 +441,7 @@ components:
           - write
           - stack_pointer
       - name:
-          - r30
+          - "30"
           - fp
         nbits: 32
         value: 0
@@ -452,7 +452,7 @@ components:
           - write
           - frame_pointer
       - name:
-          - r31
+          - "31"
           - ra
         nbits: 32
         value: 4294967295
