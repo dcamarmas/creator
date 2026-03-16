@@ -58,7 +58,7 @@ export function kbd_read_char(keystroke, params) {
     }
     writeRegister(BigInt(value), params.indexComp, params.indexElem);
 
-    return value;
+    return keystroke[0] || "";
 }
 
 export function kbd_read_int(keystroke, params) {
