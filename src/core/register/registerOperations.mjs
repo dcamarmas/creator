@@ -119,12 +119,7 @@ export function writeRegister(value, indexComp, indexElem) {
         }
         draw.danger.push(status.execution_index);
 
-        throw packExecute(
-            true,
-            "The register " + elementName + " is not writeable",
-            "danger",
-            null,
-        );
+        throw new Error(`The register ${elementName} is not writeable`);
     }
 
     element.value = value;
