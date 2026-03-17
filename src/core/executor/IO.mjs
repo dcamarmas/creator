@@ -119,11 +119,18 @@ export function kbd_read_float(keystroke, params) {
         document.app.$data.last_execution_mode_run = -1;
     }
 
-    const buffer =  new ArrayBuffer(4);
-    const view = new DataView(buffer);
-    view.setFloat32(0,value, false);
-    const bits = view.getUint32(0, false);
-    writeRegister(BigInt(bits), params.indexComp, params.indexElem);
+    // If the current architecture has a write float specialization, use it.
+    // Otherwise, fallback to writing the bits directly
+    if (CAPI.ARCH.writeFloat !== undefined) {
+        const reg = architecture.components[params.indexComp].elements[params.indexElem]
+        CAPI.ARCH.writeFloat(value, reg.name[0])
+    } else  {
+        const buffer = new ArrayBuffer(4);
+        const view = new DataView(buffer);
+        view.setFloat32(0,value, false);
+        const bits = BigInt(view.getUint32(0, false));
+        writeRegister(bits, params.indexComp, params.indexElem);
+    }
 
     return value;
 }
@@ -146,7 +153,18 @@ export function kbd_read_double(keystroke, params) {
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
         document.app.$data.last_execution_mode_run = -1;
     }
-    writeRegister(value, params.indexComp, params.indexElem, "DFP-Reg");
+    // If the current architecture has a write float specialization, use it.
+    // Otherwise, fallback to writing the bits directly
+    if (CAPI.ARCH.writeDouble !== undefined) {
+        const reg = architecture.components[params.indexComp].elements[params.indexElem]
+        CAPI.ARCH.writeDouble(value, reg.name[0])
+    } else  {
+        const buffer = new ArrayBuffer(8);
+        const view = new DataView(buffer);
+        view.setFloat64(0, value, false);
+        const bits = view.getBigUint64(0, false);
+        writeRegister(bits, params.indexComp, params.indexElem);
+    }
 
     return value;
 }

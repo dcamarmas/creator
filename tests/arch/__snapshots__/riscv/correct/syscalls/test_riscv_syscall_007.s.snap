@@ -1,12 +1,12 @@
 export const snapshot = {};
 
-snapshot[`riscv/correct/syscalls/test_riscv_syscall_006.s 1`] = `
+snapshot[`riscv/correct/syscalls/test_riscv_syscall_007.s 1`] = `
 {
   display: "",
   error: false,
-  keyboard: " 1.234567",
+  keyboard: " 1.234567890123456",
   memory: {
-    "1": 96,
+    "1": 112,
     "10": 128,
     "11": 103,
     "2": 8,
@@ -14,8 +14,8 @@ snapshot[`riscv/correct/syscalls/test_riscv_syscall_006.s 1`] = `
     "7": 115,
   },
   registers: {
-    "f10,fa0": "0xffffffff3f9e064b",
-    "x17,a7": "0x6",
+    "f10,fa0": "0x3ff3c0ca428c59f8",
+    "x17,a7": "0x7",
     mtime: "0x3",
     pc: "0xfffffffe",
   },
