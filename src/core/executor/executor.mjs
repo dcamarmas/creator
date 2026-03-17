@@ -468,42 +468,18 @@ export function writeStackLimit(stackLimit) {
     // Get memory segments from the Memory object
     const segments = main_memory.getMemorySegments();
 
-    // // Check if stack pointer would be placed in data segment
-    // if (
-    //     dataSegment &&
-    //     stackLimitBigInt <= dataSegment.end &&
-    //     stackLimitBigInt >= dataSegment.start
-    // ) {
-    //     draw.danger.push(status.execution_index);
-    //     throw packExecute(
-    //         true,
-    //         "Stack pointer cannot be placed in the data segment",
-    //         "danger",
-    //         null,
-    //     );
-    // }
-
-    // // Check if stack pointer would be placed in text segment
-    // if (
-    //     textSegment &&
-    //     stackLimitBigInt <= textSegment.end &&
-    //     stackLimitBigInt >= textSegment.start
-    // ) {
-    //     draw.danger.push(status.execution_index);
-    //     throw packExecute(
-    //         true,
-    //         "Stack pointer cannot be placed in the text segment",
-    //         "danger",
-    //         null,
-    //     );
-    // }
-
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");
-
-    // Check if stack pointer would be placed in stack segment
+    // Check if stack pointer would be above stack end
     if (stackSegment && stackLimitBigInt > stackSegment.end) {
         throw new Error("Stack pointer cannot be outside the stack segment");
+    }
+
+    // Check if stack pointer would be placed in text/data segments
+    for (const [name, value] of segments) {
+        if (name === "stack") continue;
+        if (value.start <= stackLimitBigInt && stackLimitBigInt <= value.end)
+            throw new Error(`Stack pointer cannot be placed in the ${name} segment`);
     }
 
     stackTracker.updateCurrentFrame(stackLimit);
