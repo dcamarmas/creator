@@ -1,0 +1,27 @@
+export const snapshot = {};
+
+snapshot[`mips/error/executor/test_mips_error_executor_003.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Stack pointer cannot be placed in the text segment",
+      i: 0,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 29,
+    "4": 3,
+    "5": 224,
+    "7": 8,
+  },
+  registers: {
+    "29,sp": "0x0",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;

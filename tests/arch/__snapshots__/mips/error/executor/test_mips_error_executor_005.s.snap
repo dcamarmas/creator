@@ -1,0 +1,30 @@
+export const snapshot = {};
+
+snapshot[`mips/error/executor/test_mips_error_executor_005.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Segmentation fault. You tried to write in the text segment",
+      i: 1,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 8,
+    "11": 8,
+    "3": 10,
+    "4": 172,
+    "5": 8,
+    "8": 3,
+    "9": 224,
+  },
+  registers: {
+    "8,t0": "0xa",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;

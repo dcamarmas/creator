@@ -4,3 +4,6 @@
 #
 
 .text
+main:
+    li sp, 0xffffffff
+    jr ra

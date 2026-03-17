@@ -1,0 +1,41 @@
+export const snapshot = {};
+
+snapshot[`mips/error/executor/test_mips_error_executor_008.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "The memory must be aligned",
+      i: 4,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "0": 60,
+    "1": 1,
+    "10": 64,
+    "11": 32,
+    "12": 32,
+    "13": 9,
+    "15": 10,
+    "16": 141,
+    "17": 9,
+    "19": 1,
+    "20": 3,
+    "21": 224,
+    "23": 8,
+    "3": 32,
+    "4": 52,
+    "5": 33,
+    "9": 32,
+  },
+  registers: {
+    "1,at": "0x200000",
+    "8,t0": "0x200000",
+    "9,t1": "0xa",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;
