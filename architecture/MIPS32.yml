@@ -2363,7 +2363,7 @@ instructions:
           suffix: )
           order: 3
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1);
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1, false);
     - name: lbu
       template: Custom
       type: Memory access
@@ -2399,7 +2399,7 @@ instructions:
           order: 2
           space: false
       definition: |
-        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt);
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt, false);
     - name: ldc1
       template: Custom
       type: Memory access
@@ -2439,11 +2439,11 @@ instructions:
       postoperation: |
         CAPI.ARCH.writeDouble(doubleValue, ft);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be aligned');
-        }
-        let high = CAPI.MEM.read(registers[base] + off, 4);
-        let low = CAPI.MEM.read(registers[base] + off + 4n, 4, ft);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        let high = CAPI.MEM.read(addr, 4, false);
+        let low = CAPI.MEM.read(addr + 4n, 4, ft, false);
         let doubleValue = CAPI.FP.uint2float64(Number(low), Number(high));
     - name: lh
       template: Custom
@@ -2480,7 +2480,10 @@ instructions:
           prefix: ($
           suffix: )
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 2, reg1);
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[reg1] = CAPI.MEM.read(addr, 2, reg1, false);
     - name: lhu
       template: Custom
       type: Memory access
@@ -2516,7 +2519,10 @@ instructions:
           order: 2
           space: false
       definition: |
-        registers[rt] = CAPI.MEM.read(registers[base]+off, 2, rt);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rt] = CAPI.MEM.read(addr, 2, rt, false);
     - name: lui
       template: Custom
       type: Other
@@ -2580,7 +2586,10 @@ instructions:
           suffix: )
           order: 3
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 4, reg1);
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[reg1] = CAPI.MEM.read(addr, 4, reg1, false);
     - name: lwc1
       template: Custom
       type: Memory access
@@ -2616,7 +2625,10 @@ instructions:
           order: 2
           space: false
       definition: |-
-        registers[ft] = CAPI.MEM.read(registers[base]+off, 4, ft);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[ft] = CAPI.MEM.read(addr, 4, ft, false);
     - name: mfc1
       template: Custom
       type: Transfer between registers
@@ -3480,7 +3492,7 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt);"
+      definition: "CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt, 'byte', false);"
     - name: sdc1
       template: Custom
       type: Memory access
@@ -3518,12 +3530,12 @@ instructions:
       preoperation: |
         let doubleValue = CAPI.ARCH.readDouble(ft);
         let parts = CAPI.FP.float642uint(doubleValue);
+        let value = (BigInt(parts[1]) << 32n) | BigInt(parts[0])
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be aligned');
-        }
-        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[1]), ft);
-        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[0]));
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 8, value, ft, 'float64', false);
     - name: sh
       template: Custom
       type: Memory access
@@ -3558,7 +3570,11 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 2, registers[rt], rt);"
+      definition: |
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 2, registers[rt], rt, 'half', false);
     - name: sll
       template: Custom
       type: Arithmetic integer
@@ -4144,7 +4160,11 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: "CAPI.MEM.write(val+registers[reg2], 4, registers[reg1], reg1);"
+      definition: |
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, registers[reg1], reg1, 'word', false);
     - name: swc1
       template: Custom
       type: Memory access
@@ -4179,7 +4199,11 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 4, registers[ft], ft);"
+      definition: |
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, registers[ft], ft, 'float32', false);
     - name: syscall
       template: Custom
       type: Syscall
