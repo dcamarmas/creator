@@ -24,6 +24,7 @@ export interface ArchResult {
 export interface CompileResult {
     status: string;
     msg?: string;
+    linter?: { errorText: string, line: number, column: number }
 }
 
 export interface ExecutionResult {
@@ -147,17 +148,15 @@ export async function compileAssembly(
     testAssembly: string,
     assembler: string = "default",
 ): Promise<CompileResult> {
-    const compilerKey = assembler || "default";
-
-    if (!isValidCompilerKey(compilerKey)) {
+    if (!isValidCompilerKey(assembler)) {
         throw new Error(
-            `Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
+            `Invalid assembler: ${assembler}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
         );
     }
 
     creator.reset();
 
-    const compilerFunction = compiler_map[compilerKey];
+    const compilerFunction = compiler_map[assembler];
     // Compile assembly code
     const compileResult = (await creator.assembly_compile(
         testAssembly,

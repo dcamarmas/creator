@@ -1,4 +1,4 @@
-import { ARCH, execution_tests } from "../arch_utils.mts";
+import { ARCH, execution_tests, compile_error_tests } from "../arch_utils.mts";
 
 execution_tests(
     ARCH.mips,
@@ -15,3 +15,5 @@ execution_tests(
         "test_mips_error_executor_009.s",
     ]),
 );
+
+compile_error_tests(ARCH.mips, "mips/error/compiler")
