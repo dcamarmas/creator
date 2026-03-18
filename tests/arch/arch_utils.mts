@@ -47,11 +47,17 @@ export function execution_tests(
         Deno.test(`${dir}/${file}`, async t => {
             const errors = expect_error.has(file);
             // Record passing convention errors
-            const sentinel_errors: { function: string; msg: string }[] = [];
+            const sentinel_errors: object[] = [];
             coreEvents.on(CoreEventTypes.SENTINEL_ERROR, e =>
                 sentinel_errors.push({
                     function: e.functionName,
-                    msg: e.message,
+                    errors: e.errors.map(e => {
+                        return {
+                            rule: e.rule,
+                            register: e.register?.join(","),
+                            message: e.message,
+                        }
+                    }),
                 }),
             );
 

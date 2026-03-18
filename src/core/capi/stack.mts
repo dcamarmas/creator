@@ -55,9 +55,6 @@ export const STACK = {
             return;
         }
 
-        // get function name
-        const currentFunction = sentinel.getCurrentFunction() || "unknown";
-
         const ret = sentinel.leave();
 
         if (ret.ok) {
@@ -65,17 +62,13 @@ export const STACK = {
         }
 
         // emit event for GUI
-        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, {
-            functionName: currentFunction,
-            message: ret.msg,
-            ok: false,
-        });
+        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, ret);
 
         // Google Analytics
         creator_ga(
             "execute",
             "execute.exception",
-            "execute.exception.protection_jrra" + ret.msg,
+            "execute.exception.protection_jrra",
         );
     },
 

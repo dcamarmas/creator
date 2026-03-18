@@ -32,7 +32,7 @@ import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
 import ThemeToggle from "./ThemeToggle.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
-import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
+import { coreEvents, CoreEventTypes, type SentinelErrorEvent } from "../../../core/events.mts";
 import { remove_library, architecture, load_CREATino } from "@/core/core.mjs";
 import { createFile } from "../assembly/MultifileEditor.mjs";
 
@@ -67,17 +67,9 @@ export default defineComponent({
       typeof SentinelErrorsDropdown
     > | null>(null);
 
-    const handleSentinelError = (event: unknown) => {
-      const errorEvent = event as {
-        functionName: string;
-        message: string;
-        ok: boolean;
-      };
+    const handleSentinelError = (event: SentinelErrorEvent) => {
       if (sentinelDropdownRef.value) {
-        sentinelDropdownRef.value.checkForErrors(
-          { ok: errorEvent.ok, msg: errorEvent.message },
-          errorEvent.functionName,
-        );
+        sentinelDropdownRef.value.checkForErrors(event);
       }
     };
 

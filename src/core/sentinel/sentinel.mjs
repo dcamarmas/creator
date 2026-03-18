@@ -258,7 +258,6 @@ class CallingConventionValidator {
         const frame = new CallFrame(functionName, stackPointer);
         this.callStack.push(frame);
         console_log(`[SENTINEL] Entering function: ${functionName}`, "INFO");
-        return { ok: true, msg: "" };
     }
 
     /**
@@ -268,7 +267,13 @@ class CallingConventionValidator {
         if (this.callStack.length === 0) {
             return {
                 ok: false,
-                msg: "Cannot leave function: call stack is empty",
+                functionName: "unknown",
+                errors: [
+                    {
+                        rule: "",
+                        message: "Cannot leave function: call stack is empty",
+                    },
+                ],
             };
         }
 
@@ -278,14 +283,14 @@ class CallingConventionValidator {
             "INFO",
         );
 
-        const violations = [];
+        const errors = [];
 
         // Validate stack pointer
         const spViolations = ConventionRules.validateStackPointer(
             frame,
             architecture.memory_layout.stack.start,
         );
-        violations.push(...spViolations);
+        errors.push(...spViolations);
 
         // Validate each saved register
         for (let i = 0; i < REGISTERS.length; i++) {
@@ -299,7 +304,7 @@ class CallingConventionValidator {
                         i,
                         j,
                     );
-                    violations.push(...regViolations);
+                    errors.push(...regViolations);
                 }
             }
         }
@@ -307,16 +312,11 @@ class CallingConventionValidator {
         // Pop the frame
         this.callStack.pop();
 
-        // Return result
-        if (violations.length > 0) {
-            const messages = violations.map(v => `  - ${v.message}`).join("\n");
-            return {
-                ok: false,
-                msg: `Calling convention violations in ${frame.functionName}:\n${messages}`,
-            };
-        }
-
-        return { ok: true, msg: "" };
+        return {
+            ok: errors.length === 0,
+            functionName: frame.functionName,
+            errors,
+        };
     }
 
     /**
@@ -405,7 +405,6 @@ class CallingConventionValidator {
     reset() {
         this.callStack = [];
         this.enter("main");
-        return { ok: true, msg: "" };
     }
 
     /**
@@ -445,4 +444,11 @@ export const sentinel = {
     reset: () => validator.reset(),
     getCallDepth: () => validator.getCallDepth(),
     getCurrentFunction: () => validator.getCurrentFunction(),
+    /** @type {(frameResult: import("../events.mts").SentinelErrorEvent) => string} */
+    formatErrors: frameResult => {
+        const messages = frameResult.errors
+            .map(v => `  - ${v.message}`)
+            .join("\n");
+        return `Calling convention violations in ${frameResult.functionName}:\n${messages}`;
+    },
 };
