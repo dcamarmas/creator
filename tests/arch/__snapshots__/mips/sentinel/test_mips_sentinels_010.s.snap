@@ -57,10 +57,19 @@ snapshot[`mips/sentinel/test_mips_sentinels_010.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register 16,s0 was used but never saved to memory",
+          register: "16,s0",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register 16,s0 value changed but not properly restored",
+          register: "16,s0",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register 16,s0 was used but never saved to memory
-  - Register 16,s0 value changed but not properly restored",
     },
   ],
 }

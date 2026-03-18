@@ -32,9 +32,14 @@ snapshot[`mips/sentinel/test_mips_sentinels_018.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Stack pointer not restored: entered at 0xffffffc, exited at 0xffffff8",
+          register: undefined,
+          rule: "STACK_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Stack pointer not restored: entered at 0xffffffc, exited at 0xffffff8",
     },
   ],
 }

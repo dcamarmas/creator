@@ -44,9 +44,14 @@ snapshot[`mips/sentinel/test_mips_sentinels_032.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register 16,s0 was saved but never restored",
+          register: "16,s0",
+          rule: "RESTORE_REQUIRED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register 16,s0 was saved but never restored",
     },
   ],
 }

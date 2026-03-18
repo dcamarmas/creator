@@ -106,14 +106,39 @@ snapshot[`riscv/sentinel/test_riscv_sentinels_037.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register x9,s1 was used but never saved to memory",
+          register: "x9,s1",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register x9,s1 value changed but not properly restored",
+          register: "x9,s1",
+          rule: "VALUE_NOT_RESTORED",
+        },
+        {
+          message: "Register x18,s2 was used but never saved to memory",
+          register: "x18,s2",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register x18,s2 value changed but not properly restored",
+          register: "x18,s2",
+          rule: "VALUE_NOT_RESTORED",
+        },
+        {
+          message: "Register x19,s3 was used but never saved to memory",
+          register: "x19,s3",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register x19,s3 value changed but not properly restored",
+          register: "x19,s3",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "bad_function",
-      msg: "Calling convention violations in bad_function:
-  - Register x9,s1 was used but never saved to memory
-  - Register x9,s1 value changed but not properly restored
-  - Register x18,s2 was used but never saved to memory
-  - Register x18,s2 value changed but not properly restored
-  - Register x19,s3 was used but never saved to memory
-  - Register x19,s3 value changed but not properly restored",
     },
   ],
 }

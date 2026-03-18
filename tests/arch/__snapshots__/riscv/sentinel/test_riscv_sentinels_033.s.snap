@@ -41,9 +41,14 @@ snapshot[`riscv/sentinel/test_riscv_sentinels_033.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register x9,s1 was saved but never restored",
+          register: "x9,s1",
+          rule: "RESTORE_REQUIRED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register x9,s1 was saved but never restored",
     },
   ],
 }

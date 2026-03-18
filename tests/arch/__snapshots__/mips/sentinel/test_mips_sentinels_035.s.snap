@@ -46,9 +46,14 @@ snapshot[`mips/sentinel/test_mips_sentinels_035.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register 16,s0 value changed but not properly restored",
+          register: "16,s0",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register 16,s0 value changed but not properly restored",
     },
   ],
 }

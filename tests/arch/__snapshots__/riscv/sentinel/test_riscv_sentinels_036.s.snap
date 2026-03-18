@@ -45,9 +45,14 @@ snapshot[`riscv/sentinel/test_riscv_sentinels_036.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register x9,s1 value changed but not properly restored",
+          register: "x9,s1",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register x9,s1 value changed but not properly restored",
     },
   ],
 }

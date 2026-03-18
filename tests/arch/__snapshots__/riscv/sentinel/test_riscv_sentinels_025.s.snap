@@ -53,10 +53,19 @@ snapshot[`riscv/sentinel/test_riscv_sentinels_025.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register x25,s9 was used but never saved to memory",
+          register: "x25,s9",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register x25,s9 value changed but not properly restored",
+          register: "x25,s9",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register x25,s9 was used but never saved to memory
-  - Register x25,s9 value changed but not properly restored",
     },
   ],
 }

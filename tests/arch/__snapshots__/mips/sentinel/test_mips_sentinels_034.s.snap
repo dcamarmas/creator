@@ -45,10 +45,19 @@ snapshot[`mips/sentinel/test_mips_sentinels_034.s 1`] = `
   },
   sentinel_errors: [
     {
+      errors: [
+        {
+          message: "Register 16,s0 saved with 4 bytes but restored with 2 bytes",
+          register: "16,s0",
+          rule: "SIZE_MISMATCH",
+        },
+        {
+          message: "Register 16,s0 value changed but not properly restored",
+          register: "16,s0",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
       function: "test",
-      msg: "Calling convention violations in test:
-  - Register 16,s0 saved with 4 bytes but restored with 2 bytes
-  - Register 16,s0 value changed but not properly restored",
     },
   ],
 }
