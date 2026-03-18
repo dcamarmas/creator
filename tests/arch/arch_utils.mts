@@ -28,7 +28,7 @@ const PREFIX = path.fromFileUrl(import.meta.url + "/../../../");
  * use an empty input
  * @param expect_error - Set of test file names that are expected to throw errors during execution
  */
-export function snapshot_tests(
+export function execution_tests(
     archPath: string,
     dir: string,
     keyboard: Map<string, string[]> = new Map(),
@@ -61,7 +61,7 @@ export function snapshot_tests(
 
             // Execute code
             let result = { output: "", error: false };
-            const instruction_errors: {i: number, error: string}[] = [];
+            const instruction_errors: { i: number; error: string }[] = [];
             for (let i = 0; i < 1000; i++) {
                 try {
                     result = executeStep();
@@ -69,7 +69,10 @@ export function snapshot_tests(
                         break;
                 } catch (e) {
                     if (errors)
-                        instruction_errors.push({i, error: (e as Error).message});
+                        instruction_errors.push({
+                            i,
+                            error: (e as Error).message,
+                        });
                     else throw e;
                 }
             }

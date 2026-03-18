@@ -1,3 +1,3 @@
-import { ARCH, snapshot_tests } from "../arch_utils.mts"
+import { ARCH, execution_tests } from "../arch_utils.mts";
 
-snapshot_tests(ARCH.mips, "mips/sentinel");
+execution_tests(ARCH.mips, "mips/sentinel");

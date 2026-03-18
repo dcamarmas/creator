@@ -1,5 +1,8 @@
-import { ARCH, snapshot_tests } from "../arch_utils.mts"
+import { ARCH, execution_tests } from "../arch_utils.mts";
 
-snapshot_tests(ARCH.mips, "mips/instructions", undefined, new Set([
-    "test_mips_instruction_058.s", "test_mips_instruction_064.s"
-]));
+execution_tests(
+    ARCH.mips,
+    "mips/instructions",
+    undefined,
+    new Set(["test_mips_instruction_058.s", "test_mips_instruction_064.s"]),
+);

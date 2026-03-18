@@ -1,9 +1,9 @@
-import { ARCH, snapshot_tests } from "../arch_utils.mts";
+import { ARCH, execution_tests } from "../arch_utils.mts";
 
 const long_str =
     "This is a very long string with many characters and a lot of data. :) 123\n";
 
-snapshot_tests(
+execution_tests(
     ARCH.riscv,
     "riscv/correct/examples",
     new Map([
@@ -11,7 +11,7 @@ snapshot_tests(
         ["test_riscv_example_010.s", [long_str.length + "\n", long_str]],
     ]),
 );
-snapshot_tests(
+execution_tests(
     ARCH.riscv,
     "riscv/correct/syscalls",
     new Map([

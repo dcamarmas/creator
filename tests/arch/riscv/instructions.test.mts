@@ -1,3 +1,3 @@
-import { ARCH, snapshot_tests } from "../arch_utils.mts"
+import { ARCH, execution_tests } from "../arch_utils.mts";
 
-snapshot_tests(ARCH.riscv, "riscv/instructions");
+execution_tests(ARCH.riscv, "riscv/instructions");
