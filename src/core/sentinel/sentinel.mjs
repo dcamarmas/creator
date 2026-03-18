@@ -30,46 +30,6 @@ const EventType = {
     READ_REGISTER: "read_register",
 };
 
-// Helpers for safe BigInt conversions and comparisons
-function toBigIntSafe(v) {
-    if (v === null || typeof v === "undefined") return null;
-    if (typeof v === "bigint") return v;
-    if (typeof v === "number") {
-        if (!Number.isInteger(v)) return null;
-        return BigInt(v);
-    }
-    // strings and other types that BigInt accepts
-    try {
-        return BigInt(v);
-    } catch (_e) {
-        return null;
-    }
-}
-
-function bigintsEqual(a, b) {
-    const A = toBigIntSafe(a);
-    const B = toBigIntSafe(b);
-    if (A === null || B === null) return false;
-    return A === B;
-}
-
-function valuesEqual(a, b) {
-    // Handle null/undefined
-    if (a === null || a === undefined || b === null || b === undefined) {
-        return a === b;
-    }
-
-    // Try BigInt comparison first
-    const A = toBigIntSafe(a);
-    const B = toBigIntSafe(b);
-    if (A !== null && B !== null) {
-        return A === B;
-    }
-    
-    // Fallback to strict equality
-    return a === b;
-}
-
 /**
  * Represents a single event in the register lifecycle
  */
@@ -78,9 +38,8 @@ class RegisterEvent {
         this.type = type;
         this.regIndex = regIndex;
         this.elemIndex = elemIndex;
-        // Normalize address/size to BigInt when possible to avoid mixed-type comparisons
-        this.address = toBigIntSafe(address);
-        this.size = toBigIntSafe(size);
+        this.address = address;
+        this.size = size;
         this.timestamp = Date.now();
     }
 
@@ -214,9 +173,9 @@ class ConventionRules {
         }
 
         if (firstSave && lastRestore) {
-            if (!bigintsEqual(firstSave.address, lastRestore.address)) {
-                const saveAddr = toBigIntSafe(firstSave.address);
-                const restoreAddr = toBigIntSafe(lastRestore.address);
+            if (firstSave.address !== lastRestore.address) {
+                const saveAddr = firstSave.address;
+                const restoreAddr = lastRestore.address;
                 const saveStr =
                     saveAddr !== null
                         ? `0x${saveAddr.toString(16)}`
@@ -235,17 +194,13 @@ class ConventionRules {
 
         // Rule 3: Save and restore sizes must match
         if (firstSave && lastRestore) {
-            const s1 = toBigIntSafe(firstSave.size);
-            const s2 = toBigIntSafe(lastRestore.size);
-            if (s1 === null || s2 === null || s1 !== s2) {
-                const s1Str =
-                    s1 !== null ? s1.toString() : String(firstSave.size);
-                const s2Str =
-                    s2 !== null ? s2.toString() : String(lastRestore.size);
+            const s1 = firstSave.size;
+            const s2 = lastRestore.size;
+            if (s1 !== s2) {
                 violations.push({
                     rule: "SIZE_MISMATCH",
                     register: register.name,
-                    message: `Register ${register.name} saved with ${s1Str} bytes but restored with ${s2Str} bytes`,
+                    message: `Register ${register.name} saved with ${s1} bytes but restored with ${s2} bytes`,
                 });
             }
         }
@@ -254,7 +209,7 @@ class ConventionRules {
         const currentValue = REGISTERS[regIndex].elements[elemIndex].value;
         const initialValue = frame.initialRegisterValues[regIndex]?.[elemIndex];
 
-        const valueChanged = !valuesEqual(currentValue, initialValue);
+        const valueChanged = currentValue !== initialValue;
 
         if (valueChanged && modifications.length > 0) {
             violations.push({
@@ -271,17 +226,11 @@ class ConventionRules {
      * Check stack pointer restoration
      */
     static validateStackPointer(frame, currentStackPointer) {
-        const spEnter = toBigIntSafe(frame.enterStackPointer);
-        const spNow = toBigIntSafe(currentStackPointer);
-        if (spEnter === null || spNow === null || spEnter !== spNow) {
-            const enterStr =
-                spEnter !== null
-                    ? `0x${spEnter.toString(16)}`
-                    : String(frame.enterStackPointer);
-            const nowStr =
-                spNow !== null
-                    ? `0x${spNow.toString(16)}`
-                    : String(currentStackPointer);
+        const spEnter = frame.enterStackPointer;
+        const spNow = currentStackPointer;
+        if (spEnter !== spNow) {
+            const enterStr = `0x${spEnter.toString(16)}`;
+            const nowStr = `0x${spNow.toString(16)}`;
             return [
                 {
                     rule: "STACK_NOT_RESTORED",
