@@ -63,10 +63,11 @@ let libraryInstructions = [];
 /**
  * Handle compilation error
  * @param {String} error - Error message returned by the assembler
+ * @param {boolean} ansi_color - Whether errors are formatted with ANSI or HTML colors
  * @returns {Object} Structured error data
  */
-function handleError(error) {
-    const cleanErrorText = error.replace(/<.+?>/g, "");
+function handleError(error, ansi_color) {
+    const cleanErrorText = getCleanErrorMessage(error, ansi_color);
     const linterInfo = parseErrorForLinter(cleanErrorText);
     return {
         errorcode: "101",
@@ -491,9 +492,10 @@ function writeInstructionsToMemory(instructions, library_instructions) {
  * Compile assembly code as a library
  * @param {string} code - Assembly code to compile
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorLibrary(code, wasmModules) {
+export function assembleCreatorLibrary(code, wasmModules, ansi_color) {
     /* Google Analytics */
     creator_ga("compile", "compile.library");
 
@@ -516,7 +518,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
             0, // library_offset (not used for library compilation)
             "{}", // no library labels
             true, // library flag
-            Color.Html,
+            ansi_color? Color.Ansi : Color.Html,
         );
 
         // Library compilation: only binary instructions
@@ -543,7 +545,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
-        return handleError(error)
+        return handleError(error, ansi_color)
     }
 
     // Mark global labels on library instructions
@@ -570,9 +572,10 @@ export function assembleCreatorLibrary(code, wasmModules) {
  * Compile assembly code as a normal program
  * @param {string} code - Assembly code to compile
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorProgram(code, wasmModules) {
+export function assembleCreatorProgram(code, wasmModules, ansi_color) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
 
@@ -601,7 +604,7 @@ export function assembleCreatorProgram(code, wasmModules) {
             library_offset,
             labels_json,
             false, // not a library
-            Color.Html,
+            ansi_color? Color.Ansi : Color.Html,
         );
 
         // Normal compilation: populate instructions for execution/display
@@ -628,7 +631,7 @@ export function assembleCreatorProgram(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
-        return handleError(error)
+        return handleError(error, ansi_color)
     }
 
     // Write library binary to memory if present
@@ -663,12 +666,13 @@ export function assembleCreatorProgram(code, wasmModules) {
  * @param {string} code - Assembly code to compile
  * @param {boolean} library - Whether this is a library compilation
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorBase(code, library, wasmModules) {
+export function assembleCreatorBase(code, library, wasmModules, ansi_color = false) {
     if (library) {
-        return assembleCreatorLibrary(code, wasmModules);
+        return assembleCreatorLibrary(code, wasmModules, ansi_color);
     } else {
-        return assembleCreatorProgram(code, wasmModules);
+        return assembleCreatorProgram(code, wasmModules, ansi_color);
     }
 }

@@ -162,6 +162,7 @@ export async function compileAssembly(
     const compileResult = (await creator.assembly_compile(
         testAssembly,
         compilerFunction,
+        true,
     )) as CompileResult;
     if (compileResult.status !== "ok") {
         throw new Error(`Failed to compile assembly: ${compileResult.msg}`);

@@ -22,13 +22,14 @@ import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 import * as wasmModules from "./wasm/creator_assembler.js";
 
 /**
- * Deno-specific assembly compiler that uses ANSI color configuration
+ * Deno-specific assembly compiler
  * WASM is automatically initialized in Deno version
  * @param {string} code - Assembly code to compile
  * @param {boolean} library - Whether this is a library compilation
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: ANSI)
  * @returns {Object} Compilation result
  */
-export function assembleCreator(code, library) {
+export function assembleCreator(code, library, ansi_color = true) {
     // Call the common base implementation
-    return assembleCreatorBase(code, library, wasmModules);
+    return assembleCreatorBase(code, library, wasmModules, ansi_color);
 }

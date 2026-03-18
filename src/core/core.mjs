@@ -307,17 +307,24 @@ export async function load_CREATino() {
 
 // compilation
 
-export async function assembly_compile(code, compiler) {
+/**
+ * Compiles an assembly code with the chosen compiler
+ * @param {string} code
+ * @param {import("./assembler/assembler.d.ts").CompilerFn} compiler
+ * @param {boolean} ansi_color - Whether to format errors with ANSI escape sequences
+ * (`true`) or HTML tags (`false`)
+ **/
+export async function assembly_compile(code, compiler, ansi_color = false) {
     var ret;
 
     if (architecture.config.name.includes("SRV")){
         if (Object.keys(loadedLibrary).length === 0)
-            ret = await assembly_compiler(code, false, compiler);
+            ret = await assembly_compiler(code, false, compiler, ansi_color);
         else 
-            ret = await assembly_compiler(code, true, compiler);
+            ret = await assembly_compiler(code, true, compiler, ansi_color);
     }
     else{
-        ret = await assembly_compiler(code, false, compiler);
+        ret = await assembly_compiler(code, false, compiler, ansi_color);
     }
 
     switch (ret.status) {
