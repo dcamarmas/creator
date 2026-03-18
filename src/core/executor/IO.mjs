@@ -219,7 +219,6 @@ function checkEnter(buf) {
 function rawPrompt() {
     if (testKeyboard.enable) {
         const data = testKeyboard.data.shift() || ""
-        process.stdout.write(data); // Echo the character
         return data
     }
     // Build input character by character until we hit Enter
