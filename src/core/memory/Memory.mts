@@ -262,10 +262,9 @@ export class Memory {
      * @example Memory with layout segments
      * ```typescript
      * const layout = [
-     *   { name: "text start", value: "0x0000" },
-     *   { name: "text end", value: "0x1000" },
-     *   { name: "data start", value: "0x1010" },
-     *   { name: "data end", value: "0x2000" }
+     *   [ "text",  { start: 0x0000n, end: 0x1000n } ],
+     *   [ "data",  { start: 0x1010n, end: 0x2000n } ],
+     *   [ "stack", { start: 0xFFFFn, end: 0xFFFFn } ],
      * ];
      * const memory = new Memory({
      *   sizeInBytes: 0x10000,
