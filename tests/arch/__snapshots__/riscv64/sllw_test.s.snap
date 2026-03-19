@@ -1,0 +1,36 @@
+export const snapshot = {};
+
+snapshot[`riscv64/sllw_test.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 253,
+    "1": 208,
+    "10": 90,
+    "11": 147,
+    "12": 64,
+    "13": 26,
+    "14": 91,
+    "15": 19,
+    "18": 128,
+    "19": 103,
+    "2": 9,
+    "3": 147,
+    "5": 25,
+    "6": 154,
+    "7": 19,
+    "9": 26,
+  },
+  registers: {
+    "x19,s3": "0xffffffffffffffdd",
+    "x20,s4": "0xffffffba",
+    "x21,s5": "0x7fffffdd",
+    "x22,s6": "0x7fffffdd",
+    mtime: "0x5",
+    pc: "0xfffffffffffffffe",
+  },
+  sentinel_errors: [],
+}
+`;
