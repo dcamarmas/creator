@@ -514,7 +514,7 @@ function calculateRequiredISAs(
     );
 
     if (nonExistentISAs.length > 0) {
-        const message = `There are nonexistant dependencies in the architecture: ${nonExistentISAs.join(
+        const message = `There are nonexistent dependencies in the architecture: ${nonExistentISAs.join(
             ", ",
         )}`;
         logger.error(message);
