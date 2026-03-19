@@ -168,7 +168,7 @@ export interface MemoryBackup {
     values: number[];
     bitsPerByte: number;
     size: number;
-    hints?: {
+    hints: {
         address: string;
         tag: string[];
         type: string;
@@ -368,6 +368,30 @@ export class Memory {
     }
 
     /**
+     * Gets the index of the address within the memory
+     *
+     * @param address - Memory address to use
+     * @returns Index of the address within the memory
+     * @throws Error if the address is outside of the range of the memory
+     */
+    getIndex(address: bigint): number {
+        if (address < this.baseAddress) {
+            throw new Error(
+                `Address ${address} is below base address ${this.baseAddress}`,
+            );
+        }
+
+        const addrIndex = Number(address - this.baseAddress);
+        if (addrIndex >= this.size) {
+            throw new Error(
+                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
+            );
+        }
+
+        return addrIndex;
+    }
+
+    /**
      * Reads a single byte from memory at the specified address.
      *
      * For custom byte sizes (bitsPerByte != 8), this method handles bit-level
@@ -394,19 +418,7 @@ export class Memory {
      * ```
      */
     read(address: bigint): number {
-        // check address
-        if (address < this.baseAddress) {
-            throw new Error(
-                `Address ${address} is below base address ${this.baseAddress}`,
-            );
-        }
-
-        const addrIndex = Number(address - this.baseAddress);
-        if (addrIndex >= this.size) {
-            throw new Error(
-                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
-            );
-        }
+        const addrIndex = this.getIndex(address);
 
         if (this.bitsPerByte === 8) {
             return this.uint8View[addrIndex]!;
@@ -479,19 +491,8 @@ export class Memory {
      * ```
      */
     write(address: bigint, value: number): void {
-        // check address
-        if (address < this.baseAddress) {
-            throw new Error(
-                `Address ${address} is below base address ${this.baseAddress}`,
-            );
-        }
+        const addrIndex = this.getIndex(address);
 
-        const addrIndex = Number(address - this.baseAddress);
-        if (addrIndex >= this.size) {
-            throw new Error(
-                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress})`,
-            );
-        }
         if (value > this.maxByteValue || value < 0) {
             throw new Error(
                 `Value ${value} exceeds byte size (max: ${this.maxByteValue})`,
@@ -620,7 +621,7 @@ export class Memory {
     readBytes(address: bigint, count: number): number[] {
         const result: number[] = [];
         for (let i = 0; i < count; i++) {
-            result.push(this.read(BigInt(address) + BigInt(i)));
+            result.push(this.read(address + BigInt(i)));
         }
         return result;
     }
@@ -647,13 +648,10 @@ export class Memory {
      * Returns the addresses that have been written to, along with their value
      */
     getWritten(): Array<{ addr: number; value: number }> {
-        return (
-            this.getWrittenAddresses()
-                .map((addr, _i, _arr) => ({
-                    addr,
-                    value: this.read(BigInt(addr)),
-                }))
-        );
+        return this.getWrittenAddresses().map(addr => ({
+            addr,
+            value: this.read(BigInt(addr)),
+        }));
     }
 
     /**
@@ -679,9 +677,7 @@ export class Memory {
         const values: number[] = [];
 
         // Sort addresses to ensure consistent output
-        const sortedAddresses = Array.from(this.writtenAddresses).sort(
-            (a, b) => a - b,
-        );
+        const sortedAddresses = this.getWrittenAddresses();
 
         for (const addr of sortedAddresses) {
             addresses.push(addr);
@@ -757,17 +753,15 @@ export class Memory {
             }
         }
 
-        // Restore hints if they exist in the dump
+        // Restore hints
         this.hints.clear();
-        if (dump.hints) {
-            for (const hint of dump.hints) {
-                this.hints.set(BigInt(hint.address), {
-                    address: BigInt(hint.address),
-                    tag: hint.tag,
-                    type: hint.type,
-                    sizeInBits: hint.sizeInBits,
-                });
-            }
+        for (const hint of dump.hints) {
+            this.hints.set(BigInt(hint.address), {
+                address: BigInt(hint.address),
+                tag: hint.tag,
+                type: hint.type,
+                sizeInBits: hint.sizeInBits,
+            });
         }
     }
 
@@ -915,12 +909,7 @@ export class Memory {
         }
 
         // Sort addresses from highest to lowest
-        usedAddresses.sort((a, b) => {
-            if (a > b) return -1;
-            if (a < b) return 1;
-            return 0;
-        });
-
+        usedAddresses.sort((a, b) => Number(b - a));
         return usedAddresses;
     }
 
@@ -958,20 +947,6 @@ export class Memory {
             throw new Error(`Value must be a bigint, got ${typeof value}`);
         }
 
-        // Special case for 8-bit bytes - use standard approach
-        if (this.bitsPerByte === 8) {
-            const bytes: number[] = [];
-            let remainingValue = value;
-
-            while (remainingValue > 0n) {
-                bytes.unshift(Number(remainingValue & 0xffn));
-                remainingValue >>= 8n;
-            }
-
-            return bytes.length === 0 ? [0] : bytes;
-        }
-
-        // For custom byte sizes
         const bytes: number[] = [];
         let remainingValue = value;
         const maxByteValueBigInt = BigInt(this.maxByteValue);
@@ -1017,18 +992,7 @@ export class Memory {
      */
     readWord(address: bigint): number[] {
         // check address
-        if (address < this.baseAddress) {
-            throw new Error(
-                `Address ${address} is below base address ${this.baseAddress}`,
-            );
-        }
-
-        const addrIndex = Number(address - this.baseAddress);
-        if (addrIndex >= this.size) {
-            throw new Error(
-                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
-            );
-        }
+        this.getIndex(address);
 
         const bytes: number[] = [];
         for (let i = 0n; i < this.wordSize; i++) {
@@ -1088,18 +1052,7 @@ export class Memory {
      */
     writeWord(address: bigint, word: number[]): void {
         // check address
-        if (address < this.baseAddress) {
-            throw new Error(
-                `Address ${address} is below base address ${this.baseAddress}`,
-            );
-        }
-
-        const addrIndex = Number(address - this.baseAddress);
-        if (addrIndex >= this.size) {
-            throw new Error(
-                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
-            );
-        }
+        this.getIndex(address);
 
         if (word.length !== this.wordSize) {
             throw new Error(
@@ -1345,16 +1298,14 @@ export class Memory {
      */
     addHint(
         address: bigint,
-        tag: string|string[],
+        tag: string | string[],
         type: string,
         sizeInBits?: number,
     ): void {
         // If no tag is provided and a hint exists, preserve the existing tag
         let finalTag;
-        if (typeof tag === "string")
-            finalTag = tag === ""? [] : [tag]
-        else
-            finalTag = tag;
+        if (typeof tag === "string") finalTag = tag === "" ? [] : [tag];
+        else finalTag = tag;
         const existing = this.hints.get(address);
         if (tag.length === 0 && existing) {
             finalTag = existing.tag;
@@ -1431,11 +1382,7 @@ export class Memory {
      */
     getAllHints(): MemoryHint[] {
         const hints = Array.from(this.hints.values());
-        hints.sort((a, b) => {
-            if (a.address < b.address) return -1;
-            if (a.address > b.address) return 1;
-            return 0;
-        });
+        hints.sort((a, b) => Number(a.address - b.address));
         return hints;
     }
 
@@ -1482,11 +1429,7 @@ export class Memory {
                 hintsInRange.push(hint);
             }
         }
-        hintsInRange.sort((a, b) => {
-            if (a.address < b.address) return -1;
-            if (a.address > b.address) return 1;
-            return 0;
-        });
+        hintsInRange.sort((a, b) => Number(a.address - b.address));
         return hintsInRange;
     }
 }
