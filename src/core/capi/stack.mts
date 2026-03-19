@@ -19,7 +19,7 @@
 
 import { architecture, REGISTERS, getPC, stackTracker } from "../core.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
-import { sentinel } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mts";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { coreEvents, CoreEventTypes } from "../events.mts";
 

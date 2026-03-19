@@ -34,7 +34,7 @@ import {
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
-import { sentinel } from "./sentinel/sentinel.mjs";
+import { sentinel } from "./sentinel/sentinel.mts";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
 import { coreEvents } from "./events.mts";

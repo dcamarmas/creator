@@ -19,6 +19,7 @@
 
 import { architecture, REGISTERS } from "../core.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
+import type { SentinelErrorEvent, SentinelErrorData } from "../events.mts";
 
 /**
  * Event types that can occur during function execution
@@ -34,7 +35,20 @@ const EventType = {
  * Represents a single event in the register lifecycle
  */
 class RegisterEvent {
-    constructor(type, regIndex, elemIndex, address = null, size = null) {
+    type: string;
+    regIndex: number;
+    elemIndex: number;
+    address: bigint | null;
+    size: number | null;
+    timestamp: number;
+
+    constructor(
+      type: string,
+      regIndex: number,
+      elemIndex: number,
+      address: bigint|null = null,
+      size: number|null = null
+    ) {
         this.type = type;
         this.regIndex = regIndex;
         this.elemIndex = elemIndex;
@@ -45,8 +59,7 @@ class RegisterEvent {
 
     get registerName() {
         return (
-            REGISTERS[this.regIndex]?.elements[this.elemIndex]?.name ||
-            "unknown"
+            REGISTERS[this.regIndex]!.elements[this.elemIndex]!.name
         );
     }
 
@@ -62,7 +75,12 @@ class RegisterEvent {
  * Represents a function call frame with register state tracking
  */
 class CallFrame {
-    constructor(functionName, stackPointer) {
+    functionName: string;
+    enterStackPointer: number;
+    events: RegisterEvent[];
+    initialRegisterValues: bigint[][];
+
+    constructor(functionName: string, stackPointer: number) {
         this.functionName = functionName;
         this.enterStackPointer = stackPointer;
         this.events = [];
@@ -70,17 +88,18 @@ class CallFrame {
     }
 
     static _captureRegisterValues() {
-        const values = [];
-        for (let i = 0; i < REGISTERS.length; i++) {
-            values.push([]);
-            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                values[i].push(REGISTERS[i].elements[j].value);
+        const values: bigint[][] = [];
+        for (const file of REGISTERS) {
+            const curr = [];
+            for (const reg of file.elements) {
+                curr.push(reg.value);
             }
+            values.push(curr);
         }
         return values;
     }
 
-    addEvent(event) {
+    addEvent(event: RegisterEvent) {
         this.events.push(event);
         console_log(
             `[EVENT] ${this.functionName}: ${event.toString()}`,
@@ -91,7 +110,7 @@ class CallFrame {
     /**
      * Get all events for a specific register
      */
-    getRegisterEvents(regIndex, elemIndex) {
+    getRegisterEvents(regIndex: number, elemIndex: number) {
         return this.events.filter(
             e => e.regIndex === regIndex && e.elemIndex === elemIndex,
         );
@@ -100,7 +119,7 @@ class CallFrame {
     /**
      * Find the first save event for a register
      */
-    getFirstSave(regIndex, elemIndex) {
+    getFirstSave(regIndex: number, elemIndex: number) {
         return this.events.find(
             e =>
                 e.regIndex === regIndex &&
@@ -112,7 +131,7 @@ class CallFrame {
     /**
      * Find the last restore event for a register
      */
-    getLastRestore(regIndex, elemIndex) {
+    getLastRestore(regIndex: number, elemIndex: number) {
         const restores = this.events.filter(
             e =>
                 e.regIndex === regIndex &&
@@ -130,9 +149,13 @@ class ConventionRules {
     /**
      * Check if a saved register follows proper save/restore pattern
      */
-    static validateSavedRegister(frame, regIndex, elemIndex) {
+    static validateSavedRegister(
+      frame: CallFrame,
+      regIndex: number,
+      elemIndex: number
+    ): SentinelErrorData[] {
         const violations = [];
-        const register = REGISTERS[regIndex].elements[elemIndex];
+        const register = REGISTERS[regIndex]!.elements[elemIndex]!;
         const events = frame.getRegisterEvents(regIndex, elemIndex);
 
         // Rule 1: Saved registers must be saved before modification
@@ -151,8 +174,8 @@ class ConventionRules {
             });
         }
 
-        if (firstSave && modifications.length > 0) {
-            const firstMod = modifications[0];
+        const firstMod = modifications[0];
+        if (firstSave && firstMod) {
             if (firstMod.timestamp < firstSave.timestamp) {
                 violations.push({
                     rule: "SAVE_BEFORE_USE",
@@ -206,12 +229,10 @@ class ConventionRules {
         }
 
         // Rule 4: Value must be restored (if the register was modified)
-        const currentValue = REGISTERS[regIndex].elements[elemIndex].value;
-        const initialValue = frame.initialRegisterValues[regIndex]?.[elemIndex];
+        const currentValue = register.value;
+        const initialValue = frame.initialRegisterValues[regIndex]![elemIndex]!;
 
-        const valueChanged = currentValue !== initialValue;
-
-        if (valueChanged && modifications.length > 0) {
+        if (currentValue !== initialValue && modifications.length > 0) {
             violations.push({
                 rule: "VALUE_NOT_RESTORED",
                 register: register.name,
@@ -225,7 +246,10 @@ class ConventionRules {
     /**
      * Check stack pointer restoration
      */
-    static validateStackPointer(frame, currentStackPointer) {
+    static validateStackPointer(
+      frame: CallFrame,
+      currentStackPointer: number
+    ): SentinelErrorData[] {
         const spEnter = frame.enterStackPointer;
         const spNow = currentStackPointer;
         if (spEnter !== spNow) {
@@ -246,6 +270,8 @@ class ConventionRules {
  * Main validator class for calling conventions
  */
 class CallingConventionValidator {
+    private callStack: CallFrame[];
+
     constructor() {
         this.callStack = [];
     }
@@ -253,7 +279,7 @@ class CallingConventionValidator {
     /**
      * Enter a new function
      */
-    enter(functionName) {
+    enter(functionName: string) {
         const stackPointer = architecture.memory_layout.stack.start;
         const frame = new CallFrame(functionName, stackPointer);
         this.callStack.push(frame);
@@ -263,27 +289,29 @@ class CallingConventionValidator {
     /**
      * Leave current function and validate
      */
-    leave() {
-        if (this.callStack.length === 0) {
+    leave(): SentinelErrorEvent {
+        // Pop the frame
+        const frame = this.callStack.pop();
+
+        if (frame === undefined) {
             return {
                 ok: false,
                 functionName: "unknown",
                 errors: [
                     {
-                        rule: "",
+                        rule: "EMPTY_CALLSTACK",
                         message: "Cannot leave function: call stack is empty",
                     },
                 ],
             };
         }
 
-        const frame = this.callStack[this.callStack.length - 1];
         console_log(
             `[SENTINEL] Leaving function: ${frame.functionName}`,
             "INFO",
         );
 
-        const errors = [];
+        const errors: SentinelErrorData[] = [];
 
         // Validate stack pointer
         const spViolations = ConventionRules.validateStackPointer(
@@ -293,10 +321,8 @@ class CallingConventionValidator {
         errors.push(...spViolations);
 
         // Validate each saved register
-        for (let i = 0; i < REGISTERS.length; i++) {
-            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                const register = REGISTERS[i].elements[j];
-
+        for (const [i, file] of REGISTERS.entries()) {
+            for (const [j, register] of file.elements.entries()) {
                 // Only check registers that should be saved
                 if (register.properties.includes("saved")) {
                     const regViolations = ConventionRules.validateSavedRegister(
@@ -309,9 +335,6 @@ class CallingConventionValidator {
             }
         }
 
-        // Pop the frame
-        this.callStack.pop();
-
         return {
             ok: errors.length === 0,
             functionName: frame.functionName,
@@ -322,8 +345,9 @@ class CallingConventionValidator {
     /**
      * Record a memory write event
      */
-    recordMemoryWrite(regIndex, elemIndex, address, size) {
-        if (this.callStack.length === 0) {
+    recordMemoryWrite(regIndex: number, elemIndex: number, address: bigint, size: number) {
+        const frame = this.callStack[this.callStack.length - 1];
+        if (frame === undefined) {
             console_log(
                 "[SENTINEL] Warning: Memory write outside function context",
                 "WARN",
@@ -331,7 +355,6 @@ class CallingConventionValidator {
             return;
         }
 
-        const frame = this.callStack[this.callStack.length - 1];
         const event = new RegisterEvent(
             EventType.WRITE_MEMORY,
             regIndex,
@@ -345,8 +368,9 @@ class CallingConventionValidator {
     /**
      * Record a memory read event
      */
-    recordMemoryRead(regIndex, elemIndex, address, size) {
-        if (this.callStack.length === 0) {
+    recordMemoryRead(regIndex: number, elemIndex: number, address: bigint, size: number) {
+        const frame = this.callStack[this.callStack.length - 1];
+        if (frame === undefined) {
             console_log(
                 "[SENTINEL] Warning: Memory read outside function context",
                 "WARN",
@@ -354,7 +378,6 @@ class CallingConventionValidator {
             return;
         }
 
-        const frame = this.callStack[this.callStack.length - 1];
         const event = new RegisterEvent(
             EventType.READ_MEMORY,
             regIndex,
@@ -368,12 +391,12 @@ class CallingConventionValidator {
     /**
      * Record a register write event
      */
-    recordRegisterWrite(regIndex, elemIndex) {
-        if (this.callStack.length === 0) {
+    recordRegisterWrite(regIndex: number, elemIndex: number) {
+        const frame = this.callStack[this.callStack.length - 1];
+        if (frame === undefined) {
             return;
         }
 
-        const frame = this.callStack[this.callStack.length - 1];
         const event = new RegisterEvent(
             EventType.WRITE_REGISTER,
             regIndex,
@@ -385,12 +408,12 @@ class CallingConventionValidator {
     /**
      * Record a register read event
      */
-    recordRegisterRead(regIndex, elemIndex) {
-        if (this.callStack.length === 0) {
+    recordRegisterRead(regIndex: number, elemIndex: number) {
+        const frame = this.callStack[this.callStack.length - 1];
+        if (frame === undefined) {
             return;
         }
 
-        const frame = this.callStack[this.callStack.length - 1];
         const event = new RegisterEvent(
             EventType.READ_REGISTER,
             regIndex,
@@ -418,10 +441,7 @@ class CallingConventionValidator {
      * Get current function name
      */
     getCurrentFunction() {
-        if (this.callStack.length === 0) {
-            return null;
-        }
-        return this.callStack[this.callStack.length - 1].functionName;
+        return this.callStack[this.callStack.length - 1]?.functionName;
     }
 }
 
@@ -431,21 +451,20 @@ const validator = new CallingConventionValidator();
 // Public API - Direct validator interface
 // yes, it HAS to be with arrow functions
 export const sentinel = {
-    enter: functionName => validator.enter(functionName),
+    enter: (functionName: string) => validator.enter(functionName),
     leave: () => validator.leave(),
-    recordMemoryWrite: (regIndex, elemIndex, address, size) =>
+    recordMemoryWrite: (regIndex: number, elemIndex: number, address: bigint, size: number) =>
         validator.recordMemoryWrite(regIndex, elemIndex, address, size),
-    recordMemoryRead: (regIndex, elemIndex, address, size) =>
+    recordMemoryRead: (regIndex: number, elemIndex: number, address: bigint, size: number) =>
         validator.recordMemoryRead(regIndex, elemIndex, address, size),
-    recordRegisterWrite: (regIndex, elemIndex) =>
+    recordRegisterWrite: (regIndex: number, elemIndex: number) =>
         validator.recordRegisterWrite(regIndex, elemIndex),
-    recordRegisterRead: (regIndex, elemIndex) =>
+    recordRegisterRead: (regIndex: number, elemIndex: number) =>
         validator.recordRegisterRead(regIndex, elemIndex),
     reset: () => validator.reset(),
     getCallDepth: () => validator.getCallDepth(),
     getCurrentFunction: () => validator.getCurrentFunction(),
-    /** @type {(frameResult: import("../events.mts").SentinelErrorEvent) => string} */
-    formatErrors: frameResult => {
+    formatErrors: (frameResult: SentinelErrorEvent) => {
         const messages = frameResult.errors
             .map(v => `  - ${v.message}`)
             .join("\n");

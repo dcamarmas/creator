@@ -21,7 +21,7 @@ import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
 import { exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { sentinel } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mts";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
 import type { Memory } from "../memory/Memory.mts";
 import { toHex } from "../utils/utils.mjs";

@@ -23,7 +23,7 @@ import { crex_findReg } from "../../src/core/register/registerLookup.mjs";
 import { readRegister } from "../../src/core/register/registerOperations.mjs";
 import { raise } from "@/core/capi/validation.mts";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { sentinel as sentinelApi } from "@/core/sentinel/sentinel.mjs";
+import { sentinel as sentinelApi } from "@/core/sentinel/sentinel.mts";
 import { coreEvents, CoreEventTypes, type SentinelErrorEvent } from "@/core/events.mts";
 
 interface ExpectedState {
