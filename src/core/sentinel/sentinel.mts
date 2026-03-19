@@ -427,7 +427,7 @@ class CallingConventionValidator {
      */
     reset() {
         this.callStack = [];
-        this.enter("main");
+        this.enter(architecture.config.main_function);
     }
 
     /**
