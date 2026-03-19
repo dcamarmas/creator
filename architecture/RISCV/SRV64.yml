@@ -77,8 +77,8 @@ components:
           - x1
           - ra
         nbits: 64
-        value: 4294967295
-        default_value: 4294967295
+        value: -1
+        default_value: -1
         encoding: 1
         properties:
           - read
@@ -87,8 +87,8 @@ components:
           - x2
           - sp
         nbits: 64
-        value: 268435452
-        default_value: 26843545
+        value: 0x0FFFFFFC
+        default_value: 0x0FFFFFFC
         encoding: 2
         properties:
           - read

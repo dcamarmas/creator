@@ -433,8 +433,8 @@ components:
           - "29"
           - sp
         nbits: 32
-        value: 268435452
-        default_value: 268435452
+        value: 0x0FFFFFFC
+        default_value: 0x0FFFFFFC
         encoding: 29
         properties:
           - read
@@ -455,8 +455,8 @@ components:
           - "31"
           - ra
         nbits: 32
-        value: 4294967295
-        default_value: 4294967295
+        value: -1
+        default_value: -1
         encoding: 31
         properties:
           - read

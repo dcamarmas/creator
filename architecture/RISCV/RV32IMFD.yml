@@ -166,8 +166,8 @@ components:
           - x1
           - ra
         nbits: 32
-        value: 0xFFFFFFFF
-        default_value: 0xFFFFFFFF
+        value: -1
+        default_value: -1
         encoding: 1
         properties:
           - read
