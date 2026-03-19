@@ -95,7 +95,6 @@ export let BYTESIZE;
 export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
-export let REGISTERS_BACKUP = [];
 export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
@@ -225,10 +224,6 @@ export function loadArchitecture(architectureYaml, isa = []) {
     // This must happen before creating the register backup
     stackTracker = new StackTracker();
     interruptManager = new InterruptManager(status.interrupt_handler);
-
-    // Create deep copy backup of REGISTERS after all initialization is complete
-    // This ensures the backup contains the correct values for all registers, including SP
-    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
 
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
     SP_REG_INDEX = crex_findReg_bytag("stack_pointer");
@@ -378,15 +373,10 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    // Restore register values from backup, preserving BigInt types
-    for (let i = 0; i < REGISTERS.length; i++) {
-        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-            // Copy value from backup, ensuring it's a BigInt
-            const backupValue = REGISTERS_BACKUP[i].elements[j].value;
-            REGISTERS[i].elements[j].value =
-                typeof backupValue === "bigint"
-                    ? backupValue
-                    : BigInt(backupValue);
+    // Restore register default values
+    for (const file of REGISTERS) {
+        for (const register of file.elements) {
+            register.value = register.default_value
         }
     }
     crex_clearRegisterCache();
