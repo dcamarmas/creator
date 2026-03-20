@@ -65,16 +65,23 @@ function run_tests(archPath: string, dir: string, fn: TestFN): void {
  * @param keyboard - Map of test file name to its corresponding keyboard input. Unspecified files
  * use an empty input
  * @param expect_error - Set of test file names that are expected to throw errors during execution
+ * @param library - Whether tests should be executed with a library
  */
 export function execution_tests(
     archPath: string,
     dir: string,
     keyboard: Map<string, string[]> = new Map(),
     expect_error: Set<string> = new Set(),
+    library: boolean = false,
 ): void {
     testKeyboard.enable = true;
     run_tests(archPath, dir, async (t, file, testAssembly, snapPath) => {
         const errors = expect_error.has(file);
+        if (library) {
+            const libPath = `./tests/arch/${dir}/${file.slice(0, -2)}.yml`;
+            const testLib = fs.readFileSync(libPath, "utf8");
+            creator.load_library(testLib);
+        }
 
         // Record passing convention errors
         const sentinel_errors: object[] = [];
@@ -136,6 +143,7 @@ export function execution_tests(
         };
 
         await assertSnapshot(t, state, { path: snapPath });
+        creator.remove_library();
     });
 }
 

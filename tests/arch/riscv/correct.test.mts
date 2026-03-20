@@ -13,6 +13,13 @@ execution_tests(
 );
 execution_tests(
     ARCH.riscv,
+    "riscv/correct/libraries",
+    undefined,
+    undefined,
+    true,
+);
+execution_tests(
+    ARCH.riscv,
     "riscv/correct/syscalls",
     new Map([
         ["test_riscv_syscall_005.s", ["1234567\n"]],

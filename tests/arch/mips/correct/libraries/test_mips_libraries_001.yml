@@ -1,0 +1,21 @@
+version: '1.0'
+binary: 0085082a1020000800a0202003e0000800a4082a1020000800a0202003e00008
+symbols:
+  max:
+    addr: 0
+    help:
+      description: Returns the maximum of two integers
+      parameters:
+        a0: First Integer
+        a1: Second Integer
+      returns:
+        a0: Maximum
+  min:
+    addr: 16
+    help:
+      description: Returns the minimum of two integers
+      parameters:
+        a0: First Integer
+        a1: Second Integer
+      returns:
+        a0: Minimum

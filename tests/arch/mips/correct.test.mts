@@ -13,6 +13,13 @@ execution_tests(
 );
 execution_tests(
     ARCH.mips,
+    "mips/correct/libraries",
+    undefined,
+    undefined,
+    true,
+);
+execution_tests(
+    ARCH.mips,
     "mips/correct/syscalls",
     new Map([
         ["test_mips_syscall_005.s", ["1234567\n"]],

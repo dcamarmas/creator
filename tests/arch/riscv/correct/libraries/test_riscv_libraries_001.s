@@ -1,17 +1,15 @@
-.data
-newline: .string "\r\n"
-
-.text
+ .text
 
     main:   
+        mv s0, ra
         li  a0, 5
         li  a1, 10
         jal ra, max
         li  a7, 1
         ecall
 
-        la  a0, newline
-        li  a7, 4
+        li  a0, '\n'
+        li  a7, 11
         ecall
 
         li  a0, 5
@@ -20,9 +18,9 @@ newline: .string "\r\n"
         li  a7, 1
         ecall
 
-        la  a0, newline
-        li  a7, 4
+        li  a0, '\n'
+        li  a7, 11
         ecall
 
-        li a7, 10
-        ecall
+        mv ra, s0
+        jr ra
