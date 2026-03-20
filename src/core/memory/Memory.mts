@@ -339,7 +339,7 @@ export class Memory {
         }
 
         // Initialize memory layout and segments
-        this.memoryLayout = memoryLayout;
+        this.memoryLayout = new Map(memoryLayout);
         this.segmentCache = new Map();
 
         // Initialize hints system
@@ -548,6 +548,34 @@ export class Memory {
         }
     }
 
+
+    /**
+     * Extends a memory segment by N bytes from the end
+     *
+     * @param bytes - Amount of bytes to extend the segment by
+     * @param segmentName - Name of the segment to extend
+     * @returns Starting address of the allocation
+     *
+     * @throws Error if the segment name doesn't exist on the layout
+     */
+    alloc(bytes: number, segmentName: string): bigint {
+        const segment = this.memoryLayout.get(segmentName);
+        if (!segment)
+            throw new Error(`Segment "${segmentName}" doesn't exist`);
+        const addr = BigInt(segment.end) + 1n;
+        const end = BigInt(segment.end) + BigInt(bytes);
+        const idx = Number(end - this.baseAddress);
+        if (idx >= this.size) {
+            // Address is outside of the memory, we need to grow the buffer
+            this.size = idx + 1;
+            this.buffer = this.buffer.transfer(this.size);
+            this.uint8View = new Uint8Array(this.buffer);
+        }
+        // Update the segment data
+        segment.end = Number(end);
+        return addr;
+    }
+
     /**
      * Loads ROM data into memory starting at the specified offset.
      * This method only works with 8-bit byte memories for direct compatibility
@@ -728,7 +756,7 @@ export class Memory {
      * ```
      */
     restore(dump: MemoryBackup): void {
-        if (dump.bitsPerByte !== this.bitsPerByte || dump.size !== this.size) {
+        if (dump.bitsPerByte !== this.bitsPerByte || dump.size > this.size) {
             throw new Error(
                 "Dump metadata does not match current memory configuration",
             );

@@ -29,7 +29,7 @@ import {
     kbd_read_char,
     kbd_read_string,
 } from "../executor/IO.mjs";
-import { readRegister } from "../register/registerOperations.mjs";
+import { readRegister, writeRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import type { Memory } from "../memory/Memory.mts";
 import { coreEvents, CoreEventTypes } from "../events.mts";
@@ -158,30 +158,36 @@ export const SYSCALL = {
         }
     },
 
-    sbrk(value1: string, value2: string) {
-        // TODO: this is (probably) broken
+    /**
+     * Allocates N bytes of memory
+     *
+     * @param size - Name of the register with the size to allocate
+     * @param ret_addr - Name of the register where the address of the beginning
+     * of the allocation should be placed
+     */
+    sbrk(size: string, ret_addr: string) {
         /* Google Analytics */
         creator_ga("execute", "execute.syscall", "execute.syscall.sbrk");
 
         /* Get register id */
-        const ret1 = crex_findReg(value1);
-        if (ret1.match === 0) {
-            throw new Error("capi_syscall: register " + value1 + " not found");
+        const size_reg = crex_findReg(size);
+        if (size_reg.match === 0) {
+            throw new Error("capi_syscall: register " + size + " not found");
         }
 
-        const ret2 = crex_findReg(value2);
-        if (ret2.match === 0) {
-            throw new Error("capi_syscall: register " + value2 + " not found");
+        const ret_addr_reg = crex_findReg(ret_addr);
+        if (ret_addr_reg.match === 0) {
+            throw new Error("capi_syscall: register " + ret_addr + " not found");
         }
 
         /* Request more memory */
-        const new_size = readRegister(ret1.indexComp, ret1.indexElem);
+        const new_size = readRegister(size_reg.indexComp, size_reg.indexElem);
         if (new_size < 0) {
             throw new Error("capi_syscall: negative size");
         }
 
-        // const new_addr = creator_memory_alloc(new_size);
-        // writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
+        const new_addr = CAPI.MEM.alloc(Number(new_size));
+        writeRegister(new_addr, ret_addr_reg.indexComp, ret_addr_reg.indexElem);
     },
 
     get_clk_cycles(): number {

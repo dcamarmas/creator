@@ -319,10 +319,14 @@ export const MEM = {
         return ret;
     },
 
-    alloc(bytes: number): number {
-        // TODO
-        raise("MEM.alloc is not implemented");
-        return 0;
+    /**
+     * Allocates N bytes of memory
+     *
+     * @param bytes - Amount of bytes to allocate
+     * @returns Starting address of the allocation
+     */
+    alloc(bytes: number): bigint {
+        return main_memory.alloc(bytes, "data");
     },
 
     /**
