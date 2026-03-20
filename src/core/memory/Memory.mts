@@ -136,8 +136,8 @@
  * Interface for processed memory segment information
  */
 interface MemorySegment {
-    start: bigint; // Parsed start address
-    end: bigint; // Parsed end address
+    start: number; // Parsed start address
+    end: number; // Parsed end address
     size: bigint;
 }
 
@@ -261,11 +261,11 @@ export class Memory {
      *
      * @example Memory with layout segments
      * ```typescript
-     * const layout = [
-     *   [ "text",  { start: 0x0000n, end: 0x1000n } ],
-     *   [ "data",  { start: 0x1010n, end: 0x2000n } ],
-     *   [ "stack", { start: 0xFFFFn, end: 0xFFFFn } ],
-     * ];
+     * const layout = new Map([
+     *   [ "text",  { start: 0x0000, end: 0x1000 } ],
+     *   [ "data",  { start: 0x1010, end: 0x2000 } ],
+     *   [ "stack", { start: 0xFFFF, end: 0xFFFF } ],
+     * ]);
      * const memory = new Memory({
      *   sizeInBytes: 0x10000,
      *   memoryLayout: layout,

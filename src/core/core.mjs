@@ -110,7 +110,7 @@ export let interruptManager;
 export function setInterruptManager(value) {
     interruptManager = value;
 }
-/** @type {Memory} */
+/** @type {MemoryBackup} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
