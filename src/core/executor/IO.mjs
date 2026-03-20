@@ -49,7 +49,8 @@ export function display_print(info) {
         if (typeof info !== "string") {
             info = info.toString();
         }
-        process.stdout.write(info);
+        if (!testKeyboard.enable) // Don't print in tests
+            process.stdout.write(info);
     }
 
     status.display += info;
