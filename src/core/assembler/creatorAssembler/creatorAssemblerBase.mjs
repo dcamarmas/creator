@@ -168,7 +168,7 @@ function loadLibraryIfPresent(instructions) {
         const instruction = {
             Break: null,
             Address: `0x${currentAddr.toString(16)}`,
-            Label: hasSymbol ? symbolName : "",
+            Label: hasSymbol ? [symbolName] : [],
             loaded: instructionBinary,
             user: null,
             _rowVariant: "",
