@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
+import yaml from "js-yaml";
 import { initCAPI } from "./capi/initCAPI.mts";
 import { getHexTwosComplement } from "./utils/utils.mjs";
 import { logger } from "./utils/creator_logger.mjs";
@@ -250,14 +251,12 @@ export function loadArchitecture(architectureYaml, isa = []) {
  */
 export function load_library(lib_str) {
     // Parse YAML library format
-    import("js-yaml")
-        .then(yaml => {
-            loadedLibrary = yaml.load(lib_str);
-            coreEvents.emit("library-loaded");
-        })
-        .catch(error => {
-            throw new SyntaxError(`Invalid library format: ${error.message}`);
-        });
+    try {
+        loadedLibrary = yaml.load(lib_str);
+        coreEvents.emit("library-loaded");
+    } catch (error) {
+        throw new SyntaxError(`Invalid library format: ${error.message}`);
+    };
 }
 /**
  * Loads a library to Sail simulator.
