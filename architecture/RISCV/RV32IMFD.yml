@@ -890,6 +890,16 @@ memory_layout:
     start: 0x0FFFFFFC
     end: 0x0FFFFFFF
 
+modifiers:
+  hi:
+    lower_signed: true
+    output_signed: false
+    range: [12, 32]
+  lo:
+    lower_signed: false
+    output_signed: true
+    range: [0, 12]
+
 templates:
   - name: B
     type: Conditional bifurcation
