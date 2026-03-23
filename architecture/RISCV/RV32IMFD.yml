@@ -1614,9 +1614,9 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 1, rd);
-        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[rd], 8));
+        let addr = registers[rs1] + imm;
+        const result = CAPI.MEM.read(addr, 1, rd);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 8));
       help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lbu
@@ -1642,9 +1642,9 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 2, rd);
-        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[rd], 16));
+        let addr = registers[rs1] + imm;
+        const result = CAPI.MEM.read(addr, 2, rd);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 16));
       help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lhu
