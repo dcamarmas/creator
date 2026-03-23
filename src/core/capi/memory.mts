@@ -17,7 +17,7 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
+import { main_memory, stackTracker, BYTESIZE, REGISTERS } from "../core.mjs";
 import { exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
@@ -245,9 +245,10 @@ export const MEM = {
         const i = ret.indexComp;
         const j = ret.indexElem;
 
-        // Add stack hint if we're writing to the stack segment and have a register name
-        if (segment === "stack" && reg_name) {
-            stackTracker.addHint(address, reg_name);
+        // Add stack hint if we're writing to the stack segment
+        if (segment === "stack") {
+            const reg = REGISTERS[i]!.elements[j]!;
+            stackTracker.addHint(address, reg.name.join(","));
         }
 
         sentinel.recordMemoryWrite(i, j, address, byteArray.length);
