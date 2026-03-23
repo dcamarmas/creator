@@ -302,7 +302,7 @@ function execute_instruction() {
     } else if (document.app.$data.execution_mode_run === -1) {
       document.app.$data.execution_mode_run = 1;
       status.run_program = 1;
-      SailExecute(document.app.$data.binary, ["--entry-address", /*"0x80000000"*/ document.app.$data.entry_elf.toString(16), "--disable-compressed", "--cache-pol", "1", "-p", "output.elf"]);
+      SailExecute(document.app.$data.binary, ["--entry-address", document.app.$data.entry_elf.toString(16), "--cache-pol", "1", "-p", "output.elf"]);
       // console.log("Ejecutado");
     } else if (document.app.$data.execution_mode_run !== -1 && document.app.$data.execution_mode_run !== 2){
       document.app.$data.execution_mode_run = 1;
@@ -413,7 +413,7 @@ function execute_program_packed() {
     } else if (document.app.$data.execution_mode_run === -1){
       status.run_program = 1;
       document.app.$data.execution_mode_run = 0;
-      SailExecute(document.app.$data.binary, ["--entry-address", /*"0x80000000"*/ document.app.$data.entry_elf.toString(16), "--disable-compressed", "--cache-pol", "1", "-p", "output.elf"]);
+      SailExecute(document.app.$data.binary, ["--entry-address", document.app.$data.entry_elf.toString(16), "--cache-pol", "1", "-p", "output.elf"]);
     } else if (document.app.$data.execution_mode_run !== -1 && document.app.$data.execution_mode_run !== 2){
       document.app.$data.execution_mode_run = 0;
       sailexec._reanudar_ejecucion(parseInt(0,10));
