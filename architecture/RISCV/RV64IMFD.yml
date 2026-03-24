@@ -3906,7 +3906,7 @@ pseudoinstructions:
         - field: off
           type: offset_bytes
       definition: |
-        bge reg1, x0, off;
+        bge rs1, x0, off;
       help: Take the branch if the value in register rs1 is zero.
 
     - name: bgt
