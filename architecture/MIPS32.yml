@@ -2364,7 +2364,8 @@ instructions:
           suffix: )
           order: 3
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1, false);
+        const result = CAPI.MEM.read(registers[reg2]+val, 1, reg1, false);
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 8));
     - name: lbu
       template: Custom
       type: Memory access
@@ -2484,7 +2485,8 @@ instructions:
         let addr = registers[reg2] + val;
         if (CAPI.VALIDATION.isMisaligned(addr, 2))
             CAPI.VALIDATION.raise('The memory must be aligned');
-        registers[reg1] = CAPI.MEM.read(addr, 2, reg1, false);
+        const result = CAPI.MEM.read(addr, 2, reg1, false);
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 16));
     - name: lhu
       template: Custom
       type: Memory access
