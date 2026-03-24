@@ -1361,9 +1361,9 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        const pc = registers.PC
-        registers.ra = pc
         if (CAPI.FP.uint2int(registers[rs]) >= 0) {
+          const pc = registers.PC
+          registers.ra = pc
           registers.PC = pc - 4n + imm;
           CAPI.STACK.beginFrame(registers[rs]);
         }
