@@ -94,9 +94,9 @@ snapshot[`riscv/instructions/test_riscv_instruction_013.s 1`] = `
   },
   registers: {
     "x10,a0": "0x7f",
-    "x11,a1": "0xd6",
+    "x11,a1": "0xffffffd6",
     "x12,a2": "0x7fff",
-    "x13,a3": "0xcfc7",
+    "x13,a3": "0xffffcfc7",
     "x14,a4": "0x200012",
     "x5,t0": "0x200000",
     "x6,t1": "0x200004",

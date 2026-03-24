@@ -1634,7 +1634,9 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        registers[rd] = CAPI.MEM.read(imm + registers[rs1], 1, rd, false);
+        let addr = registers[rs1] + imm;
+        const result = CAPI.MEM.read(addr, 1, rd, false);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 8));
       help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lbu
@@ -1663,7 +1665,8 @@ instructions:
         let addr = registers[rs1] + imm;
         if (CAPI.VALIDATION.isMisaligned(addr, 2))
             CAPI.VALIDATION.raise('The memory must be aligned');
-        registers[rd] = CAPI.MEM.read(addr, 2, rd, false);
+        const result = CAPI.MEM.read(addr, 2, rd, false);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 16));
       help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lhu
@@ -3784,7 +3787,6 @@ instructions:
         CAPI.MEM.write(addr, 8, registers[rs2], rs2, 'float64', false);
       help: Store a double-precision value from the floating-point registers to memory.
 
-
   Priv:
     #   ____         _
     #  |  _ \  _ __ (_)__   __
@@ -3820,7 +3822,6 @@ instructions:
       properties:
         - privileged
 
-
   Zicsr:
     #   _____ _
     #  |__  /(_)  ___  ___  _ __
@@ -3846,42 +3847,40 @@ instructions:
 
     # TODO: Implement rest of CSR instructions
 
-
 Zifencei:
-    #   _____ _   __                          _
-    #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
-    #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
-    #   / /_ | ||  _||  __/| | | || (__|  __/| |
-    #  /____||_||_|   \___||_| |_| \___|\___||_|
-    #     RV32/RV64 Zifencei Standard Exension
+  #   _____ _   __                          _
+  #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
+  #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
+  #   / /_ | ||  _||  __/| | | || (__|  __/| |
+  #  /____||_||_|   \___||_| |_| \___|\___||_|
+  #     RV32/RV64 Zifencei Standard Exension
 
-    - name: fence.i
-      template: Custom
-      type: Syscall
-      fields:
-        - field: opcode
-          value: "0001111"
-        - field: funct3
-          type: cop
-          startbit: 14
-          stopbit: 12
-          value: "001"
-        - field: zeros
-          type: cop
-          startbit: 31
-          stopbit: 15
-          value: "00000000000000000"
-        - field: zeros2
-          type: cop
-          startbit: 11
-          stopbit: 7
-          value: "00000"
-      definition: |
-        console.log('Not implemented: fence.i');
-        CAPI.VALIDATION.raise('fence.i not implemented');
-      help: Provides explicit synchronization between writes to instruction
-        memory and instruction fetches on the same hart.
-
+  - name: fence.i
+    template: Custom
+    type: Syscall
+    fields:
+      - field: opcode
+        value: "0001111"
+      - field: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
+        value: "001"
+      - field: zeros
+        type: cop
+        startbit: 31
+        stopbit: 15
+        value: "00000000000000000"
+      - field: zeros2
+        type: cop
+        startbit: 11
+        stopbit: 7
+        value: "00000"
+    definition: |
+      console.log('Not implemented: fence.i');
+      CAPI.VALIDATION.raise('fence.i not implemented');
+    help: Provides explicit synchronization between writes to instruction
+      memory and instruction fetches on the same hart.
 
 pseudoinstructions:
   # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
@@ -4371,4 +4370,3 @@ timer:
     registers.mie |= 2n ** 7n; // MTIE = 1
   disable: |
     registers.mie &= ~(2n ** 7n); // MTIE = 0
-
