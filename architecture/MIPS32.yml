@@ -3762,7 +3762,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "101011"
-      definition: "registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;"
+      definition: "registers[rd] = registers[rs] < registers[rt] ? 1n : 0n;"
     - name: sqrt.d
       template: Custom
       type: Arithmetic floating point
