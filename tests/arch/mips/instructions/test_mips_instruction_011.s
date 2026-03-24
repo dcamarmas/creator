@@ -5,19 +5,30 @@
 
 .text
     main:
-      li  $t0, 361
-      li  $t1, 2
-      li  $t2, 5
-      li  $t3, 0x44562
-      bltu $t0, $t2, jump1
-      bltu $t1, $t0, jump1
+      li  $s0, -40
+      li  $s1, -10
+      li  $s2,  15
+      li  $s3,  32
 
-    jump2:
-      li $t6, 34
-      li $v0, 10
-      syscall
+      bltu $s0, $s0, j0
+      li $t0, 1
+j0:   bltu $s0, $s1, j1
+      li $t1, 1
+j1:   bltu $s1, $s0, j2
+      li $t2, 1
+j2:   bltu $s2, $s2, j3
+      li $t3, 1
+j3:   bltu $s2, $s3, j4
+      li $t4, 1
+j4:   bltu $s3, $s2, j5
+      li $t5, 1
+j5:   bltu $s0, $s2, j6
+      li $t6, 1
+j6:   bltu $s2, $s0, j7
+      li $t7, 1
+j7:   bltu $s1, $s3, j8
+      li $t8, 1
+j8:   bltu $s3, $s1, end
+      li $t9, 1
 
-    jump1:
-      li $t4, 0x754
-      li $t5, 555
-      bltu $t5, $t4, jump2
+end:  jr $ra

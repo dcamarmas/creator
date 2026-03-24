@@ -5,19 +5,30 @@
 
 .text
     main:
-      li  $t0, 882
-      li  $t1, 881
-      li  $t2, 5
-      li  $t3, 543
-      ble $t0, $t1, jump1
-      ble $t2, $t3, jump1
+      li  $s0, -40
+      li  $s1, -10
+      li  $s2,  15
+      li  $s3,  32
 
-    jump2:
-      li $t6, 34
-      li $v0, 10
-      syscall
+      ble $s0, $s0, j0
+      li $t0, 1
+j0:   ble $s0, $s1, j1
+      li $t1, 1
+j1:   ble $s1, $s0, j2
+      li $t2, 1
+j2:   ble $s2, $s2, j3
+      li $t3, 1
+j3:   ble $s2, $s3, j4
+      li $t4, 1
+j4:   ble $s3, $s2, j5
+      li $t5, 1
+j5:   ble $s0, $s2, j6
+      li $t6, 1
+j6:   ble $s2, $s0, j7
+      li $t7, 1
+j7:   ble $s1, $s3, j8
+      li $t8, 1
+j8:   ble $s3, $s1, end
+      li $t9, 1
 
-    jump1:
-      li $t4, 11
-      li $t5, 555
-      ble $t4, $t5, jump2
+end:  jr $ra

@@ -5,19 +5,30 @@
 
 .text
     main:
-      li  x5, 361
-      li  x6, 2
-      li  x7, 5
-      li  x8, 0x44562
-      bltu x5, x7, jump1
-      bltu x6, x5, jump1
+      li  t0, -40
+      li  t1, -10
+      li  t2,  15
+      li  t3,  32
 
-    jump2:
-      li t3, 34
-      li a7, 10
-      ecall
+      bltu t0, t0, j0
+      li s0, 1
+j0:   bltu t0, t1, j1
+      li s1, 1
+j1:   bltu t1, t0, j2
+      li s2, 1
+j2:   bltu t2, t2, j3
+      li s3, 1
+j3:   bltu t2, t3, j4
+      li s4, 1
+j4:   bltu t3, t2, j5
+      li s5, 1
+j5:   bltu t0, t2, j6
+      li s6, 1
+j6:   bltu t2, t0, j7
+      li s7, 1
+j7:   bltu t1, t3, j8
+      li s8, 1
+j8:   bltu t3, t1, end
+      li s9, 1
 
-    jump1:
-      li x9, 0x754
-      li x10, 555
-      bltu x10, x9, jump2
+end:  jr ra
