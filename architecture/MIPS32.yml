@@ -1208,6 +1208,7 @@ instructions:
           order: 1
       definition: |
         // Not implemented
+        CAPI.VALIDATION.raise('bc not implemented');
 
     - name: bc1eqz
       template: FPU_I
