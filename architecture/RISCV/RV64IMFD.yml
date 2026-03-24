@@ -1516,7 +1516,7 @@ instructions:
         - field: funct3
           value: "111"
       definition: |
-        if (CAPI.FP.int2uint(registers[rs1]) > CAPI.FP.int2uint(registers[rs2]))
+        if (CAPI.FP.int2uint(registers[rs1]) >= CAPI.FP.int2uint(registers[rs2]))
             registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using unsigned comparison.
