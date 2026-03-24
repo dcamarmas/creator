@@ -9,7 +9,7 @@
 .text
 main: li a7, 1
       la t0, utf8
-loop: lb a0, 0(t0)
+loop: lbu a0, 0(t0)
       ecall
       addi t0, t0, 1
       bne a0, zero, loop
