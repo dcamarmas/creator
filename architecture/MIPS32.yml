@@ -3495,7 +3495,7 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt, 'byte', false);"
+      definition: "CAPI.MEM.write(registers[base]+off, 1, BigInt.asUintN(8, registers[rt]), rt, 'byte', false);"
     - name: sdc1
       template: Custom
       type: Memory access
@@ -3577,7 +3577,7 @@ instructions:
         let addr = registers[base] + off;
         if (CAPI.VALIDATION.isMisaligned(addr, 2))
             CAPI.VALIDATION.raise('The memory must be aligned');
-        CAPI.MEM.write(addr, 2, registers[rt], rt, 'half', false);
+        CAPI.MEM.write(addr, 2, BigInt.asUintN(16, registers[rt]), rt, 'half', false);
     - name: sll
       template: Custom
       type: Arithmetic integer
