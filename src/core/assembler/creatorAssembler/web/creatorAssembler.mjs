@@ -32,5 +32,5 @@ export async function assembleCreator(code, library) {
     await wasm_web_init();
 
     // Call the common base implementation
-    return assembleCreatorBase(code, library, wasmModules);
+    return assembleCreatorBase(code, library, wasmModules, false);
 }

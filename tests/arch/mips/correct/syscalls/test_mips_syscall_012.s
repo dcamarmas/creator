@@ -3,7 +3,8 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-.text   
-    main:    
+.text
+    main:
         li $v0, 12
         syscall
+        jr $ra

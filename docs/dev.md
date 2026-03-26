@@ -80,12 +80,23 @@ bun format <file/directory>
 ```
 
 ### Run Tests
+
 Unit tests (with [Deno](https://deno.com/))
+
 ```sh
 deno test -A --unstable-node-globals --parallel
 ```
 
+Integration tests use [Deno's snapshot testing](https://docs.deno.com/examples/snapshot_test_tutorial/).
+They store the last known good result, and compare new results against the
+stored snapshots to verify them (showing the differences if they don't match).
+For this reason, the snapshots should always be committed to the repo. They are
+run along with the other tests using the command above. The snapshots can be
+created/updated automatically with:
 
+```sh
+deno test -A --unstable-node-globals --parallel -- --update
+```
 
 ## Backend RPC Server
 This project includes a JSON RPC server that exposes the CREATOR emulator's core functionalities.

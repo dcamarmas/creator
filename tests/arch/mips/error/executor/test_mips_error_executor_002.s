@@ -4,5 +4,6 @@
 #
 
 .text
-main_:
-    li $t0, 10
+main:
+    li $sp, 0xffffffff
+    jr $ra

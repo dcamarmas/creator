@@ -13,5 +13,5 @@ main:
     sltz x8, x4
     sltz x9, x5
     sltz x10, x6
-    
-    
+
+    jr ra

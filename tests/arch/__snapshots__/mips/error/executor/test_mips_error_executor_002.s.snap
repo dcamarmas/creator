@@ -1,0 +1,37 @@
+export const snapshot = {};
+
+snapshot[`mips/error/executor/test_mips_error_executor_002.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Stack pointer cannot be outside the stack segment",
+      i: 2,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "0": 60,
+    "1": 1,
+    "10": 232,
+    "11": 32,
+    "12": 3,
+    "13": 224,
+    "15": 8,
+    "2": 255,
+    "3": 255,
+    "4": 52,
+    "5": 33,
+    "6": 255,
+    "7": 255,
+    "9": 32,
+  },
+  registers: {
+    "1,at": "0xffffffff",
+    "29,sp": "0xffffffff",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;

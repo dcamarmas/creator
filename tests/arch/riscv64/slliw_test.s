@@ -10,3 +10,4 @@ slliw s1, s0, 1
 
 # Shift right by 1 - should become positive
 srliw s2, s1, 1
+jr ra

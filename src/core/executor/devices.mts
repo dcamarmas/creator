@@ -364,7 +364,7 @@ class OSDriver extends Device {
                 const addr = MEM.alloc(size);
 
                 // save addr
-                this.writeValue(this.data.start, addr);
+                this.writeValue(this.data.start, Number(addr));
 
                 break;
             }

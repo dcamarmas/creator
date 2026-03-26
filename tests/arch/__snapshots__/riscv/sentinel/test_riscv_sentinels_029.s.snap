@@ -1,0 +1,42 @@
+export const snapshot = {};
+
+snapshot[`riscv/sentinel/test_riscv_sentinels_029.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 192,
+    "11": 115,
+    "12": 255,
+    "13": 193,
+    "14": 1,
+    "15": 19,
+    "18": 128,
+    "19": 103,
+    "3": 239,
+    "5": 160,
+    "6": 8,
+    "7": 147,
+  },
+  registers: {
+    "x1,ra": "0x4",
+    "x17,a7": "0xa",
+    "x2,sp": "0xffffff8",
+    mtime: "0x5",
+    pc: "0xc",
+  },
+  sentinel_errors: [
+    {
+      errors: [
+        {
+          message: "Stack pointer not restored: entered at 0xffffffc, exited at 0xffffff8",
+          register: undefined,
+          rule: "STACK_NOT_RESTORED",
+        },
+      ],
+      function: "test",
+    },
+  ],
+}
+`;

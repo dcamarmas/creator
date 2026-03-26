@@ -1,0 +1,36 @@
+export const snapshot = {};
+
+snapshot[`mips/instructions/test_mips_instruction_002.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 8,
+    "10": 1,
+    "11": 155,
+    "12": 33,
+    "13": 75,
+    "15": 12,
+    "16": 3,
+    "17": 224,
+    "19": 8,
+    "3": 10,
+    "4": 33,
+    "5": 9,
+    "6": 255,
+    "7": 226,
+    "8": 33,
+    "9": 42,
+  },
+  registers: {
+    "10,t2": "0x187",
+    "11,t3": "0x193",
+    "8,t0": "0xa",
+    "9,t1": "0xffffffec",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;

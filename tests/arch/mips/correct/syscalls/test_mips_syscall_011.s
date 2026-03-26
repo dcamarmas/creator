@@ -8,3 +8,4 @@
         li $v0, 11
         li $a0, 'c'
         syscall
+        jr $ra

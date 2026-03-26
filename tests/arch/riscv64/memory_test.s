@@ -44,3 +44,4 @@ lbu x5, 0(x4)
 # Now we try to save it
 la x4, z5
 sb x5, 3(x4)
+jr ra

@@ -13,5 +13,5 @@ main:
     slli x8, x5, 2
     slli x9, x6, 4
   	slli x10, x7, 15
-    
-    
+
+    jr ra

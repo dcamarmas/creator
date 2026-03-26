@@ -17,3 +17,5 @@ main:
 	slti x12, x10, -1024
 	slti x13, x10, -1023
 	slti x14, x10, -1022
+
+    jr ra

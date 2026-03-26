@@ -281,15 +281,57 @@ Deno.test("Memory - dump and restore 4-bit memory", () => {
     assertEquals(memory.read(7n), 1);
 });
 
-Deno.test("Memory - restore throws error for mismatched dump size", () => {
+Deno.test("Memory - restore smaller memory", () => {
+    const memory = new Memory({ sizeInBytes: 10 });
+    const dump = {
+        addresses: [0, 1, 5],
+        values: [1, 213, 42],
+        bitsPerByte: 8,
+        size: 6,
+        hints: [],
+    }
+
+    assertEquals(memory.read(0n), 0);
+    assertEquals(memory.read(1n), 0);
+    assertEquals(memory.read(5n), 0);
+
+    memory.restore(dump);
+    assertEquals(memory.read(0n), 1);
+    assertEquals(memory.read(1n), 213);
+    assertEquals(memory.read(5n), 42);
+});
+
+Deno.test("Memory - restore throws error for bigger dump size", () => {
     const memory = new Memory({ sizeInBytes: 10, bitsPerByte: 8 });
-    const wrongSizeDump = [1, 2, 3]; // Should be 10 elements
+    const wrongSizeDump = {
+        addresses: [5],
+        values: [42],
+        bitsPerByte: 8,
+        size: 20,
+        hints: [],
+    }
 
     assertThrows(
         () => memory.restore(wrongSizeDump),
         Error,
         "Dump metadata does not match current memory configuration",
     );
+});
+
+Deno.test("Memory - restore throws error for mismatched bits/byte", () => {
+    const memory = new Memory({ sizeInBytes: 10, bitsPerByte: 8 });
+    const wrongSizeDump = {
+        addresses: [5],
+        values: [42],
+        bitsPerByte: 16,
+        size: 10,
+        hints: [],
+    }
+    const msg = "Dump metadata does not match current memory configuration";
+
+    assertThrows(() => memory.restore(wrongSizeDump), Error, msg);
+    wrongSizeDump.bitsPerByte = 6
+    assertThrows(() => memory.restore(wrongSizeDump), Error, msg);
 });
 
 Deno.test("Memory - getBitsPerByte and getMaxByteValue", () => {
@@ -1546,10 +1588,115 @@ Deno.test("Memory - getUsedAddresses stress test", () => {
     memory.write(300n, 0);
 
     const usedAddresses = memory.getUsedAddresses();
-    expectedAddresses.sort((a, b) => {
-        if (a > b) return -1;
-        if (a < b) return 1;
-        return 0;
-    }); // Sort highest to lowest
+    // Sort highest to lowest
+    expectedAddresses.sort((a, b) => Number(b - a));
     assertEquals(usedAddresses, expectedAddresses);
+});
+
+Deno.test("Memory - alloc center", () => {
+    const memory = new Memory({
+        sizeInBytes: 100,
+        memoryLayout: new Map([
+            ["data", { start: 0, end: 3 }],
+            ["stack", { start: 90, end: 99 }],
+        ]),
+    });
+
+    const addr1 = memory.alloc(1, "data");
+    assertEquals(addr1, 4n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 0, end: 4 });
+    assertEquals(memory.getSize(), 100);
+    memory.write(addr1, 123)
+    assertEquals(memory.read(addr1), 123);
+
+    const addr2 = memory.alloc(6, "data");
+    assertEquals(addr2, 5n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 0, end: 10 });
+    assertEquals(memory.getSize(), 100);
+    memory.write(addr2, 234)
+    memory.write(addr2 + 5n, 12)
+    assertEquals(memory.read(addr2), 234);
+    assertEquals(memory.read(addr2 + 5n), 12);
+
+    const addr3 = memory.alloc(50, "data");
+    assertEquals(addr3, 11n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 0, end: 60 });
+    assertEquals(memory.getSize(), 100);
+    memory.write(addr3, 98)
+    memory.write(addr3 + 49n, 45)
+    assertEquals(memory.read(addr3), 98);
+    assertEquals(memory.read(addr3 + 49n), 45);
+});
+
+Deno.test("Memory - alloc resize", () => {
+    const memory = new Memory({
+        sizeInBytes: 10,
+        memoryLayout: new Map([
+            ["stack", { start: 0, end: 3 }],
+            ["data", { start: 8, end: 9 }],
+        ]),
+    });
+
+    const addr1 = memory.alloc(1, "data");
+    assertEquals(addr1, 10n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 8, end: 10 });
+    assertEquals(memory.getSize(), 11);
+    memory.write(addr1, 123)
+    assertEquals(memory.read(addr1), 123);
+
+    const addr2 = memory.alloc(6, "data");
+    assertEquals(addr2, 11n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 8, end: 16 });
+    assertEquals(memory.getSize(), 17);
+    memory.write(addr2, 234)
+    memory.write(addr2 + 5n, 12)
+    assertEquals(memory.read(addr2), 234);
+    assertEquals(memory.read(addr2 + 5n), 12);
+
+    const addr3 = memory.alloc(50, "data");
+    assertEquals(addr3, 17n);
+    assertEquals(memory.getMemorySegments().get("data"), { start: 8, end: 66 });
+    assertEquals(memory.getSize(), 67);
+    memory.write(addr3, 98)
+    memory.write(addr3 + 49n, 45)
+    assertEquals(memory.read(addr3), 98);
+    assertEquals(memory.read(addr3 + 49n), 45);
+});
+
+Deno.test("Memory - alloc mixed", () => {
+    const memory = new Memory({
+        sizeInBytes: 10,
+        memoryLayout: new Map([
+            ["dataA", { start: 0, end: 1 }],
+            ["dataB", { start: 8, end: 9 }],
+        ]),
+    });
+
+    const addr1 = memory.alloc(5, "dataA");
+    assertEquals(addr1, 2n);
+    assertEquals(memory.getMemorySegments().get("dataA"), { start: 0, end: 6 });
+    assertEquals(memory.getMemorySegments().get("dataB"), { start: 8, end: 9 });
+    assertEquals(memory.getSize(), 10);
+    memory.write(addr1, 123)
+    memory.write(addr1 + 4n, 78)
+    assertEquals(memory.read(addr1), 123);
+    assertEquals(memory.read(addr1 + 4n), 78);
+
+    const addr2 = memory.alloc(5, "dataB");
+    assertEquals(addr2, 10n);
+    assertEquals(memory.getMemorySegments().get("dataA"), { start: 0, end: 6 });
+    assertEquals(memory.getMemorySegments().get("dataB"), { start: 8, end: 14 });
+    assertEquals(memory.getSize(), 15);
+    memory.write(addr2, 123)
+    memory.write(addr2 + 4n, 78)
+    assertEquals(memory.read(addr2), 123);
+    assertEquals(memory.read(addr2 + 4n), 78);
+
+    const addr3 = memory.alloc(1, "dataA");
+    assertEquals(addr3, 7n);
+    assertEquals(memory.getMemorySegments().get("dataA"), { start: 0, end: 7 });
+    assertEquals(memory.getMemorySegments().get("dataB"), { start: 8, end: 14 });
+    assertEquals(memory.getSize(), 15);
+    memory.write(addr3, 91)
+    assertEquals(memory.read(addr3), 91);
 });

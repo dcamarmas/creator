@@ -1,0 +1,38 @@
+export const snapshot = {};
+
+snapshot[`riscv64/slliw_test.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 16,
+    "10": 4,
+    "11": 19,
+    "13": 20,
+    "14": 20,
+    "15": 155,
+    "17": 20,
+    "18": 217,
+    "19": 27,
+    "2": 4,
+    "22": 128,
+    "23": 103,
+    "3": 19,
+    "4": 2,
+    "5": 4,
+    "6": 20,
+    "7": 19,
+    "8": 255,
+    "9": 244,
+  },
+  registers: {
+    "x18,s2": "0x7fffffff",
+    "x8,fp,s0": "0xffffffffffffffff",
+    "x9,s1": "0xfffffffe",
+    mtime: "0x6",
+    pc: "0xfffffffffffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

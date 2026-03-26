@@ -13,4 +13,5 @@ main:
     neg x8, x5 
     neg x9, x6 
   	neg x10, x7
-    
+
+    jr ra

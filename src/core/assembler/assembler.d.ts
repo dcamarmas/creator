@@ -1,7 +1,7 @@
 type Instruction = {
     Address: string;
     Break: boolean | null;
-    Label: string;
+    Label: string[];
     binary: string;
     hide: boolean;
     loaded: string;
@@ -16,3 +16,6 @@ export declare const instructions: Instruction[];
 type InstructionTagMap = { [addr: number]: { tag: string; global: boolean } };
 
 export declare let tag_instructions: InstructionTagMap;
+
+type CompilerFn = (code: string, library: boolean, ansi_color: boolean)
+                  => Promise<object> | object

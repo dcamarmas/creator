@@ -63,10 +63,11 @@ let libraryInstructions = [];
 /**
  * Handle compilation error
  * @param {String} error - Error message returned by the assembler
+ * @param {boolean} ansi_color - Whether errors are formatted with ANSI or HTML colors
  * @returns {Object} Structured error data
  */
-function handleError(error) {
-    const cleanErrorText = error.replace(/<.+?>/g, "");
+function handleError(error, ansi_color) {
+    const cleanErrorText = getCleanErrorMessage(error, ansi_color);
     const linterInfo = parseErrorForLinter(cleanErrorText);
     return {
         errorcode: "101",
@@ -141,7 +142,7 @@ function loadLibraryIfPresent(instructions) {
     // Convert hex string to binary string
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.slice(i, i+2);
+        const hexByte = loadedLibrary.binary.slice(i, i + 2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }
@@ -160,14 +161,17 @@ function loadLibraryIfPresent(instructions) {
     // Process each instruction
     let currentAddr = 0;
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.slice(i, i + instructionSizeBits);
+        const instructionBinary = binaryString.slice(
+            i,
+            i + instructionSizeBits,
+        );
         const symbolName = symbolsByAddr.get(currentAddr);
         const hasSymbol = symbolName !== undefined;
 
         const instruction = {
             Break: null,
             Address: `0x${currentAddr.toString(16)}`,
-            Label: hasSymbol ? symbolName : "",
+            Label: hasSymbol ? [symbolName] : [],
             loaded: instructionBinary,
             user: null,
             _rowVariant: "",
@@ -194,8 +198,7 @@ function loadLibraryIfPresent(instructions) {
 function loadDataIntoMemory(data_mem, wasmModules) {
     const { DataCategoryJS } = wasmModules;
     const wordSizeBytes =
-        newArchitecture.config.word_size /
-        newArchitecture.config.byte_size;
+        newArchitecture.config.word_size / newArchitecture.config.byte_size;
     for (let i = 0; i < data_mem.length; i++) {
         const data = data_mem[i];
         const addr = data.address();
@@ -388,12 +391,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
                 const stringLength = Number(size);
                 const stringType = "string";
-                main_memory.addHint(
-                    addr,
-                    labels,
-                    stringType,
-                    stringLength * 8,
-                );
+                main_memory.addHint(addr, labels, stringType, stringLength * 8);
                 break;
             }
 
@@ -405,12 +403,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
                 const spaceType =
                     category === DataCategoryJS.Padding ? "padding" : "space";
-                main_memory.addHint(
-                    addr,
-                    labels,
-                    spaceType,
-                    Number(size) * 8,
-                );
+                main_memory.addHint(addr, labels, spaceType, Number(size) * 8);
                 break;
             }
 
@@ -428,23 +421,20 @@ function writeBinaryToMemory(binary, baseAddr) {
     // Split into words, reverse order, and concatenate
     const words = [];
     for (let j = 0; j < binary.length; j += WORDSIZE) {
-        words.push(binary.slice(j, j+WORDSIZE));
+        words.push(binary.slice(j, j + WORDSIZE));
     }
     const reversedBinary = words.reverse().join("");
 
     for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
-        const wordBinary = reversedBinary.slice(j, j+WORDSIZE);
+        const wordBinary = reversedBinary.slice(j, j + WORDSIZE);
         const wordBytes = [];
 
         for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-            const byte = parseInt(wordBinary.slice(k, k+BYTESIZE), 2);
+            const byte = parseInt(wordBinary.slice(k, k + BYTESIZE), 2);
             wordBytes.push(byte);
         }
 
-        main_memory.writeWord(
-            BigInt(baseAddr + j / BYTESIZE),
-            wordBytes,
-        );
+        main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
     }
 }
 
@@ -458,7 +448,7 @@ function writeLibraryToMemory() {
 
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.slice(i, i+2);
+        const hexByte = loadedLibrary.binary.slice(i, i + 2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }
@@ -468,8 +458,11 @@ function writeLibraryToMemory() {
     const instructionSizeBytes = instructionSizeBits / 8;
 
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.slice(i, i+instructionSizeBits);
-        writeBinaryToMemory(instructionBinary, currentAddr)
+        const instructionBinary = binaryString.slice(
+            i,
+            i + instructionSizeBits,
+        );
+        writeBinaryToMemory(instructionBinary, currentAddr);
         currentAddr += instructionSizeBytes;
     }
 }
@@ -483,7 +476,7 @@ function writeInstructionsToMemory(instructions, library_instructions) {
     for (let i = library_instructions; i < instructions.length; i++) {
         const instruction = instructions[i];
         const addr = parseInt(instruction.Address, 16);
-        writeBinaryToMemory(instruction.binary, addr)
+        writeBinaryToMemory(instruction.binary, addr);
     }
 }
 
@@ -491,9 +484,10 @@ function writeInstructionsToMemory(instructions, library_instructions) {
  * Compile assembly code as a library
  * @param {string} code - Assembly code to compile
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorLibrary(code, wasmModules) {
+export function assembleCreatorLibrary(code, wasmModules, ansi_color) {
     /* Google Analytics */
     creator_ga("compile", "compile.library");
 
@@ -516,7 +510,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
             0, // library_offset (not used for library compilation)
             "{}", // no library labels
             true, // library flag
-            Color.Html,
+            ansi_color ? Color.Ansi : Color.Html,
         );
 
         // Library compilation: only binary instructions
@@ -543,17 +537,16 @@ export function assembleCreatorLibrary(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
-        return handleError(error)
+        return handleError(error, ansi_color);
     }
 
     // Mark global labels on library instructions
     for (const instruction of libraryInstructions) {
-        if (instruction.Label !== "") {
-            if (label_table[instruction.Label].global === true) {
-                instruction.globl = true;
-            } else {
-                instruction.Label = "";
-            }
+        instruction.Label = instruction.Label.filter(
+            label => label_table[label].global,
+        );
+        if (instruction.Label.length > 0) {
+            instruction.globl = true;
         }
     }
 
@@ -573,9 +566,10 @@ export function assembleCreatorLibrary(code, wasmModules) {
  * Compile assembly code as a normal program
  * @param {string} code - Assembly code to compile
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorProgram(code, wasmModules) {
+export function assembleCreatorProgram(code, wasmModules, ansi_color) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
 
@@ -604,7 +598,7 @@ export function assembleCreatorProgram(code, wasmModules) {
             library_offset,
             labels_json,
             false, // not a library
-            Color.Html,
+            ansi_color ? Color.Ansi : Color.Html,
         );
 
         // Normal compilation: populate instructions for execution/display
@@ -631,7 +625,7 @@ export function assembleCreatorProgram(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
-        return handleError(error)
+        return handleError(error, ansi_color);
     }
 
     // Write library binary to memory if present
@@ -666,12 +660,18 @@ export function assembleCreatorProgram(code, wasmModules) {
  * @param {string} code - Assembly code to compile
  * @param {boolean} library - Whether this is a library compilation
  * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @param {boolean} ansi_color - Whether to use ANSI or HTML colors (default: HTML)
  * @returns {Object} Compilation result
  */
-export function assembleCreatorBase(code, library, wasmModules) {
+export function assembleCreatorBase(
+    code,
+    library,
+    wasmModules,
+    ansi_color = false,
+) {
     if (library) {
-        return assembleCreatorLibrary(code, wasmModules);
+        return assembleCreatorLibrary(code, wasmModules, ansi_color);
     } else {
-        return assembleCreatorProgram(code, wasmModules);
+        return assembleCreatorProgram(code, wasmModules, ansi_color);
     }
 }

@@ -39,13 +39,14 @@ export const ARCH = {
 
     /**
      * Reads a double precision floating point value from a register pair.
-     * @param {string} regName - The base register name (must be even, e.g., "f0")
+     * @param {string} regName - The base register name (must be even, e.g., "f0" or "FP0")
      * @returns {number} The JavaScript number representation of the double
      */
     readDouble(regName) {
         this.validateEvenRegister(regName);
 
-        const regNumber = parseInt(regName.substring(1), 10);
+        const offset = regName.substring(0, 2) === "FP"? 2 : 1;
+        const regNumber = parseInt(regName.substring(offset), 10);
         const highReg = regName;
         const lowRegName = "f" + (regNumber + 1);
 

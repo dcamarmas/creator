@@ -13,7 +13,7 @@ main:
 
     add x9, x5, x6   # 10 - 30
     add x10, x7, x9  # -20 + 0
-    add x11, x8, x10 # -20 + 0xFFFFFF noo -> 0xFFFFFF - 20
+    add x11, x8, x10 # -20 + 0xFFFFFF
 
     # end program
     jr ra

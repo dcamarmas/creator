@@ -7,3 +7,4 @@
 main:
 	
 	li zero, 10
+    jr ra

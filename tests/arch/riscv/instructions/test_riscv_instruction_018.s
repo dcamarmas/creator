@@ -13,4 +13,5 @@ main:
     ori x8, x5, 0x455
     ori x9, x6, 0x222
   	ori x10, x7, 0x7FF
-    
+
+    jr ra

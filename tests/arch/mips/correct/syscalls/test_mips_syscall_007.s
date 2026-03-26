@@ -7,4 +7,4 @@
 main:
 	li $v0, 7
     syscall
-    
+    jr $ra

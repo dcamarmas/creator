@@ -17,3 +17,5 @@ main:
   slti $t7, $t5, -1024
   slti $t8, $t5, -1023
   slti $t9, $t5, -1022
+
+  jr $ra

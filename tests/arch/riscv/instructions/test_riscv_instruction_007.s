@@ -5,19 +5,30 @@
 
 .text
     main:
-      li  x5, 0x44562
-      li  x6, 2
-      li  x7, 5
-      li  x8, 0x44562
-      beq x7, x5, jump1
-      beq x5, x6, jump1
+      li  t0, -40
+      li  t1, -10
+      li  t2,  15
+      li  t3,  32
 
-    jump2:
-      li t3, 34
-      li a7, 10
-      ecall
+      beq t0, t0, j0
+      li s0, 1
+j0:   beq t0, t1, j1
+      li s1, 1
+j1:   beq t1, t0, j2
+      li s2, 1
+j2:   beq t2, t2, j3
+      li s3, 1
+j3:   beq t2, t3, j4
+      li s4, 1
+j4:   beq t3, t2, j5
+      li s5, 1
+j5:   beq t0, t2, j6
+      li s6, 1
+j6:   beq t2, t0, j7
+      li s7, 1
+j7:   beq t1, t3, j8
+      li s8, 1
+j8:   beq t3, t1, end
+      li s9, 1
 
-    jump1:
-      li x5, 11
-      li x6, 555
-      beq x0, x0, jump2
+end:  jr ra

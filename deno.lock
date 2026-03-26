@@ -1,6 +1,12 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@std/assert@^1.0.17": "1.0.19",
+    "jsr:@std/fs@^1.0.22": "1.0.23",
+    "jsr:@std/internal@^1.0.12": "1.0.12",
+    "jsr:@std/path@*": "1.1.4",
+    "jsr:@std/path@^1.1.4": "1.1.4",
+    "jsr:@std/testing@*": "1.0.17",
     "npm:@codemirror/lang-yaml@^6.1.2": "6.1.2",
     "npm:@codemirror/language@^6.11.3": "6.12.1",
     "npm:@codemirror/legacy-modes@^6.5.1": "6.5.2",
@@ -68,6 +74,35 @@
     "npm:wasm-pack@~0.13.1": "0.13.1",
     "npm:xterm@^5.3.0": "5.3.0",
     "npm:yargs@18": "18.0.0"
+  },
+  "jsr": {
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e"
+    },
+    "@std/fs@1.0.23": {
+      "integrity": "3ecbae4ce4fee03b180fa710caff36bb5adb66631c46a6460aaad49515565a37",
+      "dependencies": [
+        "jsr:@std/path@^1.1.4"
+      ]
+    },
+    "@std/internal@1.0.12": {
+      "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
+    },
+    "@std/path@1.1.4": {
+      "integrity": "1d2d43f39efb1b42f0b1882a25486647cb851481862dc7313390b2bb044314b5",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/testing@1.0.17": {
+      "integrity": "87bdc2700fa98249d48a17cd72413352d3d3680dcfbdb64947fd0982d6bbf681",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/fs",
+        "jsr:@std/internal",
+        "jsr:@std/path@^1.1.4"
+      ]
+    }
   },
   "npm": {
     "@aesoper/normal-utils@0.1.5": {

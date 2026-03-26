@@ -14,3 +14,9 @@
         
         sw t0, 0(a0)
         sw t1, 4(a0)
+        li a0, 8
+        ecall
+        
+        sw t0, 0(a0)
+        sw t1, 4(a0)
+        jr ra

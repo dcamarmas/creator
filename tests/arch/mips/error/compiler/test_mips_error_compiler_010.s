@@ -5,7 +5,7 @@
 
  .data
  	.align 2
-    spa:	.space	52428800
+    spa:	.space	16 * 1024 * 1024 * 1024
 
 .text
    main:

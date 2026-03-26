@@ -36,7 +36,7 @@ function applyHintHighlighting(
     const colors = getHintColors();
 
     for (let k = hintsInRange.length - 1; k >= 0; k--) {
-        const { hint, offset } = hintsInRange[k];
+        const { hint, offset } = hintsInRange[k]!;
         if (!hint.sizeInBits) continue;
 
         const sizeInBytes = Math.ceil(hint.sizeInBits / 8);
@@ -68,7 +68,7 @@ function displayMemory(address: number, count: number): void {
         const formattedAddr = `0x${currentAddr.toString(16).padStart(8, "0")}`;
 
         const hintsInRange: Array<{
-            hint: { tag: string; type: string; sizeInBits?: number };
+            hint: { tag: string[]; type: string; sizeInBits?: number };
             offset: number;
         }> = [];
         for (let j = 0; j < wordSize; j++) {
@@ -95,8 +95,8 @@ function displayMemory(address: number, count: number): void {
 
             const colors = getHintColors();
             for (let k = 0; k < hintsInRange.length; k++) {
-                const { hint, offset } = hintsInRange[k];
-                const tag = hint.tag || "";
+                const { hint, offset } = hintsInRange[k]!;
+                const tag = hint.tag.join(",");
                 const type = hint.type || "";
                 const shortHint = type && tag ? `${tag}:${type}` : type || tag;
                 const sizeInfo = hint.sizeInBits

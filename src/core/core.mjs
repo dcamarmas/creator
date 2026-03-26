@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
+import yaml from "js-yaml";
 import { initCAPI } from "./capi/initCAPI.mts";
 import { getHexTwosComplement } from "./utils/utils.mjs";
 import { logger } from "./utils/creator_logger.mjs";
@@ -34,7 +35,7 @@ import {
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
-import { sentinel } from "./sentinel/sentinel.mjs";
+import { sentinel } from "./sentinel/sentinel.mts";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
 import { coreEvents } from "./events.mts";
@@ -95,7 +96,6 @@ export let BYTESIZE;
 export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
-export let REGISTERS_BACKUP = [];
 export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
@@ -111,7 +111,7 @@ export let interruptManager;
 export function setInterruptManager(value) {
     interruptManager = value;
 }
-/** @type {Memory} */
+/** @type {MemoryBackup} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
@@ -226,10 +226,6 @@ export function loadArchitecture(architectureYaml, isa = []) {
     stackTracker = new StackTracker();
     interruptManager = new InterruptManager(status.interrupt_handler);
 
-    // Create deep copy backup of REGISTERS after all initialization is complete
-    // This ensures the backup contains the correct values for all registers, including SP
-    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
-
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
     SP_REG_INDEX = crex_findReg_bytag("stack_pointer");
 
@@ -255,14 +251,12 @@ export function loadArchitecture(architectureYaml, isa = []) {
  */
 export function load_library(lib_str) {
     // Parse YAML library format
-    import("js-yaml")
-        .then(yaml => {
-            loadedLibrary = yaml.load(lib_str);
-            coreEvents.emit("library-loaded");
-        })
-        .catch(error => {
-            throw new SyntaxError(`Invalid library format: ${error.message}`);
-        });
+    try {
+        loadedLibrary = yaml.load(lib_str);
+        coreEvents.emit("library-loaded");
+    } catch (error) {
+        throw new SyntaxError(`Invalid library format: ${error.message}`);
+    };
 }
 /**
  * Loads a library to Sail simulator.
@@ -307,17 +301,24 @@ export async function load_CREATino() {
 
 // compilation
 
-export async function assembly_compile(code, compiler) {
+/**
+ * Compiles an assembly code with the chosen compiler
+ * @param {string} code
+ * @param {import("./assembler/assembler.d.ts").CompilerFn} compiler
+ * @param {boolean} ansi_color - Whether to format errors with ANSI escape sequences
+ * (`true`) or HTML tags (`false`)
+ **/
+export async function assembly_compile(code, compiler, ansi_color = false) {
     var ret;
 
     if (architecture.config.name.includes("SRV")){
         if (Object.keys(loadedLibrary).length === 0)
-            ret = await assembly_compiler(code, false, compiler);
+            ret = await assembly_compiler(code, false, compiler, ansi_color);
         else 
-            ret = await assembly_compiler(code, true, compiler);
+            ret = await assembly_compiler(code, true, compiler, ansi_color);
     }
     else{
-        ret = await assembly_compiler(code, false, compiler);
+        ret = await assembly_compiler(code, false, compiler, ansi_color);
     }
 
     switch (ret.status) {
@@ -371,15 +372,10 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    // Restore register values from backup, preserving BigInt types
-    for (let i = 0; i < REGISTERS.length; i++) {
-        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-            // Copy value from backup, ensuring it's a BigInt
-            const backupValue = REGISTERS_BACKUP[i].elements[j].value;
-            REGISTERS[i].elements[j].value =
-                typeof backupValue === "bigint"
-                    ? backupValue
-                    : BigInt(backupValue);
+    // Restore register default values
+    for (const file of REGISTERS) {
+        for (const register of file.elements) {
+            register.value = register.default_value
         }
     }
     crex_clearRegisterCache();
@@ -682,11 +678,10 @@ export function getRegisterInfo(regName) {
 }
 
 export function getPC() {
-    const pc_address = readRegister(
+    return readRegister(
         PC_REG_INDEX.indexComp,
         PC_REG_INDEX.indexElem,
     );
-    return BigInt(pc_address);
 }
 
 export function getSP() {

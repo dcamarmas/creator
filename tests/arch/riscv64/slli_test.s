@@ -12,8 +12,7 @@ main:
     slli s4, s3, 20       # Expected: 0x100000
 
     # Test 3: Shift negative
-    lui s5, 0xFFFFF       # Load -1 
-    addi s5, s5, 0xFFF    # s5 = -1
+    addi s5, zero, -1     # Load -1
     slli s6, s5, 32       # Expected: 0xFFFFFFFF00000000
 
     # Test 4: Maximum shift (63)
@@ -24,3 +23,4 @@ main:
     # Test 5: Large value shift
     lui s9, 0x7FFFF       # Load large positive
     slli s10, s9, 1       # Expected: 0xFFFE0000
+    jr ra

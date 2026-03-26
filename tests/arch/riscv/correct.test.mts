@@ -1,0 +1,31 @@
+import { ARCH, execution_tests } from "../arch_utils.mts";
+
+const long_str =
+    "This is a very long string with many characters and a lot of data. :) 123\n";
+
+execution_tests(
+    ARCH.riscv,
+    "riscv/correct/examples",
+    new Map([
+        ["test_riscv_example_009.s", ["123\n", "456\n"]],
+        ["test_riscv_example_010.s", [long_str.length + "\n", long_str]],
+    ]),
+);
+execution_tests(
+    ARCH.riscv,
+    "riscv/correct/libraries",
+    undefined,
+    undefined,
+    true,
+);
+execution_tests(
+    ARCH.riscv,
+    "riscv/correct/syscalls",
+    new Map([
+        ["test_riscv_syscall_005.s", ["1234567\n"]],
+        ["test_riscv_syscall_006.s", ["1.234567\n"]],
+        ["test_riscv_syscall_007.s", ["1.234567890123456\n"]],
+        ["test_riscv_syscall_008.s", ["This is a long string\n"]],
+        ["test_riscv_syscall_012.s", ["a\n"]],
+    ]),
+);

@@ -17,4 +17,5 @@ main:
     sltiu x12, x10, -1024
     sltiu x13, x10, -1023
     sltiu x14, x10, -1022
-    
+
+    jr ra

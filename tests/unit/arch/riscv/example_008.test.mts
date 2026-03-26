@@ -1,17 +1,6 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import {
-    setupSimulator,
-    executeN,
-    cleanupSimulator,
-    assertSimulatorState,
-} from "../simulator-test-utils.mts";
+import { assertExecution } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "Architecture-agnostic testing - RISC-V Matrix Copy with Floating Point",
-
-    async () => {
-        const testAssembly = `
-
+const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -37,7 +26,7 @@ main:
         li   t3, 4
         add  t4, zero, zero
         add  t5, zero, zero
-    
+
 loop1:  beq  t2, t4, end1
 loop2:  beq  t3, t5, end2
         flw  f0, 0(t0)
@@ -49,43 +38,32 @@ loop2:  beq  t3, t5, end2
 end2:   addi t4, t4, 1
         add  t5, zero, zero
         beq  x0, x0, loop1
-end1:   
+end1:
         # exit program
         li a7, 10
         ecall
+`;
 
-
-    `;
-        const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
-        // Setup simulator with RISC-V architecture
-        await setupSimulator(testAssembly, RISCV_ARCH_PATH);
-
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
-
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                x5: 0x200040n,
-                x6: 0x200080n,
-                x7: 0x4n,
-                x28: 0x4n,
-                x29: 0x4n,
-                f0: 0xffffffff33441124n,
-            },
-            memory: {
-                "0x20007f": 0x24n,
-                "0x20007e": 0x11n,
-                "0x20007d": 0x44n,
-                "0x20007c": 0x33n,
-                "0x200040": 0x34n,
-                "0x200044": 0x34n,
-                "0x200048": 0x34n,
-                "0x20004c": 0x34n,
-            },
-        });
-
-        cleanupSimulator();
-    },
+Deno.test(
+    "Architecture-agnostic testing - RISC-V Matrix Copy with Floating Point",
+    assertExecution("RISCV/RV32IMFD.yml", testAssembly, {
+        registers: {
+            x5: 0x200040n,
+            x6: 0x200080n,
+            x7: 0x4n,
+            x28: 0x4n,
+            x29: 0x4n,
+            f0: 0xffffffff33441124n,
+        },
+        memory: {
+            "0x20007f": 0x24n,
+            "0x20007e": 0x11n,
+            "0x20007d": 0x44n,
+            "0x20007c": 0x33n,
+            "0x200040": 0x34n,
+            "0x200044": 0x34n,
+            "0x200048": 0x34n,
+            "0x20004c": 0x34n,
+        },
+    }),
 );

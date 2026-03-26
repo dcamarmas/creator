@@ -1,0 +1,30 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/executor/test_riscv_error_executor_006.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Segmentation fault. You tried to read in the text segment (00000000)",
+      i: 1,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "1": 160,
+    "10": 128,
+    "11": 103,
+    "2": 2,
+    "3": 147,
+    "6": 34,
+    "7": 131,
+  },
+  registers: {
+    "x5,t0": "0xa",
+    mtime: "0x2",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

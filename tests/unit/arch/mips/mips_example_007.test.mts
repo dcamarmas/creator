@@ -1,14 +1,6 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import {
-    setupSimulator,
-    executeN,
-    cleanupSimulator,
-    assertSimulatorState,
-} from "../simulator-test-utils.mts";
+import { assertExecution } from "../simulator-test-utils.mts";
 
-Deno.test("MIPS Array Sum Loop", async () => {
-    const testAssembly = `
-
+const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -41,40 +33,27 @@ loop1: beq $t1, $t2, end1     #if($t1 == $t2) --> jump to fin1
   b loop1
 
   # loop end
-end1: 
+end1:
   li $v0, 10
   syscall
+`;
 
-
-
-    `;
-
-    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
-
-    // Setup simulator with MIPS architecture
-    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
-
-    // Execute the program
-    const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
-
-    // Assert all expected state using the wrapper function
-    assertSimulatorState({
+Deno.test(
+    "MIPS Array Sum Loop",
+    assertExecution("MIPS32.yml", testAssembly, {
         registers: {
             PC: 0x44n,
-            r1: 0x200000n, // at
-            r2: 0xan, // v0
-            r9: 0x5n, // t1
-            r10: 0x5n, // t2
-            r11: 0x1n, // t3
-            r12: 0x4n, // t4
-            r13: 0x200014n, // t5
-            r14: 0x5n, // t6
-            r15: 0xfn, // t7
+            "1": 0x200000n, // at
+            "2": 0xan, // v0
+            "9": 0x5n, // t1
+            "10": 0x5n, // t2
+            "11": 0x1n, // t3
+            "12": 0x4n, // t4
+            "13": 0x200014n, // t5
+            "14": 0x5n, // t6
+            "15": 0xfn, // t7
         },
         display: "", // Display buffer should be empty
         keyboard: "", // Keyboard buffer should be empty
-    });
-
-    cleanupSimulator();
-});
+    }),
+);

@@ -61,7 +61,7 @@ export interface ReturnType {
  */
 export interface Instruction {
     Address: string;
-    Label: string | null;
+    Label: string[];
     loaded: string;
     user: string;
     Break: boolean | null;

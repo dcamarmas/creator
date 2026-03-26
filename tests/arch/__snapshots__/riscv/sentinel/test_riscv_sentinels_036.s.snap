@@ -1,0 +1,59 @@
+export const snapshot = {};
+
+snapshot[`riscv/sentinel/test_riscv_sentinels_036.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 32,
+    "10": 8,
+    "11": 147,
+    "15": 115,
+    "16": 255,
+    "17": 129,
+    "18": 1,
+    "19": 19,
+    "2": 4,
+    "21": 145,
+    "22": 32,
+    "23": 35,
+    "25": 81,
+    "26": 32,
+    "27": 35,
+    "29": 32,
+    "3": 147,
+    "30": 4,
+    "31": 147,
+    "33": 1,
+    "34": 36,
+    "35": 131,
+    "37": 129,
+    "38": 1,
+    "39": 19,
+    "42": 128,
+    "43": 103,
+    "5": 192,
+    "7": 239,
+    "9": 160,
+  },
+  registers: {
+    "x1,ra": "0x8",
+    "x17,a7": "0xa",
+    mtime: "0xb",
+    pc: "0x10",
+  },
+  sentinel_errors: [
+    {
+      errors: [
+        {
+          message: "Register x9,s1 value changed but not properly restored",
+          register: "x9,s1",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
+      function: "test",
+    },
+  ],
+}
+`;

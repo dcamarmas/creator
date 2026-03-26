@@ -91,10 +91,11 @@ export default defineComponent({
       }
 
       // Check for main symbol (not allowed in libraries)
+      const main = architecture.config.main_function;
       for (const instruction of libraryInstructions) {
-        if (instruction.Label === "main") {
+        if (instruction.Label.includes(main)) {
           show_notification(
-            'You cannot use the "main" label in a library',
+            `You cannot use the "${main}" label in a library`,
             "danger",
           );
           return false;
@@ -114,16 +115,17 @@ export default defineComponent({
 
         // Add symbol if instruction has a global label
         if (
-          instruction.Label &&
-          instruction.Label !== "" &&
+          instruction.Label.length > 0 &&
           instruction.globl === true
         ) {
           const addr = parseInt(instruction.Address, 16);
 
-          symbols.push({
-            name: instruction.Label,
-            addr,
-          });
+          for (const label of instruction.Label) {
+            symbols.push({
+              name: label,
+              addr,
+            });
+          }
         }
       }
 

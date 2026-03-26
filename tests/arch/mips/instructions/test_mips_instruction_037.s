@@ -4,15 +4,23 @@
 #
 
 
-# .text
-# main:
+.text
+main:
 
-#     li x5, 10
-#     li x6, 13
-#     li x7, 45
-#     li x8, -2
+    li $t0, 10
+    li $t1, 13
+    li $t2, 45
+    li $t3, -2
 
-#     mulhu x9, x5,  x6
-#     mulhu x10, x6, x7
-#     mulhu x11, x7, x8
-#     mulhu x12, x8, x5
+    multu $t0, $t1
+    mfhi $s0
+    mflo $s1
+    multu $t1, $t2
+    mfhi $s2
+    mflo $s3
+    multu $t2, $t3
+    mfhi $s4
+    mflo $s5
+    multu $t3, $t4
+
+    jr $ra

@@ -23,7 +23,8 @@ import { crex_findReg } from "../../src/core/register/registerLookup.mjs";
 import { readRegister } from "../../src/core/register/registerOperations.mjs";
 import { raise } from "@/core/capi/validation.mts";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { coreEvents, CoreEventTypes } from "@/core/events.mts";
+import { sentinel as sentinelApi } from "@/core/sentinel/sentinel.mts";
+import { coreEvents, CoreEventTypes, type SentinelErrorEvent } from "@/core/events.mts";
 
 interface ExpectedState {
     registers?: { [name: string]: number };
@@ -58,11 +59,6 @@ export function executeN(n: number): { error: boolean; msg: string } {
     return ret;
 }
 
-interface SentinelEvent {
-    functionName: string;
-    message: string;
-    ok: boolean;
-}
 
 /**
  * Validates the execution of a program.
@@ -79,9 +75,9 @@ export function validate(
     sentinel: boolean = true,
 ): { error: boolean; msg: string } {
     // subscribe to sentinel events
-    const sentinelErrors: SentinelEvent[] = [];
-    coreEvents.on(CoreEventTypes.SENTINEL_ERROR, (event: unknown) => {
-        sentinelErrors.push(event as SentinelEvent);
+    const sentinelErrors: SentinelErrorEvent[] = [];
+    coreEvents.on(CoreEventTypes.SENTINEL_ERROR, event => {
+        sentinelErrors.push(event);
     });
 
     // execute program
@@ -177,7 +173,7 @@ export function validate(
             error: true,
             msg:
                 `Found ${sentinelErrors.length} sentinel errors:\n` +
-                sentinelErrors.map(e => e.message).join("\n"),
+                sentinelErrors.map(sentinelApi.formatErrors).join("\n"),
         };
     }
 

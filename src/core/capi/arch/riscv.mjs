@@ -227,4 +227,13 @@ export const ARCH = {
         NaNBoxed = BigInt(NaNBoxed);
         return NaNBoxed;
     },
+    /**
+     * Writes a float32 to a register, using NaN boxing with float64
+     * @param {number} value - The JavaScript number to write
+     * @param {string} regName - The base register name (must be even, e.g., "f0")
+     **/
+    writeFloat(value, regName) {
+        const bits = this.toBigInt(value, "NaNBfloat32_64")
+        CAPI.REG.write(bits, regName)
+    }
 };

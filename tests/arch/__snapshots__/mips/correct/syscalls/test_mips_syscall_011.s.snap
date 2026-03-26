@@ -1,0 +1,27 @@
+export const snapshot = {};
+
+snapshot[`mips/correct/syscalls/test_mips_syscall_011.s 1`] = `
+{
+  display: "c",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 2,
+    "11": 12,
+    "12": 3,
+    "13": 224,
+    "15": 8,
+    "3": 11,
+    "4": 32,
+    "5": 4,
+    "7": 99,
+  },
+  registers: {
+    "2,v0": "0xb",
+    "4,a0": "0x63",
+    PC: "0xffffffff",
+  },
+  sentinel_errors: [],
+}
+`;

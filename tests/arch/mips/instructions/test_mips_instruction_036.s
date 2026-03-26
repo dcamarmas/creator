@@ -14,3 +14,5 @@ main:
     addiu $t5, $t1, 5611
     addiu $t6, $t2, 0x124
     addiu $t7, $t3, 225667
+
+    jr $ra

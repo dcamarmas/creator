@@ -12,5 +12,11 @@
         li $a0, 8
         syscall
         
-        sw $t0, ($v0)
+        sw $t0, 0($v0)
         sw $t1, 4($v0)
+        li $v0, 9
+        syscall
+        
+        sw $t0, 0($v0)
+        sw $t1, 4($v0)
+        jr $ra
