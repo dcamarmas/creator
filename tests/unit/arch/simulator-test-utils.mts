@@ -167,8 +167,6 @@ export async function compileAssembly(
         throw new Error(`Failed to compile assembly: ${compileResult.msg}`);
     }
 
-    creator.reset();
-
     return compileResult;
 }
 
