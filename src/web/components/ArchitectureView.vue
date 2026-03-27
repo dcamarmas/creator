@@ -292,7 +292,7 @@ export default defineComponent({
                   :max="architecture.config.name === 'SRV32' ? 89 : 122"
                   >
                   </b-progress><br>
-                  <div v-if="result_log !== ''" v-html="result_log"></div>
+                  <div v-if="result_log !== ''">{{ result_log }}</div>
                 </b-col>
               </b-row>
 
