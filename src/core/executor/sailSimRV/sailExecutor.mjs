@@ -64,7 +64,7 @@ export async function SailTest32(){
     document.app.$data.testing              = true;
     document.app.$data.c_kernel             = false;
     if (programs.length === 0)
-        programs = await cargarProgramas32("../../../../examples/RISCV-32-Sail-Validation/list.json");
+        programs = await cargarProgramas32("examples/RISCV-32-Sail-Validation/list.json");
     
     for (let index = 0; index < programs.length; index++) {
 
@@ -119,7 +119,7 @@ export async function SailTest64(){
     document.app.$data.testing              = true;
     document.app.$data.c_kernel             = false;
     if (programs.length === 0)
-        programs = await cargarProgramas64("../../../../examples/RISCV-64-Sail-Validation/list.json");
+        programs = await cargarProgramas64("examples/RISCV-64-Sail-Validation/list.json");
 
     for (let index = 0; index < programs.length; index++) {
 

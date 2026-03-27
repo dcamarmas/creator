@@ -94,9 +94,18 @@ export default defineComponent({
     updateState(){
       this.result_test = document.app.$data.passed_test;
       if (this.result_test + document.app.$data.failed_test === ((architecture.config.name === 'SRV32' ? 89 : 122)) ){
-        this.result_log = "Validation completed.<br> Your architecture passed the " + (this.result_test / (architecture.config.name === 'SRV32' ? 89 : 122)) * 100 + "%<br> of the validation tests."
+        this.result_log = "Validation completed.\n Your architecture passed the " + (this.result_test / (architecture.config.name === 'SRV32' ? 89 : 122)) * 100 + "%\n of the validation tests.";
       }
         
+    },
+    resetValidationState(){
+      this.runned = 0;
+      this.result_test = 0;
+      this.running = true;
+      this.result_log = "";
+      document.app.$data.passed_test = 0;
+      document.app.$data.failed_test = 0;
+      document.app.$data.testing = false;
     },
   },
   mounted(){
@@ -273,7 +282,7 @@ export default defineComponent({
           <b-modal
             id="showValidationModal"
             :title="'Validation test for ' + (architecture.config.name === 'SRV32' ? 32 : 64) + ' bits architecture'"
-            @ok="validate = false">
+            @ok="resetValidationState">
             This validation test runs {{(architecture.config.name === 'SRV32' ? 89 : 122)}} RISC-V programs. <br>
             These programs are taken from the official RISC-V test repository (<a href="https://github.com/riscv-software-src/riscv-tests" target="_blank" rel="noopener noreferrer">riscv-tests</a>), where the correct operation <br> 
             of the full instruction set of the RISC-V specification is verified.
@@ -292,7 +301,7 @@ export default defineComponent({
                   :max="architecture.config.name === 'SRV32' ? 89 : 122"
                   >
                   </b-progress><br>
-                  <div v-if="result_log !== ''">{{ result_log }}</div>
+                  <div v-if="result_log !== ''" style="white-space: pre-line;">{{ result_log }}</div>
                 </b-col>
               </b-row>
 
