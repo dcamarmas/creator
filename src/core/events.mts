@@ -39,6 +39,7 @@ export const CoreEventTypes = {
     ARDUINO_PIN_CHANGED: "arduino-pin-write",
     ARDUINO_RESET: "arduino-reset",
     ARDUINO_PIN_INTERRUPT: "arduino-pin-interrupt",
+    VALIDATION_UPDATE: "update-validation",
 } as const;
 
 /**
