@@ -243,14 +243,17 @@ class ConsoleDevice extends Device {
 
                 // read byte by byte until a null terminator is found
                 const mainMemory = main_memory as Memory;
-                const buffer = [];
+                const bytes = [];
                 for (let i = 0; i < mainMemory.getSize(); i++) {
                     const byte = mainMemory.read(BigInt(addr + i));
                     if (byte === 0) break; // null terminator
-                    buffer.push(String.fromCharCode(byte));
+                    bytes.push(byte);
                 }
 
-                this.#write(buffer.join(""), DataType.String);
+                // Decode the UTF-8 data to a string
+                const buffer = new Uint8Array(bytes)
+                const msg = new TextDecoder().decode(buffer);
+                this.#write(msg, DataType.String);
 
                 break;
 
@@ -304,7 +307,7 @@ class ConsoleDevice extends Device {
                     const bytes = new TextEncoder().encode(keystroke);
 
                     // Write the string to memory byte by byte
-                    for (let i = 0; i < keystroke.length && i < length; i++) {
+                    for (let i = 0; i < bytes.length && i < length; i++) {
                         mainMemory.write(BigInt(addr + i), bytes[i]!);
                     }
                 });

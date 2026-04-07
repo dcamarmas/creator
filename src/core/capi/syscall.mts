@@ -68,14 +68,16 @@ export const SYSCALL = {
                 break;
             }
             case "string": {
-                const buffer = [];
+                const bytes = [];
                 // read byte by byte until a null terminator is found
                 for (let i = 0; i < mainMemory.getSize(); i++) {
-                    const byte = mainMemory.read((value as bigint) + BigInt(i));
+                    const byte = mainMemory.read(BigInt(value) + BigInt(i));
                     if (byte === 0) break; // null terminator
-                    buffer.push(String.fromCharCode(byte));
+                    bytes.push(byte);
                 }
-                const msg = buffer.join("");
+                // Decode the UTF-8 data to a string
+                const buffer = new Uint8Array(bytes);
+                const msg = new TextDecoder().decode(buffer);
                 display_print(msg);
                 break;
             }

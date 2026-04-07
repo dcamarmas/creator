@@ -175,8 +175,8 @@ export function kbd_read_string(keystroke, params) {
 
     const bytes = new TextEncoder().encode(keystroke);
     // Write the string to memory byte by byte
-    for (let i = 0n; i < keystroke.length && i < params.size; i++) {
-        main_memory.write(BigInt(addr + BigInt(i)), bytes[i]);
+    for (let i = 0n; i < bytes.length && i < params.size; i++) {
+        main_memory.write(addr + i, bytes[i]);
     }
 
     if (architecture.config.name.includes("SRV")) {

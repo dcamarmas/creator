@@ -9,6 +9,7 @@ execution_tests(
     new Map([
         ["test_riscv_example_009.s", ["123\n", "456\n"]],
         ["test_riscv_example_010.s", [long_str.length + "\n", long_str]],
+        ["test_riscv_example_017.s", ["String in UTF-8: ∀ ∫ ∇ ∈ 🠬\n"]],
     ]),
 );
 execution_tests(

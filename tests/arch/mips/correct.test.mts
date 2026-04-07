@@ -9,6 +9,7 @@ execution_tests(
     new Map([
         ["test_mips_example_009.s", ["123\n", "456\n"]],
         ["test_mips_example_010.s", [long_str.length + "\n", long_str]],
+        ["test_mips_example_017.s", ["String in UTF-8: ∀ ∫ ∇ ∈ 🠬\n"]],
     ]),
 );
 execution_tests(

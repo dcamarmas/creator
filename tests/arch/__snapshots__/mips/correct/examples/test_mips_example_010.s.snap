@@ -206,6 +206,9 @@ snapshot[`mips/correct/examples/test_mips_example_010.s 1`] = `
     "77": 2,
     "79": 4,
     "83": 12,
+    "84": 3,
+    "85": 224,
+    "87": 8,
     "9": 32,
   },
   registers: {
@@ -214,7 +217,7 @@ snapshot[`mips/correct/examples/test_mips_example_010.s 1`] = `
     "4,a0": "0x20004b",
     "5,a1": "0x4a",
     "8,t0": "0x4a",
-    PC: "0xfa0",
+    PC: "0xffffffff",
   },
   sentinel_errors: [],
 }

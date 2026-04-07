@@ -377,16 +377,9 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                 break;
 
             case DataCategoryJS.String: {
-                const encoder = new TextEncoder();
-                let currentAddr = addr;
-
-                for (const ch_h of data.value(false)) {
-                    const bytes = new Uint8Array(4);
-                    const n = encoder.encodeInto(ch_h, bytes).written;
-                    for (let j = 0; j < n; j++) {
-                        main_memory.write(currentAddr, bytes[j]);
-                        currentAddr++;
-                    }
+                const bytes = new TextEncoder().encode(data.value(false));
+                for (let i = 0n; i < bytes.length; i++) {
+                    main_memory.write(addr + i, bytes[i]);
                 }
 
                 const stringLength = Number(size);
