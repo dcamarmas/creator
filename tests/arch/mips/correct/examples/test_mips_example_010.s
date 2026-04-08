@@ -29,3 +29,5 @@ main:
     
     li $v0, 4
     syscall
+
+    jr $ra

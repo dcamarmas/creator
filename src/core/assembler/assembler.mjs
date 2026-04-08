@@ -103,11 +103,20 @@ export function formatErrorWithColors(error) {
     return htmlMsg;
 }
 
-export function getCleanErrorMessage(error) {
+export function getCleanErrorMessage(error, ansi_color = true) {
     const errorMsg = String(error);
-    const parsed = ansicolor.parse(errorMsg);
-    const cleanMsg = parsed.spans.map(span => span.text).join("");
-    return cleanMsg;
+    if (ansi_color) {
+        const parsed = ansicolor.parse(errorMsg);
+        return parsed.spans.map(span => span.text).join("");
+    } else {
+        return errorMsg
+            .replace(/<.+?>/g, "")
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'");
+    }
 }
 
 /**
@@ -319,10 +328,11 @@ export function parseDebugSymbols(debugSymbols) {
 /**
  * Dispatcher for assembly compilers.
  * @param {string} code
- * @param {any} library
- * @param {string} compiler
+ * @param {boolean} library
+ * @param {import("./assembler.d.ts").CompilerFn} compiler
+ * @param {boolean} ansi_color
  */
-export function assembly_compiler(code, library, compiler) {
+export function assembly_compiler(code, library, compiler, ansi_color = false) {
     // If no compiler is specified, error out
     if (!compiler) {
         raise("No compiler specified for assembly compilation");
@@ -333,5 +343,5 @@ export function assembly_compiler(code, library, compiler) {
     status.executedInstructions = 0;
     status.clkCycles = 0;
 
-    return compiler(code, library);
+    return compiler(code, library, ansi_color);
 }

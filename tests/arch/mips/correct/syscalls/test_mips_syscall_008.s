@@ -15,3 +15,4 @@
       la $a0, buffer
       li $a1, 5
       syscall
+      jr $ra

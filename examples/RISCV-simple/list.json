@@ -3,19 +3,19 @@
     "name": "Example 1",
     "id": "e1",
     "url": "examples/RISCV/example1.s",
-    "description": "ALU operations"
+    "description": "ALU Operations"
   },
   {
     "name": "Example 2",
     "id": "e2",
     "url": "examples/RISCV/example2.s",
-    "description": "ALU operations"
+    "description": "ALU Operations"
   },
   {
     "name": "Example 3",
     "id": "e3",
     "url": "examples/RISCV/example3.s",
-    "description": "Memory access"
+    "description": "Memory Access"
   },
   {
     "name": "Example 4",

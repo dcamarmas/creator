@@ -1,14 +1,6 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import {
-    setupSimulator,
-    executeN,
-    cleanupSimulator,
-    assertSimulatorState,
-} from "../simulator-test-utils.mts";
+import { assertExecution } from "../simulator-test-utils.mts";
 
-Deno.test("MIPS Matrix Copy with Floats", async () => {
-    const testAssembly = `
-
+const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -33,7 +25,7 @@ main:
         li $t3, 4
         move $t4, $zero
         move $t5, $zero
-    
+
 loop1:  beq $t2, $t4, end1
 loop2:  beq $t3, $t5, end2
         l.s $f0, 0($t0)
@@ -47,28 +39,19 @@ end2:   addi $t4, $t4, 1
         b loop1
 end1:   li $v0, 10
         syscall
+`;
 
-    `;
-
-    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
-
-    // Setup simulator with MIPS architecture
-    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
-
-    // Execute the program
-    const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
-
-    // Assert all expected state using the wrapper function
-    assertSimulatorState({
+Deno.test(
+    "MIPS Matrix Copy with Floats",
+    assertExecution("MIPS32.yml", testAssembly, {
         registers: {
-            r1: 0x200040n, // at
-            r2: 0xan, // v0
-            r8: 0x200040n, // t0
-            r9: 0x200080n, // t1
-            r10: 0x4n, // t2
-            r11: 0x4n, // t3
-            r12: 0x4n, // t4
+            "1": 0x200040n, // at
+            "2": 0xan, // v0
+            "8": 0x200040n, // t0
+            "9": 0x200080n, // t1
+            "10": 0x4n, // t2
+            "11": 0x4n, // t3
+            "12": 0x4n, // t4
         },
         memory: {
             "0x20007f": 0x24n,
@@ -117,7 +100,5 @@ end1:   li $v0, 10
         },
         display: "", // Display buffer should be empty
         keyboard: "", // Keyboard buffer should be empty
-    });
-
-    cleanupSimulator();
-});
+    }),
+);

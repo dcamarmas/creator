@@ -5,18 +5,14 @@
 
 .text
     main:
-      li  $t0, 0xAAB
-      li  $t1, 0xBBA
-      li  $t2, 0xAAB
-      bnez $t0, $t2, jump1
-      bnez $t0, $t1, jump1
+      li  $s0, -10
+      li  $s1,  15
 
-    jump2:
-      li $t6, 34
-      li $v0, 10
-      syscall
+      bnez $s0, j0
+      li $t0, 1
+j0:   bnez $s1, j1
+      li $t1, 1
+j1:   bnez $0, end
+      li $t2, 1
 
-    jump1:
-      li $t4, 235363
-      li $t5, 0xAA
-      bnez $t4, $t5, jump2
+end:  jr $ra

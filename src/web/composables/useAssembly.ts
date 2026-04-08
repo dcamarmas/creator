@@ -23,7 +23,7 @@ import { resetStats } from "@/core/executor/stats.mts";
 import { instructions } from "@/core/assembler/assembler.mjs";
 import { show_notification, storeBackup } from "@/web/utils.mjs";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 
 export interface AssemblyResult {
     type: "success" | "error" | "warning";

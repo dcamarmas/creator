@@ -45,5 +45,9 @@ export default defineComponent({
   overflow-x: auto;
   line-height: 112%;
   border-radius: 3px;
+  // creator-assembler's color codes
+  --err-red: #ff0000;
+  --err-bright-blue: #00BCFE;
+  --err-yellow: #ffff00;
 }
 </style>

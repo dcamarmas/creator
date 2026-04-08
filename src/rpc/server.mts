@@ -36,6 +36,7 @@ import { instructions } from "../core/assembler/assembler.mjs";
 import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
 import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
 import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
+import { SailCompile } from "../core/assembler/sailAssembler/web/CNAssambler.mjs";
 import fs from "node:fs";
 import type { StackTracker } from "@/core/memory/StackTracker.mjs";
 
@@ -44,6 +45,7 @@ const assembler_map = {
     default: assembleCreator,
     sjasmplus: sjasmplusAssemble,
     rasm: rasmAssemble,
+    Sail: SailCompile,
 } as const;
 
 type CompilerType = keyof typeof assembler_map;
@@ -82,7 +84,7 @@ interface EmulatorState {
     };
     instructions: Array<{
         address: string;
-        label?: string;
+        label: string[];
         asm: string;
         machineCode: string;
     }>;
@@ -595,13 +597,13 @@ class CreatorRpcServer {
         baseAddress: bigint,
         wordSize: number,
     ): Array<{
-        tag: string;
+        tag: string[];
         type: string;
         offset: number;
         sizeInBits?: number;
     }> {
         const hints: Array<{
-            tag: string;
+            tag: string[];
             type: string;
             offset: number;
             sizeInBits?: number;
@@ -728,7 +730,7 @@ class CreatorRpcServer {
             // Get instruction list with better debugging info
             const instructionList = instructions.map((instr, index) => ({
                 address: instr.Address,
-                label: instr.Label || "",
+                label: instr.Label,
                 asm: instr.loaded || instr.user || "",
                 machineCode: instr.binary || instr.loaded || "",
                 instructionIndex: index,
@@ -765,7 +767,7 @@ class CreatorRpcServer {
         currentInstruction?: {
             index: number;
             address: string;
-            label?: string;
+            label: string[];
             asm: string;
             machineCode: string;
             isBreakpoint?: boolean;
@@ -773,7 +775,7 @@ class CreatorRpcServer {
         nextInstruction?: {
             index: number;
             address: string;
-            label?: string;
+            label: string[];
             asm: string;
             machineCode: string;
         };
@@ -822,7 +824,7 @@ class CreatorRpcServer {
                     currentInstruction = {
                         index: i,
                         address: instr.Address,
-                        label: instr.Label || undefined,
+                        label: instr.Label,
                         asm: instr.loaded || instr.user || "",
                         machineCode: instr.binary || instr.loaded || "",
                         isBreakpoint: instr.Break === true,
@@ -834,7 +836,7 @@ class CreatorRpcServer {
                         nextInstruction = {
                             index: i + 1,
                             address: nextInstr.Address,
-                            label: nextInstr.Label || undefined,
+                            label: nextInstr.Label,
                             asm: nextInstr.loaded || nextInstr.user || "",
                             machineCode:
                                 nextInstr.binary || nextInstr.loaded || "",
@@ -875,7 +877,7 @@ class CreatorRpcServer {
     }): Promise<{
         index: number;
         address: string;
-        label?: string;
+        label: string[];
         asm: string;
         machineCode: string;
         visible: boolean;
@@ -916,7 +918,7 @@ class CreatorRpcServer {
             return {
                 index,
                 address: instruction.Address,
-                label: instruction.Label || undefined,
+                label: instruction.Label,
                 asm: instruction.loaded || instruction.user || "",
                 machineCode: instruction.binary || instruction.loaded || "",
                 visible: instruction.visible !== false,
@@ -978,7 +980,7 @@ class CreatorRpcServer {
                 instruction: {
                     index,
                     address: instruction.Address,
-                    label: instruction.Label || undefined,
+                    label: instruction.Label,
                     asm: instruction.loaded || instruction.user || "",
                     machineCode: instruction.binary || instruction.loaded || "",
                     isBreakpoint: instruction.Break === true,
@@ -999,7 +1001,7 @@ class CreatorRpcServer {
         Array<{
             index: number;
             address: string;
-            label?: string;
+            label?: string[];
             asm: string;
             machineCode: string;
             visible: boolean;
@@ -1022,7 +1024,7 @@ class CreatorRpcServer {
             return instructions.map((instr, index) => ({
                 index,
                 address: instr.Address,
-                label: instr.Label || undefined,
+                label: instr.Label,
                 asm: instr.loaded || instr.user || "",
                 user: instr.user || "",
                 loaded: instr.loaded || "",

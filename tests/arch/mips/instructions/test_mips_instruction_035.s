@@ -14,3 +14,5 @@ main:
     addu $t5, $t1, $t2
     addu $t6, $t2, $t3
     addu $t7, $t3, $t0
+
+    jr $ra

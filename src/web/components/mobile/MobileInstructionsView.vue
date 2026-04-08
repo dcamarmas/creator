@@ -28,7 +28,11 @@ import TableExecution from "@/web/components/simulator/TableExecution.vue";
 import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue";
 import SentinelErrorsDropdown from "@/web/components/simulator/SentinelErrorsDropdown.vue";
 import type { Instruction } from "@/core/assembler/assembler";
-import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
+import {
+  coreEvents,
+  CoreEventTypes,
+  type SentinelErrorEvent,
+} from "../../../core/events.mts";
 
 export default defineComponent({
   props: {
@@ -52,17 +56,9 @@ export default defineComponent({
       typeof SentinelErrorsDropdown
     > | null>(null);
 
-    const handleSentinelError = (event: unknown) => {
-      const errorEvent = event as {
-        functionName: string;
-        message: string;
-        ok: boolean;
-      };
+    const handleSentinelError = (event: SentinelErrorEvent) => {
       if (sentinelDropdownRef.value) {
-        sentinelDropdownRef.value.checkForErrors(
-          { ok: errorEvent.ok, msg: errorEvent.message },
-          errorEvent.functionName,
-        );
+        sentinelDropdownRef.value.checkForErrors(event);
       }
     };
 

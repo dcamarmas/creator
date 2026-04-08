@@ -17,4 +17,5 @@ main:
     or $t6, $t0, $t3
     or $t7, $t1, $t4
     or $t8, $t2, $t5
-      
+
+    jr $ra

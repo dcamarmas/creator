@@ -107,10 +107,15 @@ export default defineComponent({
     convertFromDecimal() {
       try {
         this.error = "";
-        const value = parseFloat(this.decimalInput);
+        const value = parseFloat(this.decimalInput || 0);
 
         if (isNaN(value)) {
           this.error = "Invalid decimal number";
+          return;
+        }
+
+        if (this.decimalInput.includes(",")) {
+          this.error = "Use a period (.) instead of a comma (,) character for decimal numbers";
           return;
         }
 
@@ -147,23 +152,22 @@ export default defineComponent({
         this.error = "";
         let hexStr = this.hexInput.replace(/^0x/i, "").replace(/\s/g, "");
 
-        if (!/^[0-9a-fA-F]+$/.test(hexStr)) {
+        if (!/^[0-9a-fA-F]*$/.test(hexStr)) {
           this.error = "Invalid hexadecimal value";
           return;
         }
 
+        const size = Math.ceil(this.formatBits / 4);
+        hexStr = hexStr.padStart(size, "0").slice(-size);
         if (this.format === "ieee32") {
-          hexStr = hexStr.padStart(8, "0").substring(0, 8);
           this.decimalValue = hex2float("0x" + hexStr);
           this.binaryValue = float2bin(this.decimalValue);
-          this.hexValue = "0x" + hexStr.toUpperCase();
         } else {
           // IEEE 64
-          hexStr = hexStr.padStart(16, "0").substring(0, 16);
           this.decimalValue = hex2double("0x" + hexStr);
           this.binaryValue = double2bin(this.decimalValue);
-          this.hexValue = "0x" + hexStr.toUpperCase();
         }
+        this.hexValue = "0x" + hexStr.toUpperCase();
 
         this.updateBreakdown();
         this.updateInputs();
@@ -177,13 +181,13 @@ export default defineComponent({
         this.error = "";
         let binStr = this.binaryInput.replace(/\s/g, "");
 
-        if (!/^[01]+$/.test(binStr)) {
+        if (!/^[01]*$/.test(binStr)) {
           this.error = "Invalid binary value";
           return;
         }
 
         const expectedBits = this.formatBits;
-        binStr = binStr.padStart(expectedBits, "0").substring(0, expectedBits);
+        binStr = binStr.padStart(expectedBits, "0").slice(-expectedBits);
 
         this.binaryValue = binStr;
 
@@ -358,7 +362,7 @@ export default defineComponent({
     :id="id"
     title="IEEE 754 Floating Point Converter"
     size="xl"
-    hide-footer
+    footer-class="d-none"
     body-class="p-0"
   >
     <div class="calculator-container">
@@ -387,7 +391,7 @@ export default defineComponent({
           </button>
         </div>
         <button class="clear-btn" @click="clear" title="Clear all fields">
-          <font-awesome-icon icon="fa-solid fa-trash" />
+          <font-awesome-icon icon="fa-solid fa-broom" />
         </button>
       </div>
 

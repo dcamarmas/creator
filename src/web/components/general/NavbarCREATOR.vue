@@ -32,8 +32,9 @@ import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
 import ThemeToggle from "./ThemeToggle.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
-import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
+import { coreEvents, CoreEventTypes, type SentinelErrorEvent } from "../../../core/events.mts";
 import { remove_library, architecture, load_CREATino } from "@/core/core.mjs";
+import { createFile } from "../assembly/MultifileEditor.mjs";
 
 export default defineComponent({
   props: {
@@ -66,17 +67,9 @@ export default defineComponent({
       typeof SentinelErrorsDropdown
     > | null>(null);
 
-    const handleSentinelError = (event: unknown) => {
-      const errorEvent = event as {
-        functionName: string;
-        message: string;
-        ok: boolean;
-      };
+    const handleSentinelError = (event: SentinelErrorEvent) => {
       if (sentinelDropdownRef.value) {
-        sentinelDropdownRef.value.checkForErrors(
-          { ok: errorEvent.ok, msg: errorEvent.message },
-          errorEvent.functionName,
-        );
+        sentinelDropdownRef.value.checkForErrors(event);
       }
     };
 
@@ -149,7 +142,7 @@ export default defineComponent({
         return true;
       }
       // Check if CreatorAssembler is in the list
-      return assemblers.some((asm: any) => asm.name === "CreatorAssembler");
+      return assemblers.some((asm: any) => (asm.name === "CreatorAssembler" || asm.name === "Sail"));
     },
 
     // Hide mobile navbar when selecting architecture
@@ -276,7 +269,13 @@ export default defineComponent({
       }
     },
     newAssembly() {
-      (this.$root as any).assembly_code = "";
+      if (architecture.config.name.includes("SRV")){
+        // Call modal to create new File
+        (this.$root as any).assembly_code = createFile((this.$root as any).assembly_code);
+      }else {
+        (this.$root as any).assembly_code = "";
+      }
+
     },
     removeLibrary() {
       remove_library();
@@ -511,15 +510,16 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" /> Save
           as Library...
         </b-dropdown-item>
-            <b-dropdown-item @click="loadCREATino">
+        <b-dropdown-item  v-if="architecture_name.includes('RV32')" @click="loadCREATino">
           <font-awesome-icon :icon="['fas', 'infinity']" class="me-2" /> Add Arduino
           Library
         </b-dropdown-item>
         <b-dropdown-divider />
         <b-dropdown-item @click="removeLibrary">
           <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" /> Remove
-          Library
+          Library...
         </b-dropdown-item>
+
       </b-nav-item-dropdown>
 
       <!-- Tools Menu (Simulator View) -->
@@ -537,7 +537,7 @@ export default defineComponent({
         <b-dropdown-item v-b-modal.flash>
           <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
         </b-dropdown-item>
-        <b-dropdown-item v-b-modal.calculator>
+        <b-dropdown-item v-b-modal.calculator_simulator>
           <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
           IEEE754 Calculator
         </b-dropdown-item>
@@ -556,14 +556,14 @@ export default defineComponent({
       >
         <b-dropdown-item
           v-if="creator_mode === 'assembly'"
-          v-b-modal.examples-assembly
+          v-b-modal.examples_assembly
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...
         </b-dropdown-item>
         <b-dropdown-item
           v-if="creator_mode === 'simulator'"
-          v-b-modal.examples-simulator
+          v-b-modal.examples_simulator
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...

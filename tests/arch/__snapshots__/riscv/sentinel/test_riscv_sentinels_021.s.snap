@@ -1,0 +1,72 @@
+export const snapshot = {};
+
+snapshot[`riscv/sentinel/test_riscv_sentinels_021.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 80,
+    "10": 8,
+    "11": 147,
+    "15": 115,
+    "16": 255,
+    "17": 65,
+    "18": 1,
+    "19": 19,
+    "2": 10,
+    "21": 17,
+    "22": 36,
+    "23": 35,
+    "25": 129,
+    "26": 34,
+    "268435451": 8,
+    "27": 35,
+    "29": 65,
+    "3": 147,
+    "30": 4,
+    "31": 19,
+    "33": 32,
+    "34": 10,
+    "35": 147,
+    "37": 129,
+    "38": 32,
+    "39": 131,
+    "41": 65,
+    "42": 36,
+    "43": 3,
+    "45": 193,
+    "46": 1,
+    "47": 19,
+    "5": 192,
+    "50": 128,
+    "51": 103,
+    "7": 239,
+    "9": 160,
+  },
+  registers: {
+    "x1,ra": "0x8",
+    "x17,a7": "0xa",
+    "x21,s5": "0x2",
+    mtime: "0xd",
+    pc: "0x10",
+  },
+  sentinel_errors: [
+    {
+      errors: [
+        {
+          message: "Register x21,s5 was used but never saved to memory",
+          register: "x21,s5",
+          rule: "SAVE_BEFORE_USE",
+        },
+        {
+          message: "Register x21,s5 value changed but not properly restored",
+          register: "x21,s5",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
+      function: "test",
+    },
+  ],
+}
+`;

@@ -17,4 +17,5 @@ main:
     or x11, x5, x8
     or x12, x6, x9
   	or x13, x7, x10
-    
+
+    jr ra

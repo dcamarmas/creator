@@ -1,0 +1,20 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/executor/test_riscv_error_executor_009.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 160,
+    "3": 19,
+    "6": 128,
+    "7": 103,
+  },
+  registers: {
+    mtime: "0x2",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

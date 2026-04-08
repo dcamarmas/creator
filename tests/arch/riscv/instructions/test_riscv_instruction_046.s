@@ -13,4 +13,5 @@ main:
     not x8, x5 
     not x9, x6 
   	not x10, x7
-    
+
+    jr ra

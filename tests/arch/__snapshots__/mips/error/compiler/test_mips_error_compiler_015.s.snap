@@ -1,0 +1,42 @@
+export const snapshot = {};
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_015.s 1`] = `
+{
+  column: 22,
+  errorText: "[E03] Error: Label hello isn't defined",
+  line: 8,
+}
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_015.s 2`] = `
+"[E03] Error: Label hello isn't defined
+   ╭─[ assembly:8:22 ]
+   │
+ 8 │     example:   .word hello
+   │                      ──┬──  
+   │                        ╰──── Unknown label
+───╯
+"
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_015.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E03] Error:</span> Label <span style='color:var(--err-red,#a00)'>hello</span> isn&#39;t defined
+   <span style='color:#949494'>╭─[</span> assembly:8:22 <span style='color:#949494'>]</span>
+   <span style='color:#949494'>│</span>
+ <span style='color:#949494'>8 │</span> <span style='color:#b2b2b2'>    example:   .word </span><span style='color:var(--err-red,#a00)'>hello</span>
+ <span style='color:#585858'>  │</span>                      <span style='color:var(--err-red,#a00)'>──┬──</span>  
+ <span style='color:#585858'>  │</span>                        <span style='color:var(--err-red,#a00)'>╰────</span> Unknown label
+<span style='color:#949494'>───╯</span>
+"
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_015.s 4`] = `
+"[31m[E03] Error:[0m Label [31mhello[0m isn't defined
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:8:22 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m8 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249me[0m[38;5;249mx[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m.[0m[38;5;249mw[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249md[0m[38;5;249m [0m[31mh[0m[31me[0m[31ml[0m[31ml[0m[31mo[0m
+ [38;5;240m  │[0m                      [31m─[0m[31m─[0m[31m┬[0m[31m─[0m[31m─[0m  
+ [38;5;240m  │[0m                        [31m╰[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m Unknown label
+[38;5;246m───╯[0m
+"
+`;

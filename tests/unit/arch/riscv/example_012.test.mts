@@ -1,17 +1,6 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import {
-    setupSimulator,
-    executeN,
-    cleanupSimulator,
-    assertSimulatorState,
-} from "../simulator-test-utils.mts";
+import { assertExecution } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "Architecture-agnostic testing - RISC-V Recursive Factorial Function",
-
-    async () => {
-        const testAssembly = `
-
+const testAssembly = `
 #
 # ARCOS.INF.UC3M.ES
 # BY-NC-SA (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
@@ -20,7 +9,7 @@ Deno.test(
 
 .text
 
-     main: 
+     main:
            addi sp, sp, -4
            sw ra, 0(sp)
 
@@ -51,7 +40,7 @@ factorial:
            #     return 1
            li   x5, 2
            bge  a0, t0, b_else
-           li   a0, 1 
+           li   a0, 1
            beq  x0, x0, b_efs
            # else:
            #    return a0 * factorial(a0 - 1)
@@ -68,29 +57,17 @@ factorial:
 
            # return t0
            jr ra
+`;
 
-    `;
-
-        const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
-
-        // Setup simulator with RISC-V architecture
-        await setupSimulator(testAssembly, RISCV_ARCH_PATH);
-
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
-
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                x5: 0x2n, // t0 should contain 0x2 (comparison value)
-                x6: 0x5n, // t1 should contain 0x5 (last factorial parameter)
-                x10: 0x78n, // a0 should contain 0x78 (120 - factorial of 5)
-            },
-            display: "120", // Display should show '120' (5! = 120)
-            keyboard: "", // Keyboard buffer should be empty
-        });
-
-        cleanupSimulator();
-    },
+Deno.test(
+    "Architecture-agnostic testing - RISC-V Recursive Factorial Function",
+    assertExecution("RISCV/RV32IMFD.yml", testAssembly, {
+        registers: {
+            x5: 0x2n, // t0 should contain 0x2 (comparison value)
+            x6: 0x5n, // t1 should contain 0x5 (last factorial parameter)
+            x10: 0x78n, // a0 should contain 0x78 (120 - factorial of 5)
+        },
+        display: "120", // Display should show '120' (5! = 120)
+        keyboard: "", // Keyboard buffer should be empty
+    }),
 );

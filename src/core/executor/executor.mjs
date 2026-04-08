@@ -48,6 +48,7 @@ import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
 import { coreEvents } from "../events.mts";
 import { clearAllRegisterGlows } from "../register/registerGlowState.mjs";
+import { architecture } from "../core.mjs";
 
 const instructionCache = new Map();
 const compiledFunctions = new Map();
@@ -94,7 +95,7 @@ function performExecutionChecks() {
 function get_entrypoint() {
     // search main tag
     const entrypoint = instructions.find(
-        i => i.Label === newArchitecture.config.main_function,
+        i => i.Label.includes(newArchitecture.config.main_function),
     )?.Address;
 
     return entrypoint
@@ -366,16 +367,6 @@ function executeInstructionCycle() {
     logger.debug("Execution Index:" + status.execution_index);
     logger.debug("PC Register: " + getPC());
 
-    // Special check for stack visualization purposes
-    if (
-        status.execution_index ===
-        instructions.findIndex(
-            i => parseInt(i.Address, 16) === get_entrypoint(),
-        )
-    ) {
-        stackTracker.newFrame(tag_instructions[getPC()]?.tag || "");
-    }
-
     // Check for conditions that would stop execution
     const inLoopCheckResult = performExecutionChecks();
     if (inLoopCheckResult !== null) {
@@ -477,42 +468,18 @@ export function writeStackLimit(stackLimit) {
     // Get memory segments from the Memory object
     const segments = main_memory.getMemorySegments();
 
-    // // Check if stack pointer would be placed in data segment
-    // if (
-    //     dataSegment &&
-    //     stackLimitBigInt <= dataSegment.end &&
-    //     stackLimitBigInt >= dataSegment.start
-    // ) {
-    //     draw.danger.push(status.execution_index);
-    //     throw packExecute(
-    //         true,
-    //         "Stack pointer cannot be placed in the data segment",
-    //         "danger",
-    //         null,
-    //     );
-    // }
-
-    // // Check if stack pointer would be placed in text segment
-    // if (
-    //     textSegment &&
-    //     stackLimitBigInt <= textSegment.end &&
-    //     stackLimitBigInt >= textSegment.start
-    // ) {
-    //     draw.danger.push(status.execution_index);
-    //     throw packExecute(
-    //         true,
-    //         "Stack pointer cannot be placed in the text segment",
-    //         "danger",
-    //         null,
-    //     );
-    // }
-
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");
-
-    // Check if stack pointer would be placed in stack segment
+    // Check if stack pointer would be above stack end
     if (stackSegment && stackLimitBigInt > stackSegment.end) {
         throw new Error("Stack pointer cannot be outside the stack segment");
+    }
+
+    // Check if stack pointer would be placed in text/data segments
+    for (const [name, value] of segments) {
+        if (name === "stack") continue;
+        if (value.start <= stackLimitBigInt && stackLimitBigInt <= value.end)
+            throw new Error(`Stack pointer cannot be placed in the ${name} segment`);
     }
 
     stackTracker.updateCurrentFrame(stackLimit);
@@ -520,7 +487,10 @@ export function writeStackLimit(stackLimit) {
     // Update the stack segment in the memory layout if it exists
     if (stackSegment) {
         // Update the memory segment's start address to reflect the new stack pointer
-        stackSegment.start = Number(stackLimitBigInt);
+        if (architecture.config.name.includes("SRV64"))
+            stackSegment.start = stackLimitBigInt;
+        else
+            stackSegment.start = Number(stackLimitBigInt);
         // And update the size of the stack segment
         stackSegment.size = stackSegment.end - stackSegment.start;
     }

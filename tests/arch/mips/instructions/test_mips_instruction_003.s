@@ -14,3 +14,5 @@ main:
     sub $t4, $t0, $t1 
     sub $t5, $t2, $t4 
     sub $t6, $t3, $t5 
+
+    jr $ra

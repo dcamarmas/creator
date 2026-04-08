@@ -13,5 +13,5 @@ main:
     seqz x8, x4
     seqz x9, x5
     seqz x10, x6
-    
-    
+
+    jr ra

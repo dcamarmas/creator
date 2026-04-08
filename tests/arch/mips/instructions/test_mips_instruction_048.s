@@ -13,3 +13,5 @@ main:
   move $t3, $t0
   move $t4, $t1
   move $t5, $t2
+
+  jr $ra

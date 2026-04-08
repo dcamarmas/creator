@@ -13,5 +13,5 @@ main:
     sgtz x8, x4
     sgtz x9, x5
     sgtz x10, x6
-    
-    
+
+    jr ra

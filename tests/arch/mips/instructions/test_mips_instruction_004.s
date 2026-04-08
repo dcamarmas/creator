@@ -11,3 +11,5 @@ main:
     lui $t7, 0x34
     lui $t8, 0xFF0
     lui $t9, 2
+
+    jr $ra

@@ -13,4 +13,5 @@ main:
     andi $t3, $t0, 0x455
     andi $t4, $t1, 0x222
     andi $t5, $t2, 0xFFF
-  
+
+    jr $ra

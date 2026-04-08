@@ -13,3 +13,5 @@ main:
   rotr $t3, $t0, 2
   rotr $t4, $t1, 4
   rotr $t5, $t2, 15
+
+  jr $ra

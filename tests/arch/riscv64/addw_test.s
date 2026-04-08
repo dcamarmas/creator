@@ -2,10 +2,10 @@
 main:
     # Initialize registers with 32-bit values (sign-extended to 64 bits)
     # s1 = 0x00010000
-    lui s1, 0x00010       # s1 = 0x0000000000010000
+    lui s1, 0x00010        # s1 = 0x0000000000010000
 
     # s2 = 0x00020000
-    lui s2, 0x00020       # s2 = 0x0000000000020000
+    lui s2, 0x00020        # s2 = 0x0000000000020000
 
     # Test 1: Small positive addition
     addw s3, s1, s2        # Expected s3 = 0x0000000000030000
@@ -20,4 +20,5 @@ main:
 
     # Test 4: Edge case - max 32-bit signed + 0x10000
     lui s8, 0x7FFF0        # s8 = 0x0000000007FFF0000
-    addw s9, s8, s1        # Expected s9 = 0x0000000080000000
+    addw s9, s8, s1        # Expected s9 = 0xFFFFFFFF80000000
+    jr ra

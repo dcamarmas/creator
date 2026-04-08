@@ -7,4 +7,4 @@
 main:
 	li a7, 7
     ecall
-    
+    jr ra

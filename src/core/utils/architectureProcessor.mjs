@@ -423,20 +423,16 @@ function convertElementValuesToBigInt(architectureObj) {
         }
 
         for (const element of component.elements) {
+            // Convert function using two's complement
+            const convert = (x) => BigInt.asUintN(element.nbits, BigInt(x));
             // Convert value to BigInt if it exists and is not already a BigInt
-            if (
-                element.value !== undefined &&
-                typeof element.value !== "bigint"
-            ) {
-                element.value = BigInt(element.value);
+            if (typeof element.value !== "bigint") {
+                element.value = convert(element.value);
             }
 
             // Convert default_value to BigInt if it exists and is not already a BigInt
-            if (
-                element.default_value !== undefined &&
-                typeof element.default_value !== "bigint"
-            ) {
-                element.default_value = BigInt(element.default_value);
+            if (typeof element.default_value !== "bigint") {
+                element.default_value = convert(element.default_value);
             }
         }
     }
@@ -514,7 +510,7 @@ function calculateRequiredISAs(
     );
 
     if (nonExistentISAs.length > 0) {
-        const message = `There are nonexistant dependencies in the architecture: ${nonExistentISAs.join(
+        const message = `There are nonexistent dependencies in the architecture: ${nonExistentISAs.join(
             ", ",
         )}`;
         logger.error(message);

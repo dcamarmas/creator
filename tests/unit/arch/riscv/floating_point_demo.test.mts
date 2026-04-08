@@ -12,27 +12,27 @@ const FLOATING_POINT_DEMO_ASSEMBLY = `
     pi:         .float 3.14159265
     e:          .float 2.71828183
     radius:     .float 5.0
-    
+
 .text
 main:
     # Load floating point constants
     la t0, pi
     flw f0, 0(t0)           # f0 = pi
-    
+
     la t0, e
     flw f1, 0(t0)           # f1 = e
-    
+
     la t0, radius
     flw f2, 0(t0)           # f2 = radius (5.0)
-    
+
     # Mathematical operations
     fadd.s f3, f0, f1       # f3 = pi + e
     fmul.s f4, f0, f1       # f4 = pi * e
-    
+
     # Circle area calculation: area = pi * radius^2
     fmul.s f5, f2, f2       # f5 = radius^2
     fmul.s f6, f0, f5       # f6 = pi * radius^2
-    
+
     # exit program
     li a7, 10
     ecall

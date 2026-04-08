@@ -1,0 +1,65 @@
+export const snapshot = {};
+
+snapshot[`mips/sentinel/test_mips_sentinels_033.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 16,
+    "11": 10,
+    "15": 12,
+    "16": 32,
+    "17": 1,
+    "19": 8,
+    "20": 3,
+    "21": 161,
+    "22": 232,
+    "23": 35,
+    "24": 175,
+    "25": 176,
+    "268435447": 2,
+    "28": 32,
+    "29": 16,
+    "3": 2,
+    "31": 2,
+    "32": 143,
+    "33": 176,
+    "35": 4,
+    "36": 39,
+    "37": 189,
+    "39": 8,
+    "4": 12,
+    "40": 3,
+    "41": 224,
+    "43": 8,
+    "7": 16,
+    "8": 32,
+    "9": 2,
+  },
+  registers: {
+    "1,at": "0x8",
+    "2,v0": "0xa",
+    "31,ra": "0x8",
+    PC: "0x10",
+  },
+  sentinel_errors: [
+    {
+      errors: [
+        {
+          message: "Register 16,s0 saved at 0xffffff4 but restored from 0xffffff8",
+          register: "16,s0",
+          rule: "RESTORE_ADDRESS_MISMATCH",
+        },
+        {
+          message: "Register 16,s0 value changed but not properly restored",
+          register: "16,s0",
+          rule: "VALUE_NOT_RESTORED",
+        },
+      ],
+      function: "test",
+    },
+  ],
+}
+`;

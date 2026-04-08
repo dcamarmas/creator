@@ -15,4 +15,5 @@ main:
     slt $t5, $t1, $t1
     slt $t6, $t1, $t2
     slt $t7, $t1, $t3
-    
+
+    jr $ra

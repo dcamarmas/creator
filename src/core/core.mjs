@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+import yaml from "js-yaml";
 import { initCAPI } from "./capi/initCAPI.mts";
 import { getHexTwosComplement } from "./utils/utils.mjs";
 import { logger } from "./utils/creator_logger.mjs";
@@ -35,7 +35,7 @@ import {
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
-import { sentinel } from "./sentinel/sentinel.mjs";
+import { sentinel } from "./sentinel/sentinel.mts";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
 import { coreEvents } from "./events.mts";
@@ -48,6 +48,8 @@ import { init, compileArchitectureFunctions } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 import * as archProcessor from "./utils/architectureProcessor.mjs";
+import { writeDataDumpMemory32, writeDataDumpMemory64 } from "./assembler/sailAssembler/web/CNAssambler.mjs";
+import { disassemble_lib } from "@/web/components/assembly/MultifileEditor.mjs";
 
 /** @type {import("./core.d.ts").Library | import("./core.d.ts").LegacyLibrary} */
 export let loadedLibrary = {};
@@ -80,6 +82,13 @@ export const guiVariables = {
     keep_highlighted: -1n, // Address to keep highlighted (used to highlight interrupted instructions)
 };
 
+export var L1_cache_memory = [/*{id:0, addr: "0", binary: "0x00"}*/];
+export var L1_I_cache_memory = [];
+export var L1_D_cache_memory = [];
+export var L2_cache_memory = [];
+export var L2_I_cache_memory = [];
+export var L2_D_cache_memory = [];
+export var config_cache = [];
 /** @type {number} */
 export let WORDSIZE;
 /** @type {number} */
@@ -87,7 +96,6 @@ export let BYTESIZE;
 export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
-export let REGISTERS_BACKUP = [];
 export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
@@ -103,7 +111,7 @@ export let interruptManager;
 export function setInterruptManager(value) {
     interruptManager = value;
 }
-/** @type {Memory} */
+/** @type {MemoryBackup} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
@@ -119,6 +127,7 @@ export const instructions_packed = 100;
 
 export { initCAPI }; // Instead of calling it here, which causes circular dependencies, we re-export it so it can be called by the main application.
 let creator_debug = false;
+let creator_kernel = true;
 
 BigInt.prototype.toJSON = function () {
     return JSON.rawJSON(this.toString());
@@ -133,6 +142,11 @@ export function set_debug(enable_debug) {
         logger.disable();
     }
 }
+
+export function set_kernel(enable_kernel) {
+    creator_kernel = enable_kernel;
+}
+
 /**
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
@@ -212,10 +226,6 @@ export function loadArchitecture(architectureYaml, isa = []) {
     stackTracker = new StackTracker();
     interruptManager = new InterruptManager(status.interrupt_handler);
 
-    // Create deep copy backup of REGISTERS after all initialization is complete
-    // This ensures the backup contains the correct values for all registers, including SP
-    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
-
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
     SP_REG_INDEX = crex_findReg_bytag("stack_pointer");
 
@@ -241,14 +251,24 @@ export function loadArchitecture(architectureYaml, isa = []) {
  */
 export function load_library(lib_str) {
     // Parse YAML library format
-    import("js-yaml")
-        .then(yaml => {
-            loadedLibrary = yaml.load(lib_str);
-            coreEvents.emit("library-loaded");
-        })
-        .catch(error => {
-            throw new SyntaxError(`Invalid library format: ${error.message}`);
-        });
+    try {
+        loadedLibrary = yaml.load(lib_str);
+        coreEvents.emit("library-loaded");
+    } catch (error) {
+        throw new SyntaxError(`Invalid library format: ${error.message}`);
+    };
+}
+/**
+ * Loads a library to Sail simulator.
+ *
+ * @param {string} lib_str
+ *
+ */
+
+export async function load_library_sail(lib, lib_name) {
+    loadedLibrary = {name: lib_name, library_file: lib};
+    await disassemble_lib(loadedLibrary);
+    coreEvents.emit("library-loaded");
 }
 
 /**
@@ -259,9 +279,6 @@ export function remove_library() {
     loadedCreatino = false;
     coreEvents.emit("library-removed");
 }
-/**
- * Add CREATino library.
- */
 export async function load_CREATino() {
   //show_loading();
   try {
@@ -284,8 +301,26 @@ export async function load_CREATino() {
 
 // compilation
 
-export async function assembly_compile(code, compiler) {
-    const ret = await assembly_compiler(code, false, compiler);
+/**
+ * Compiles an assembly code with the chosen compiler
+ * @param {string} code
+ * @param {import("./assembler/assembler.d.ts").CompilerFn} compiler
+ * @param {boolean} ansi_color - Whether to format errors with ANSI escape sequences
+ * (`true`) or HTML tags (`false`)
+ **/
+export async function assembly_compile(code, compiler, ansi_color = false) {
+    var ret;
+
+    if (architecture.config.name.includes("SRV")){
+        if (Object.keys(loadedLibrary).length === 0)
+            ret = await assembly_compiler(code, false, compiler, ansi_color);
+        else 
+            ret = await assembly_compiler(code, true, compiler, ansi_color);
+    }
+    else{
+        ret = await assembly_compiler(code, false, compiler, ansi_color);
+    }
+
     switch (ret.status) {
         case "error":
             break;
@@ -300,7 +335,7 @@ export async function assembly_compile(code, compiler) {
             break;
 
         default:
-            ret.msg = "Unknow assembly compiler code :-/";
+            ret.msg = "Unknown assembly compiler code :-/";
             break;
     }
 
@@ -337,15 +372,10 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    // Restore register values from backup, preserving BigInt types
-    for (let i = 0; i < REGISTERS.length; i++) {
-        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-            // Copy value from backup, ensuring it's a BigInt
-            const backupValue = REGISTERS_BACKUP[i].elements[j].value;
-            REGISTERS[i].elements[j].value =
-                typeof backupValue === "bigint"
-                    ? backupValue
-                    : BigInt(backupValue);
+    // Restore register default values
+    for (const file of REGISTERS) {
+        for (const register of file.elements) {
+            register.value = register.default_value
         }
     }
     crex_clearRegisterCache();
@@ -363,6 +393,36 @@ export function reset() {
         main_memory.restore(main_memory_backup);
     }
 
+    if (architecture.config.name.includes("SRV")){
+        for (const instruction of instructions ?? []){
+            const auxAddr = parseInt(instruction.Address,16);
+            for (let j = 0; j < instruction.hex.length; j += 32) {
+                const wordBinary = instruction.hex.slice(j, j+32);
+                const wordBytes = [];
+
+                // Split word into bytes
+                for (let k = 0; k < wordBinary.length; k += 8) {
+                    const byte = parseInt(wordBinary.slice(k, k+8), 2);
+                    wordBytes.push(byte);
+                }
+
+                main_memory.writeWord(BigInt(auxAddr + j / 8), wordBytes);
+            }
+        }
+        instructions.forEach(insn => {
+            insn.L1 = 0;
+            insn.L1_I = 0;
+            insn.L1_D = 0;
+            insn.L2 = 0;
+            insn.L2_I = 0;
+            insn.L2_D = 0;
+        });
+        if (architecture.config.name === "SRV32")
+            writeDataDumpMemory32();
+        else
+            writeDataDumpMemory64();
+
+    }
     // Stack Reset
     stackTracker.reset();
     sentinel.reset();
@@ -618,11 +678,10 @@ export function getRegisterInfo(regName) {
 }
 
 export function getPC() {
-    const pc_address = readRegister(
+    return readRegister(
         PC_REG_INDEX.indexComp,
         PC_REG_INDEX.indexElem,
     );
-    return BigInt(pc_address);
 }
 
 export function getSP() {
@@ -640,4 +699,81 @@ export function setPC(value) {
     writeRegister(value, PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
 
     return null;
+}
+
+export function updateCacheMem(index, type, addr, value) {
+    
+    // Identificamps primero a que cache afecta
+    // Despues comprobamos si ese bloque de cache ya existe
+    // Si existe se reemplaza, sino se hace un push de una nueva línea
+    switch(type) {
+        case "L1_I":
+        let L1_I_index = L1_I_cache_memory.findIndex(block => block.id === index);
+        if (L1_I_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_I_num_lines) :  -1;
+            L1_I_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_I_cache_memory[L1_I_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_I_cache_memory[L1_I_index].addr = addr;
+        }
+        document.app.L1_I_cache_memory = L1_I_cache_memory;
+        break;
+        case "L1_D":
+        let L1_D_index = L1_D_cache_memory.findIndex(block => block.id === index);
+        if (L1_D_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_D_num_lines) :  -1;
+            L1_D_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_D_cache_memory[L1_D_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_D_cache_memory[L1_D_index].addr = addr;
+        }
+        break;
+        case "L1":
+        let L1_index = L1_cache_memory.findIndex(block => block.id === index);
+        if (L1_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_num_lines) :  -1;
+            L1_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_cache_memory[L1_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_cache_memory[L1_index].addr = addr;
+        }
+        break;
+        case "L2":
+        let L2_index = L2_cache_memory.findIndex(block => block.id === index);
+        if (L2_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_num_lines) :  -1;
+            L2_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_cache_memory[L2_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_cache_memory[L2_index].addr = addr;
+        }
+        break;
+        case "L2_I":
+        let L2_I_index = L2_I_cache_memory.findIndex(block => block.id === index);
+        if (L2_I_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_I_num_lines) :  -1;
+            L2_I_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_I_cache_memory[L2_I_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_I_cache_memory[L2_I_index].addr = addr;
+        }
+        document.app.L2_I_cache_memory = L2_I_cache_memory;
+        break;
+        case "L2_D":
+        let L2_D_index = L2_D_cache_memory.findIndex(block => block.id === index);
+        if (L2_D_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_D_num_lines) :  -1;
+            L2_D_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_D_cache_memory[L2_D_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_D_cache_memory[L2_D_index].addr = addr;
+        }
+        break;
+    }
 }

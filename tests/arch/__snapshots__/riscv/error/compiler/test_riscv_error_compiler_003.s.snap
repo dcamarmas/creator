@@ -1,0 +1,84 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_003.s 1`] = `
+{
+  column: 8,
+  errorText: "[E09] Error: Incorrect instruction syntax",
+  line: 12,
+}
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_003.s 2`] = `
+"[E09] Error: Incorrect instruction syntax
+    ╭─[ assembly:12:8 ]
+    │
+ 12 │    add t0, t1
+    │        ───┬──  
+    │           ╰──── Incorrect syntax
+    │ 
+    │ Note: Allowed formats:
+    │       opcode rd, rs1, rs2
+────╯
+
+The syntax opcode rd, rs1, rs2 failed with the following reason:
+Error: found end of input but expected , or binary operator
+    ╭─[ assembly:12:14 ]
+    │
+ 12 │    add t0, t1
+    │            ─┬│ 
+    │             ╰── While parsing this expression
+    │              │ 
+    │              ╰─ Unexpected input
+────╯
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_003.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E09] Error:</span> Incorrect instruction syntax
+    <span style='color:#949494'>╭─[</span> assembly:12:8 <span style='color:#949494'>]</span>
+    <span style='color:#949494'>│</span>
+ <span style='color:#949494'>12 │</span> <span style='color:#b2b2b2'>   add </span><span style='color:var(--err-red,#a00)'>t0, t1</span>
+ <span style='color:#585858'>   │</span>        <span style='color:var(--err-red,#a00)'>───┬──</span>  
+ <span style='color:#585858'>   │</span>           <span style='color:var(--err-red,#a00)'>╰────</span> Incorrect syntax
+ <span style='color:#585858'>   │</span> 
+ <span style='color:#585858'>   │</span> <span style='color:#87d7af'>Note</span>: Allowed formats:
+ <span style='color:#585858'>   │</span>       opcode rd, rs1, rs2
+<span style='color:#949494'>────╯</span>
+
+The syntax <span style='color:var(--err-bright-blue,#55f)'>opcode rd, rs1, rs2</span> failed with the following reason:
+<span style='color:var(--err-red,#a00)'>Error:</span> found <span style='color:var(--err-red,#a00)'>end of input</span> but expected <span style='color:var(--err-green,#0a0)'>,</span> or <span style='color:var(--err-green,#0a0)'>binary operator</span>
+    <span style='color:#949494'>╭─[</span> assembly:12:14 <span style='color:#949494'>]</span>
+    <span style='color:#949494'>│</span>
+ <span style='color:#949494'>12 │</span> <span style='color:#b2b2b2'>   add t0, </span><span style='color:var(--err-yellow,#a60)'>t1</span>
+ <span style='color:#585858'>   │</span>            <span style='color:var(--err-yellow,#a60)'>─┬</span><span style='color:var(--err-red,#a00)'>│</span> 
+ <span style='color:#585858'>   │</span>             <span style='color:var(--err-yellow,#a60)'>╰──</span> While parsing this <span style='color:var(--err-yellow,#a60)'>expression</span>
+ <span style='color:#585858'>   │</span>              <span style='color:var(--err-red,#a00)'>│</span> 
+ <span style='color:#585858'>   │</span>              <span style='color:var(--err-red,#a00)'>╰─</span> Unexpected input
+<span style='color:#949494'>────╯</span>
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_003.s 4`] = `
+"[31m[E09] Error:[0m Incorrect instruction syntax
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:12:8 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m12 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249ma[0m[38;5;249md[0m[38;5;249md[0m[38;5;249m [0m[31mt[0m[31m0[0m[31m,[0m[31m [0m[31mt[0m[31m1[0m
+ [38;5;240m   │[0m        [31m─[0m[31m─[0m[31m─[0m[31m┬[0m[31m─[0m[31m─[0m  
+ [38;5;240m   │[0m           [31m╰[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m Incorrect syntax
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mNote[0m: Allowed formats:
+ [38;5;240m   │[0m       opcode rd, rs1, rs2
+[38;5;246m────╯[0m
+
+The syntax [94mopcode rd, rs1, rs2[0m failed with the following reason:
+[31mError:[0m found [31mend of input[0m but expected [32m,[0m or [32mbinary operator[0m
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:12:14 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m12 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249ma[0m[38;5;249md[0m[38;5;249md[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249m0[0m[38;5;249m,[0m[38;5;249m [0m[33mt[0m[33m1[0m
+ [38;5;240m   │[0m            [33m─[0m[33m┬[0m[31m│[0m 
+ [38;5;240m   │[0m             [33m╰[0m[33m─[0m[33m─[0m While parsing this [33mexpression[0m
+ [38;5;240m   │[0m              [31m│[0m 
+ [38;5;240m   │[0m              [31m╰[0m[31m─[0m Unexpected input
+[38;5;246m────╯[0m
+"
+`;

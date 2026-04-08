@@ -15,3 +15,5 @@ main:
     mul $t5, $t1, $t2
     mul $t6, $t2, $t3
     mul $t7, $t3, $t4
+
+    jr $ra

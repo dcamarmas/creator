@@ -1,0 +1,35 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/executor/test_riscv_error_executor_004.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Stack pointer cannot be placed in the data segment",
+      i: 2,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "1": 32,
+    "10": 129,
+    "11": 19,
+    "14": 128,
+    "15": 103,
+    "2": 2,
+    "3": 183,
+    "5": 2,
+    "6": 130,
+    "7": 147,
+    "9": 2,
+  },
+  registers: {
+    "x2,sp": "0x200000",
+    "x5,t0": "0x200000",
+    mtime: "0x3",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

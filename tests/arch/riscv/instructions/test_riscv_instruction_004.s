@@ -11,3 +11,5 @@ main:
     lui x7, 0x34
     lui x8, 0xFF002
     lui x9, 2
+
+    jr ra

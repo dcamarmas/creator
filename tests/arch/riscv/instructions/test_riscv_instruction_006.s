@@ -11,7 +11,8 @@ main:
     li x7, 12
     li x8, 0x123515
 
-	jal x1, end
+	jal x0, mid
+mid:jalr x1, 0x28(x0)
 
     sub x9, x5, x6   # 547 - (-937)
     sub x10, x7, x9  # 12 - 1484

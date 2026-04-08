@@ -7,11 +7,7 @@ import {
 } from "../simulator-test-utils.mts";
 import * as creator from "@/core/core.mjs";
 
-Deno.test(
-    "Architecture-agnostic testing - RISC-V Nested Function Calls with Stack",
-    // eslint-disable-next-line max-lines-per-function
-    async () => {
-        const testAssembly = `
+const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -30,13 +26,13 @@ main:
     li a0, 23
     li a1, -77
     li a2, 45
-    
+
     # Call the first level function (starts the nested calls)
     jal ra, level1
-    
+
     # Store result
     mv s0, a0
-    
+
     # Print result
     li a7, 1
     ecall
@@ -59,16 +55,16 @@ level1:
     sw s0, 8(sp)
     sw a0, 4(sp)    # Save argument a0
     sw a1, 0(sp)    # Save argument a1
-    
+
     # Save arguments in saved registers
     mv s0, a0
-    
+
     # Call level2
     jal ra, level2
-    
+
     # Add original a0 to result
     add a0, a0, s0
-    
+
     # Restore registers and return
     lw a1, 0(sp)
     lw s0, 8(sp)
@@ -83,14 +79,14 @@ level2:
     sw ra, 8(sp)
     sw a1, 4(sp)
     sw a2, 0(sp)
-    
+
     # Call level3
     jal ra, level3
-    
+
     # Add original a2 to result
     lw t0, 0(sp)
     add a0, a0, t0
-    
+
     # Restore and return
     lw a1, 4(sp)
     lw ra, 8(sp)
@@ -103,14 +99,14 @@ level3:
     addi sp, sp, -8
     sw ra, 4(sp)
     sw a1, 0(sp)
-    
+
     # First call the original sum function
     jal ra, sum
-    
+
     # Then call sub with result from sum
     lw a1, 0(sp)
     jal ra, sub
-    
+
     # Restore and return
     lw ra, 4(sp)
     addi sp, sp, 8
@@ -122,14 +118,16 @@ sum:
     add  t2, a2, a2
     add  a0, t1, zero
     add  a1, t2, zero
-    jr   ra  
+    jr   ra
 
 sub:
     sub a0, a0, a1
     jr ra
+`;
 
-    `;
-
+Deno.test(
+    "Architecture-agnostic testing - RISC-V Nested Function Calls with Stack",
+    async () => {
         const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
 
         // Setup simulator with RISC-V architecture

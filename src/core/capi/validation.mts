@@ -18,6 +18,7 @@
  */
 
 import { capi_uint2int } from "./fp.mts";
+import { architecture } from "../core.mjs";
 
 type Document = { app: { exception(msg: string): unknown } };
 
@@ -44,8 +45,15 @@ export function isOverflow(op1: bigint, op2: bigint, res_u: bigint) {
     );
 }
 
-export function isMisaligned(addr: bigint, type: string) {
-    return false;
+/**
+ * Checks whether an address is misaligned
+ * @param addr - Base address to read/write
+ * @param size - Size of the element being read/written
+ **/
+export function isMisaligned(addr: bigint, size: bigint|number) {
+    const config = architecture.config;
+    const word_size_bytes = BigInt(config.word_size / config.byte_size);
+    return addr % word_size_bytes !== 0n && addr % BigInt(size) !== 0n;
 }
 
 // Object export for initCAPI spreading

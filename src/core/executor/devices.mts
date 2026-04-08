@@ -94,10 +94,10 @@ export abstract class Device {
      * @throws Error if value is too big.
      *
      */
-    protected writeValue(address: number, value: number, words: number = 1) {
+    protected writeValue(value: number, address: number, words: number = 1) {
         // transform value in bytes
         const bytes = this.memory.splitToBytes(BigInt(value));
-        bytes.unshift(...new Array(4 * words).fill(0)); // fill the w/ 0 until we reach the word number of bytes
+        bytes.unshift(...new Array(4 * words - bytes.length).fill(0)); // fill the w/ 0 until we reach the word number of bytes
 
         for (let i = 0; i < words; i++) {
             this.memory.writeWord(BigInt(address), bytes);
@@ -203,11 +203,6 @@ class ConsoleDevice extends Device {
             "execute.syscall.read_" + type,
         ); // google analytics
 
-        // scroll into keyboard input
-        if (document !== undefined) {
-            document.getElementById("enter_keyboard")!.scrollIntoView();
-        }
-
         // stop program to wait for read
         status.run_program = 3;
 
@@ -248,14 +243,17 @@ class ConsoleDevice extends Device {
 
                 // read byte by byte until a null terminator is found
                 const mainMemory = main_memory as Memory;
-                const buffer = [];
+                const bytes = [];
                 for (let i = 0; i < mainMemory.getSize(); i++) {
                     const byte = mainMemory.read(BigInt(addr + i));
                     if (byte === 0) break; // null terminator
-                    buffer.push(String.fromCharCode(byte));
+                    bytes.push(byte);
                 }
 
-                this.#write(buffer.join(""), DataType.String);
+                // Decode the UTF-8 data to a string
+                const buffer = new Uint8Array(bytes)
+                const msg = new TextDecoder().decode(buffer);
+                this.#write(msg, DataType.String);
 
                 break;
 
@@ -309,7 +307,7 @@ class ConsoleDevice extends Device {
                     const bytes = new TextEncoder().encode(keystroke);
 
                     // Write the string to memory byte by byte
-                    for (let i = 0; i < keystroke.length && i < length; i++) {
+                    for (let i = 0; i < bytes.length && i < length; i++) {
                         mainMemory.write(BigInt(addr + i), bytes[i]!);
                     }
                 });
@@ -369,7 +367,7 @@ class OSDriver extends Device {
                 const addr = MEM.alloc(size);
 
                 // save addr
-                this.writeValue(this.data.start, addr);
+                this.writeValue(this.data.start, Number(addr));
 
                 break;
             }
@@ -387,35 +385,36 @@ class OSDriver extends Device {
     }
 }
 
-// TODO: device handler class?
+// TODO: device handler class
 // TODO: Enable/Disable devices
+// TODO: configure devices from arch definition
 
 // { <id>: Device, ...}
 export const devices = new Map<string, Device>([
-    // [
-    //     "console",
-    //     new ConsoleDevice({
-    //         ctrl_addr: 0xf0000000,
-    //         status_addr: 0xf0000004,
-    //         data: {
-    //             start: 0xf0000008,
-    //             end: 0xf000000f,
-    //         },
-    //         enabled: true,
-    //     }),
-    // ],
-    // [
-    //     "os",
-    //     new OSDriver({
-    //         ctrl_addr: 0xf0000010,
-    //         status_addr: 0xf0000014,
-    //         data: {
-    //             start: 0xf0000018,
-    //             end: 0xf000001f,
-    //         },
-    //         enabled: true,
-    //     }),
-    // ],
+    [
+        "console",
+        new ConsoleDevice({
+            ctrl_addr: 0xf0000000,
+            status_addr: 0xf0000004,
+            data: {
+                start: 0xf0000008,
+                end: 0xf000000f,
+            },
+            enabled: true,
+        }),
+    ],
+    [
+        "os",
+        new OSDriver({
+            ctrl_addr: 0xf0000010,
+            status_addr: 0xf0000014,
+            data: {
+                start: 0xf0000018,
+                end: 0xf000001f,
+            },
+            enabled: true,
+        }),
+    ],
 ]);
 
 /* Memory */

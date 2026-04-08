@@ -17,3 +17,5 @@ main:
     and $t6, $t0, $t3
     and $t7, $t1, $t4
     and $t8, $t2, $t5    
+
+    jr $ra

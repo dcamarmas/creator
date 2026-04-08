@@ -1,0 +1,38 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/executor/test_riscv_error_executor_007.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "The memory must be aligned",
+      i: 3,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "1": 32,
+    "10": 3,
+    "11": 19,
+    "13": 98,
+    "14": 160,
+    "15": 163,
+    "18": 128,
+    "19": 103,
+    "2": 2,
+    "3": 151,
+    "5": 2,
+    "6": 130,
+    "7": 147,
+    "9": 160,
+  },
+  registers: {
+    "x5,t0": "0x200000",
+    "x6,t1": "0xa",
+    mtime: "0x4",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

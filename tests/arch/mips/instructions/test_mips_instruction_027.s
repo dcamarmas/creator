@@ -13,3 +13,5 @@ main:
   srl $t3, $t0, 2
   srl $t4, $t1, 4
   srl $t5, $t2, 15
+
+  jr $ra

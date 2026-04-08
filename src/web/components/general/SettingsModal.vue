@@ -21,6 +21,7 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import {
   interruptManager,
   set_debug,
+  set_kernel,
   setInterruptManager,
   status,
 } from "@/core/core.mjs";
@@ -41,6 +42,7 @@ export default defineComponent({
     notification_time: { type: Number, required: true },
     dark_mode_setting: { type: String, required: true },
     c_debug: { type: Boolean, required: true },
+    c_kernel: { type: Boolean, required: true },
     vim_custom_keybinds: {
       type: Array as PropType<VimKeybind[]>,
       required: true,
@@ -93,6 +95,7 @@ export default defineComponent({
     "update:notification_time",
     "update:dark_mode_setting",
     "update:c_debug",
+    "update:c_kernel",
     "update:vim_custom_keybinds",
     "update:vim_mode",
     "update:backup",
@@ -219,6 +222,23 @@ export default defineComponent({
           "configuration",
           "configuration.debug_mode",
           "configuration.debug_mode." + value,
+        );
+      },
+    },
+    c_kernel_value: {
+      get() {
+        return this.c_kernel;
+      },
+      set(value: boolean) {
+        set_kernel(value);
+
+        this.$emit("update:c_kernel", value);
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.kernel_mode",
+          "configuration.kernel_mode." + value,
         );
       },
     },
@@ -576,6 +596,15 @@ export default defineComponent({
           class="representation-select"
         />
       </b-list-group-item>
+      <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-6">Kernel Simulator:</label> <b-form-checkbox
+          id="range-6"
+          v-model="c_kernel_value"
+          name="check-button"
+          switch
+          size="lg"
+        /> </b-list-group-item> 
     </b-list-group>
 
     <template #footer="{ hide }">

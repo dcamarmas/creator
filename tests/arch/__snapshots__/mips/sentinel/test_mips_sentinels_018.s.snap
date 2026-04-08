@@ -1,0 +1,46 @@
+export const snapshot = {};
+
+snapshot[`mips/sentinel/test_mips_sentinels_018.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 18,
+    "11": 10,
+    "15": 12,
+    "16": 35,
+    "17": 189,
+    "18": 255,
+    "19": 252,
+    "20": 3,
+    "21": 224,
+    "23": 8,
+    "3": 5,
+    "4": 12,
+    "7": 16,
+    "8": 32,
+    "9": 2,
+  },
+  registers: {
+    "18,s2": "0x5",
+    "2,v0": "0xa",
+    "29,sp": "0xffffff8",
+    "31,ra": "0x8",
+    PC: "0x10",
+  },
+  sentinel_errors: [
+    {
+      errors: [
+        {
+          message: "Stack pointer not restored: entered at 0xffffffc, exited at 0xffffff8",
+          register: undefined,
+          rule: "STACK_NOT_RESTORED",
+        },
+      ],
+      function: "test",
+    },
+  ],
+}
+`;

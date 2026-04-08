@@ -15,3 +15,5 @@ main:
     mulhu x10, x6, x7
     mulhu x11, x7, x8
     mulhu x12, x8, x5
+
+    jr ra

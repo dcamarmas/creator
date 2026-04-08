@@ -5,15 +5,16 @@
 
 .data
     w1:		.word 14
-    b1:		.byte 127
+    b1:		.byte 127, -42
 
     .align 1
-    h1:		.half 32767
+    h1:		.half 32767, -12345
+    .align 2
     w2:		.space 4
-    b2:		.space 1
+    b2:		.space 2
 
     .align 1
-    h2:		.space 2
+    h2:		.space 4
 
 .text
 main:
@@ -27,15 +28,23 @@ main:
 
     lb $t5,  0($t1)
     lbu $t6, b1
+    lb $s0,  1($t1)
+    lbu $s1, b1 + 1
 
     lh $t7,  0($t2)
     lhu $t8, h1
+    lh $s2,  2($t2)
+    lhu $s3, h1 + 2
 
     la $t9, w2
     sw $t3, 0($t9)
 
     la $t9, b2
     sb $t5, 0($t9)
+    sb $s0, 1($t9)
 
     la $t9, h2
     sh $t7, 0($t9)	
+    sh $s2, 2($t9)	
+
+    jr $ra

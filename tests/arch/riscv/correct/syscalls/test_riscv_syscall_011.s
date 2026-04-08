@@ -8,3 +8,4 @@
         li a7, 11
         li a0, 'c'
         ecall
+        jr ra

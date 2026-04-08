@@ -1,0 +1,33 @@
+export const snapshot = {};
+
+snapshot[`riscv/sentinel/test_riscv_sentinels_030.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "1": 80,
+    "10": 8,
+    "11": 147,
+    "15": 115,
+    "17": 80,
+    "18": 1,
+    "19": 147,
+    "2": 1,
+    "22": 128,
+    "23": 103,
+    "3": 147,
+    "5": 192,
+    "7": 239,
+    "9": 160,
+  },
+  registers: {
+    "x1,ra": "0x8",
+    "x17,a7": "0xa",
+    "x3,gp": "0x5",
+    mtime: "0x6",
+    pc: "0x10",
+  },
+  sentinel_errors: [],
+}
+`;
