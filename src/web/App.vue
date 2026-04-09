@@ -354,6 +354,14 @@ export default {
       target_port: "",
       target_location: "~/creator",
       flash_url: "http://localhost:8080",
+      
+      /* Validation test */
+      // Stats
+      passed_test: 0,
+      failed_test: 0,
+
+      // Check testing execution
+      testing: false,
     };
   },
 

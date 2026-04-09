@@ -17,7 +17,7 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { REGISTERS } from "../core.mjs";
+import { architecture, REGISTERS } from "../core.mjs";
 
 /**
  * Represents a stack frame, with a begin and end address
@@ -71,6 +71,7 @@ export class StackTracker {
     public reset() {
         this.frames.length = 0;
         this.hints.clear();
+        this.newFrame(architecture.config.main_function);
     }
 
     /**

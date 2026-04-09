@@ -8,3 +8,4 @@
         li a7, 10
         ecall            
         li t0, 453
+        jr ra

@@ -1,0 +1,84 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_006.s 1`] = `
+{
+  column: 7,
+  errorText: "[E09] Error: Incorrect instruction syntax",
+  line: 11,
+}
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_006.s 2`] = `
+"[E09] Error: Incorrect instruction syntax
+    ╭─[ assembly:11:7 ]
+    │
+ 11 │    li t0, 0xhello
+    │       ─────┬─────  
+    │            ╰─────── Incorrect syntax
+    │ 
+    │ Note: Allowed formats:
+    │       opcode rd, val
+────╯
+
+The syntax opcode rd, val failed with the following reason:
+Error: found identifier (xhello) but expected binary operator or end of input
+    ╭─[ assembly:11:12 ]
+    │
+ 11 │    li t0, 0xhello
+    │           ┬───┬──  
+    │           ╰──────── While parsing this expression
+    │               │    
+    │               ╰──── Unexpected input
+────╯
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_006.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E09] Error:</span> Incorrect instruction syntax
+    <span style='color:#949494'>╭─[</span> assembly:11:7 <span style='color:#949494'>]</span>
+    <span style='color:#949494'>│</span>
+ <span style='color:#949494'>11 │</span> <span style='color:#b2b2b2'>   li </span><span style='color:var(--err-red,#a00)'>t0, 0xhello</span>
+ <span style='color:#585858'>   │</span>       <span style='color:var(--err-red,#a00)'>─────┬─────</span>  
+ <span style='color:#585858'>   │</span>            <span style='color:var(--err-red,#a00)'>╰───────</span> Incorrect syntax
+ <span style='color:#585858'>   │</span> 
+ <span style='color:#585858'>   │</span> <span style='color:#87d7af'>Note</span>: Allowed formats:
+ <span style='color:#585858'>   │</span>       opcode rd, val
+<span style='color:#949494'>────╯</span>
+
+The syntax <span style='color:var(--err-bright-blue,#55f)'>opcode rd, val</span> failed with the following reason:
+<span style='color:var(--err-red,#a00)'>Error:</span> found <span style='color:var(--err-red,#a00)'>identifier (xhello)</span> but expected <span style='color:var(--err-green,#0a0)'>binary operator</span> or <span style='color:var(--err-green,#0a0)'>end of input</span>
+    <span style='color:#949494'>╭─[</span> assembly:11:12 <span style='color:#949494'>]</span>
+    <span style='color:#949494'>│</span>
+ <span style='color:#949494'>11 │</span> <span style='color:#b2b2b2'>   li t0, </span><span style='color:var(--err-yellow,#a60)'>0</span><span style='color:var(--err-red,#a00)'>xhello</span>
+ <span style='color:#585858'>   │</span>           <span style='color:var(--err-yellow,#a60)'>┬</span><span style='color:var(--err-red,#a00)'>───┬──</span>  
+ <span style='color:#585858'>   │</span>           <span style='color:var(--err-yellow,#a60)'>╰────────</span> While parsing this <span style='color:var(--err-yellow,#a60)'>expression</span>
+ <span style='color:#585858'>   │</span>               <span style='color:var(--err-red,#a00)'>│</span>    
+ <span style='color:#585858'>   │</span>               <span style='color:var(--err-red,#a00)'>╰────</span> Unexpected input
+<span style='color:#949494'>────╯</span>
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_006.s 4`] = `
+"[31m[E09] Error:[0m Incorrect instruction syntax
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:11:7 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m11 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249m [0m[31mt[0m[31m0[0m[31m,[0m[31m [0m[31m0[0m[31mx[0m[31mh[0m[31me[0m[31ml[0m[31ml[0m[31mo[0m
+ [38;5;240m   │[0m       [31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m┬[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m  
+ [38;5;240m   │[0m            [31m╰[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m Incorrect syntax
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mNote[0m: Allowed formats:
+ [38;5;240m   │[0m       opcode rd, val
+[38;5;246m────╯[0m
+
+The syntax [94mopcode rd, val[0m failed with the following reason:
+[31mError:[0m found [31midentifier (xhello)[0m but expected [32mbinary operator[0m or [32mend of input[0m
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:11:12 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m11 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249m0[0m[38;5;249m,[0m[38;5;249m [0m[33m0[0m[31mx[0m[31mh[0m[31me[0m[31ml[0m[31ml[0m[31mo[0m
+ [38;5;240m   │[0m           [33m┬[0m[31m─[0m[31m─[0m[31m─[0m[31m┬[0m[31m─[0m[31m─[0m  
+ [38;5;240m   │[0m           [33m╰[0m[33m─[0m[33m─[0m[33m─[0m[33m─[0m[33m─[0m[33m─[0m[33m─[0m[33m─[0m While parsing this [33mexpression[0m
+ [38;5;240m   │[0m               [31m│[0m    
+ [38;5;240m   │[0m               [31m╰[0m[31m─[0m[31m─[0m[31m─[0m[31m─[0m Unexpected input
+[38;5;246m────╯[0m
+"
+`;

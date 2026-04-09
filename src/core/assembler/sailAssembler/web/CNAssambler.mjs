@@ -897,7 +897,7 @@ export async function dump(file){
         instructions.push({
         Break: null,
         Address: "0x" + dumptextinstructions32[i][0],
-        Label: dumptextinstructions32[i][4],
+        Label: [dumptextinstructions32[i][4]],
         loaded: dumptextinstructions32[i][2],
         user : list_user_instructions[i],
         L1_I: 0,
@@ -959,7 +959,7 @@ export async function dump(file){
         instructions.push({
         Break: null,
         Address: "0x" + dumptextinstructions64[i][0],
-        Label: dumptextinstructions64[i][4],
+        Label: [dumptextinstructions64[i][4]],
         loaded: dumptextinstructions64[i][2],
         user : list_user_instructions[i],
         L1_I: 0,

@@ -1,0 +1,33 @@
+export const snapshot = {};
+
+snapshot[`mips/sentinel/test_mips_sentinels_006.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 32,
+    "1": 28,
+    "11": 10,
+    "15": 12,
+    "16": 32,
+    "17": 28,
+    "19": 5,
+    "20": 3,
+    "21": 224,
+    "23": 8,
+    "3": 5,
+    "4": 12,
+    "7": 16,
+    "8": 32,
+    "9": 2,
+  },
+  registers: {
+    "2,v0": "0xa",
+    "28,gp": "0x5",
+    "31,ra": "0x8",
+    PC: "0x10",
+  },
+  sentinel_errors: [],
+}
+`;

@@ -536,7 +536,7 @@ export default defineComponent({
                 // Add hint for this instruction
                 hints.push({
                   address: addr.toString(),
-                  tag: instruction.loaded || instruction.user,
+                  tag: [instruction.loaded || instruction.user],
                   type: "instruction",
                   sizeInBits: instructionSizeInBits,
                 });
@@ -603,7 +603,7 @@ export default defineComponent({
 
         for (let i = 0; i < sizeInBytes; i++) {
           this.hintMap.set(address + i, {
-            tag: typeof hint.tag === "string" ? hint.tag : hint.tag.join(", "),
+            tag: hint.tag.join(", "),
             type: hint.type,
             sizeInBits: hint.sizeInBits,
             colorIndex: hintColorIndex,

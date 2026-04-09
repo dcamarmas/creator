@@ -12,5 +12,6 @@ main:
 
     nor $t3, $t0, $t1
     nor $t4, $t1, $t2
-  	nor $t5, $t2, $t0
-    
+    nor $t5, $t2, $t0
+
+    jr $ra

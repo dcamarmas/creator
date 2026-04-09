@@ -15,5 +15,5 @@ main:
     slt x9, x5, x5
     slt x10, x5, x6
     slt x11, x5, x7
-    
-    
+
+    jr ra

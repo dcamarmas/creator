@@ -17,4 +17,5 @@ main:
     xor $t6, $t0, $t3
     xor $t7, $t1, $t4
     xor $t8, $t2, $t5
-    
+
+    jr $ra

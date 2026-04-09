@@ -56,7 +56,7 @@ export function handleAboutCommand(): void {
             "║" +
                 colorText(" 🚀 CREATOR Core Version:", "33") +
                 ` ${creatorVersion}`.padEnd(
-                    35 - creatorVersion.length + " 6.1.0".length,
+                    35 - creatorVersion.length + " 6.1.1".length,
                 ) +
                 "║",
         );

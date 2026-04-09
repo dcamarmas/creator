@@ -39,6 +39,7 @@ export const CoreEventTypes = {
     ARDUINO_PIN_CHANGED: "arduino-pin-write",
     ARDUINO_RESET: "arduino-reset",
     ARDUINO_PIN_INTERRUPT: "arduino-pin-interrupt",
+    VALIDATION_UPDATE: "update-validation",
 } as const;
 
 /**
@@ -52,13 +53,25 @@ export interface RegisterUpdatedEvent {
 }
 
 /**
+ * Calling convention violation information
+ */
+export interface SentinelErrorData {
+    /** ID of the rule broken */
+    rule: string,
+    /** Register in which the rule was broken, if applicable */
+    register?: string[],
+    /** Full error message */
+    message: string
+}
+
+/**
  * Emitted when calling convention violations are detected
  */
 export interface SentinelErrorEvent {
     /** Name of the function that had violations */
     functionName: string;
-    /** Full error message */
-    message: string;
+    /** Violations found on the function */
+    errors: SentinelErrorData[];
     /** Whether the check passed (always false for error events) */
     ok: boolean;
 }
@@ -137,6 +150,8 @@ export type CoreEvents = {
     "arduino-find-vector-slot": ArduinoFindSlotEvent;
     /** Emitted when the simulator requests to get the pin assigned to an interrupt vector slot */
     "arduino-get-pin-from-slot": ArduinoGetPinFromSlotEvent;
+    /** Emitted when interrupts are enabled/disabled */
+    "arduino-interrupts-enabled": boolean;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal

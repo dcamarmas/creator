@@ -1,55 +1,40 @@
-
-#Creatino example: parse
+#Template for Arduino proyects
 .data
-	msg: .string "Enter a integer number:\n"
-    sol: .string "You entered %d"
-    lookahead: .string "SKIP_NONE"
+space: .zero 100
 
 .text
-
-number:
-	mv a1, a0
-    la a0, sol
-    addi sp, sp, -4       
-    sw ra, 0(sp)             
-	jal ra, serial_printf
-    lw ra, 0(sp)          
-    addi sp, sp, 4 
-    jal ra, loop
-
 setup:
-	li a0, 115200
-    addi sp, sp, -4       
-    sw ra, 0(sp)             
-	jal ra, serial_begin
-    lw ra, 0(sp)          
-    addi sp, sp, 4 
-    
+    li a0, 115200
+    addi sp, sp, -4
+    sw   ra, 0(sp)
+    jal ra, serial_begin
+    lw   ra, 0(sp)
+    addi sp, sp, 4
     jr ra
-    
-loop:    
-	la a0, msg 
-    addi sp, sp, -4       
-    sw ra, 0(sp)             
-	jal ra, serial_printf
-    lw ra, 0(sp)          
-    addi sp, sp, 4 
-    
-    la a0, lookahead
-	addi sp, sp, -4       
-    sw ra, 0(sp)             
-	jal ra, serial_parseInt
-    lw ra, 0(sp)          
-    addi sp, sp, 4 
-    bnez a0, number
-    jal ra, loop
-    
-    
+loop:
+
+    addi sp, sp, -4
+    sw ra, 0(sp)
+    la a0, space
+    li a1, 5
+    jal ra, serial_readBytes
+    lw ra, 0(sp)
+    addi sp, sp, 4
+
+
+    addi sp, sp, -4
+    sw ra, 0(sp)
+    la a0, space
+    jal ra, serial_printf
+    lw ra, 0(sp)
+    addi sp, sp, 4
+
+    j loop
 main:
-	jal ra, initArduino
-    addi sp, sp, -4       
-    sw ra, 0(sp)             
+    addi sp, sp, -16       
+    sw ra, 12(sp)          
+    jal ra, initArduino    
     jal ra, setup
-    lw ra, 0(sp)          
-    addi sp, sp, 4              
+    lw ra, 12(sp)          
+    addi sp, sp, 16              
     j loop

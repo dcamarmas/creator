@@ -84,7 +84,7 @@ export function sjasmplusAssemble(code) {
 
     // Now add hints to memory based on the parsed symbols (its a dictionary)
     for (const [name, addr] of Object.entries(parsedSymbols)) {
-        main_memory.addHint(addr, name);
+        main_memory.addHint(addr, [name]);
     }
 
     // Clean up temp files

@@ -17,4 +17,5 @@ main:
     and x11, x5, x8
     and x12, x6, x9
   	and x13, x7, x10
-    
+
+    jr ra

@@ -15,3 +15,5 @@ main:
     div x10, x6, x5
     div x11, x7, x8
     div x12, x8, x7
+
+    jr ra

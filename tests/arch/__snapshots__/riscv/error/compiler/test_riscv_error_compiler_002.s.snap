@@ -1,0 +1,42 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_002.s 1`] = `
+{
+  column: 2,
+  errorText: "[E02] Error: Instruction suma isn't defined",
+  line: 12,
+}
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_002.s 2`] = `
+"[E02] Error: Instruction suma isn't defined
+    ╭─[ assembly:12:2 ]
+    │
+ 12 │     suma t0, t1, t2
+    │     ──┬─  
+    │       ╰─── Unknown instruction
+────╯
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_002.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E02] Error:</span> Instruction <span style='color:var(--err-red,#a00)'>suma</span> isn&#39;t defined
+    <span style='color:#949494'>╭─[</span> assembly:12:2 <span style='color:#949494'>]</span>
+    <span style='color:#949494'>│</span>
+ <span style='color:#949494'>12 │</span> <span style='color:#b2b2b2'>    </span><span style='color:var(--err-red,#a00)'>suma</span><span style='color:#b2b2b2'> t0, t1, t2</span>
+ <span style='color:#585858'>   │</span>     <span style='color:var(--err-red,#a00)'>──┬─</span>  
+ <span style='color:#585858'>   │</span>       <span style='color:var(--err-red,#a00)'>╰───</span> Unknown instruction
+<span style='color:#949494'>────╯</span>
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_002.s 4`] = `
+"[31m[E02] Error:[0m Instruction [31msuma[0m isn't defined
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:12:2 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m12 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[31ms[0m[31mu[0m[31mm[0m[31ma[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249m0[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249m1[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249m2[0m
+ [38;5;240m   │[0m     [31m─[0m[31m─[0m[31m┬[0m[31m─[0m  
+ [38;5;240m   │[0m       [31m╰[0m[31m─[0m[31m─[0m[31m─[0m Unknown instruction
+[38;5;246m────╯[0m
+"
+`;

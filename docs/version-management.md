@@ -12,7 +12,7 @@ The version is determined using the following priority order:
 
 1. **`CREATOR_VERSION` environment variable** (highest priority)
    - Allows manual override for testing or special builds
-   - Example: `export CREATOR_VERSION=6.1.0-rc1`
+   - Example: `export CREATOR_VERSION=6.1.1-rc1`
 
 2. **`CREATOR_CHANNEL` environment variable**
    - `CREATOR_CHANNEL=nightly`: Generates `nightly-YYYYMMDD` format
@@ -27,7 +27,7 @@ The version is determined using the following priority order:
 ## Version Formats
 
 ### Stable Channel
-- Format: `major.minor.patch` (e.g., `6.0.0`, `6.1.0`)
+- Format: `major.minor.patch` (e.g., `6.0.0`, `6.1.0`, `6.1.1`)
 - Source: `package.json` version field
 - Used for: Official releases with version tags
 
@@ -168,7 +168,7 @@ checkForUpdates(currentVersion);
 3. Users will see update notifications daily if they run nightly builds
 
 ### For Stable Releases
-1. Update `package.json` version to proper semantic version (e.g., `6.0.0`, `6.1.0`)
+1. Update `package.json` version to proper semantic version (e.g., `6.0.0`, `6.1.0`, `6.1.1`)
 2. Remove prerelease identifiers from package.json version
 3. Set `CREATOR_CHANNEL=stable` or leave unset
 4. Create a git tag matching the version
@@ -183,7 +183,7 @@ checkForUpdates(currentVersion);
 
 // For development/beta - keep prerelease:
 {
-  "version": "6.1.0-beta"  // Automatically treated as nightly
+  "version": "6.1.1-beta"  // Automatically treated as nightly
 }
 ```
 

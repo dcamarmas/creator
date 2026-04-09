@@ -8,3 +8,4 @@
         li $v0, 10
         syscall            
         li $t0, 453
+        jr $ra

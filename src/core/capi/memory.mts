@@ -17,11 +17,11 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
+import { main_memory, stackTracker, BYTESIZE, REGISTERS } from "../core.mjs";
 import { exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { sentinel } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mts";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
 import type { Memory } from "../memory/Memory.mts";
 import { toHex } from "../utils/utils.mjs";
@@ -226,7 +226,7 @@ export const MEM = {
         if (hint) {
             try {
                 const sizeInBits = bytes * BYTESIZE;
-                memory.addHint(BigInt(address), "", hint, sizeInBits);
+                memory.addHint(BigInt(address), [], hint, sizeInBits);
             } catch (e) {
                 raise(
                     "Failed to add hint for address '0x" +
@@ -245,9 +245,10 @@ export const MEM = {
         const i = ret.indexComp;
         const j = ret.indexElem;
 
-        // Add stack hint if we're writing to the stack segment and have a register name
-        if (segment === "stack" && reg_name) {
-            stackTracker.addHint(address, reg_name);
+        // Add stack hint if we're writing to the stack segment
+        if (segment === "stack") {
+            const reg = REGISTERS[i]!.elements[j]!;
+            stackTracker.addHint(address, reg.name.join(","));
         }
 
         sentinel.recordMemoryWrite(i, j, address, byteArray.length);
@@ -319,10 +320,14 @@ export const MEM = {
         return ret;
     },
 
-    alloc(bytes: number): number {
-        // TODO
-        raise("MEM.alloc is not implemented");
-        return 0;
+    /**
+     * Allocates N bytes of memory
+     *
+     * @param bytes - Amount of bytes to allocate
+     * @returns Starting address of the allocation
+     */
+    alloc(bytes: number): bigint {
+        return main_memory.alloc(bytes, "data");
     },
 
     /**
@@ -341,7 +346,7 @@ export const MEM = {
                 : devices.get(deviceID)!.memory;
 
         try {
-            memory.addHint(address, "", hint, sizeInBits);
+            memory.addHint(address, [], hint, sizeInBits);
             return true;
         } catch (e) {
             raise(

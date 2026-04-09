@@ -12,6 +12,14 @@ main:
     li $t3, -2
 
     mult $t0, $t1
+    mfhi $s0
+    mflo $s1
     mult $t1, $t2
+    mfhi $s2
+    mflo $s3
     mult $t2, $t3
+    mfhi $s4
+    mflo $s5
     mult $t3, $t4
+
+    jr $ra

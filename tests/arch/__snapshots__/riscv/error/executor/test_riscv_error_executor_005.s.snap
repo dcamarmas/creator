@@ -1,0 +1,31 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/executor/test_riscv_error_executor_005.s 1`] = `
+{
+  display: "",
+  error: false,
+  instruction_errors: [
+    {
+      error: "Segmentation fault. You tried to write in the text segment",
+      i: 1,
+    },
+  ],
+  keyboard: "",
+  memory: {
+    "1": 160,
+    "10": 128,
+    "11": 103,
+    "2": 2,
+    "3": 147,
+    "5": 80,
+    "6": 32,
+    "7": 35,
+  },
+  registers: {
+    "x5,t0": "0xa",
+    mtime: "0x2",
+    pc: "0xfffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

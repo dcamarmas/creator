@@ -50,7 +50,7 @@ function displayInstruction(
     hideLibrary = false,
 ): void {
     const address = instr.Address.padEnd(8);
-    const label = (instr.Label || "").padEnd(11);
+    const label = instr.Label.join(",").padEnd(11);
     let loaded = (instr.loaded || "").padEnd(23);
     const loadedIsBinary = /^[01]+$/.test(loaded);
     const rightColumn = instr.user || "";
@@ -100,7 +100,7 @@ export function handleInstructionsCommand(limit?: number): void {
             : instructions.length;
 
     for (let i = 0; i < count; i++) {
-        displayInstruction(instructions[i], currentPC);
+        displayInstruction(instructions[i]!, currentPC);
     }
 }
 
@@ -117,7 +117,7 @@ export function findInstructionByAddressOrLabel(
         address = userInput.toLowerCase();
     } else {
         const labelMatch = instructions.find(
-            instr => instr.Label === userInput,
+            instr => instr.Label.includes(userInput),
         );
 
         if (labelMatch) {
@@ -159,7 +159,7 @@ export function toggleBreakpoint(index: number): void {
 
     console.log(
         `Breakpoint ${status} at ${instr!.Address}${
-            instr!.Label ? ` (${instr!.Label})` : ""
+            instr!.Label.length > 0 ? ` (${instr!.Label.join(",")})` : ""
         }: ${instr!.loaded}`,
     );
 }
@@ -179,7 +179,7 @@ function listBreakpoints(): void {
 
     for (const bp of breakpoints) {
         console.log(
-            `  ${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}: ${bp.loaded}`,
+            `  ${bp.Address}${bp.Label.length > 0 ? ` (${bp.Label.join(",")})` : ""}: ${bp.loaded}`,
         );
     }
 }

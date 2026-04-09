@@ -1,0 +1,42 @@
+export const snapshot = {};
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_021.s 1`] = `
+{
+  column: 21,
+  errorText: "[E17] Error: Data at address 0x200001 isn't aligned to size 2 nor word size 4",
+  line: 9,
+}
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_021.s 2`] = `
+"[E17] Error: Data at address 0x200001 isn't aligned to size 2 nor word size 4
+   ╭─[ assembly:9:21 ]
+   │
+ 9 │     example2:   .half 2
+   │                       ┬  
+   │                       ╰── This value isn't aligned
+───╯
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_021.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E17] Error:</span> Data at address <span style='color:var(--err-red,#a00)'>0x200001</span> isn&#39;t aligned to size <span style='color:var(--err-bright-blue,#55f)'>2</span> nor word size <span style='color:var(--err-bright-blue,#55f)'>4</span>
+   <span style='color:#949494'>╭─[</span> assembly:9:21 <span style='color:#949494'>]</span>
+   <span style='color:#949494'>│</span>
+ <span style='color:#949494'>9 │</span> <span style='color:#b2b2b2'>    example2:   .half </span><span style='color:var(--err-red,#a00)'>2</span>
+ <span style='color:#585858'>  │</span>                       <span style='color:var(--err-red,#a00)'>┬</span>  
+ <span style='color:#585858'>  │</span>                       <span style='color:var(--err-red,#a00)'>╰──</span> This value isn&#39;t aligned
+<span style='color:#949494'>───╯</span>
+"
+`;
+
+snapshot[`riscv/error/compiler/test_riscv_error_compiler_021.s 4`] = `
+"[31m[E17] Error:[0m Data at address [31m0x200001[0m isn't aligned to size [94m2[0m nor word size [94m4[0m
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:9:21 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m9 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249me[0m[38;5;249mx[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m2[0m[38;5;249m:[0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m.[0m[38;5;249mh[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249mf[0m[38;5;249m [0m[31m2[0m
+ [38;5;240m  │[0m                       [31m┬[0m  
+ [38;5;240m  │[0m                       [31m╰[0m[31m─[0m[31m─[0m This value isn't aligned
+[38;5;246m───╯[0m
+"
+`;

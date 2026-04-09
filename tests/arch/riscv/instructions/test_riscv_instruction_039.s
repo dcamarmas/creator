@@ -15,3 +15,5 @@ main:
     divu x10, x6, x5
     divu x11, x7, x8
     divu x12, x8, x7
+
+    jr ra

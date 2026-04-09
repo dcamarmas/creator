@@ -132,7 +132,7 @@ components:
     double_precision: false
     elements:
       - name:
-          - r0
+          - "0"
           - zero
         nbits: 32
         value: 0
@@ -141,7 +141,7 @@ components:
         properties:
           - read
       - name:
-          - r1
+          - "1"
           - at
         nbits: 32
         value: 0
@@ -151,7 +151,7 @@ components:
           - read
           - write
       - name:
-          - r2
+          - "2"
           - v0
         nbits: 32
         value: 0
@@ -161,7 +161,7 @@ components:
           - read
           - write
       - name:
-          - r3
+          - "3"
           - v1
         nbits: 32
         value: 0
@@ -171,7 +171,7 @@ components:
           - read
           - write
       - name:
-          - r4
+          - "4"
           - a0
         nbits: 32
         value: 0
@@ -181,7 +181,7 @@ components:
           - read
           - write
       - name:
-          - r5
+          - "5"
           - a1
         nbits: 32
         value: 0
@@ -191,7 +191,7 @@ components:
           - read
           - write
       - name:
-          - r6
+          - "6"
           - a2
         nbits: 32
         value: 0
@@ -201,7 +201,7 @@ components:
           - read
           - write
       - name:
-          - r7
+          - "7"
           - a3
         nbits: 32
         value: 0
@@ -211,7 +211,7 @@ components:
           - read
           - write
       - name:
-          - r8
+          - "8"
           - t0
         nbits: 32
         value: 0
@@ -221,7 +221,7 @@ components:
           - read
           - write
       - name:
-          - r9
+          - "9"
           - t1
         nbits: 32
         value: 0
@@ -231,7 +231,7 @@ components:
           - read
           - write
       - name:
-          - r10
+          - "10"
           - t2
         nbits: 32
         value: 0
@@ -241,7 +241,7 @@ components:
           - read
           - write
       - name:
-          - r11
+          - "11"
           - t3
         nbits: 32
         value: 0
@@ -251,7 +251,7 @@ components:
           - read
           - write
       - name:
-          - r12
+          - "12"
           - t4
         nbits: 32
         value: 0
@@ -261,7 +261,7 @@ components:
           - read
           - write
       - name:
-          - r13
+          - "13"
           - t5
         nbits: 32
         value: 0
@@ -271,7 +271,7 @@ components:
           - read
           - write
       - name:
-          - r14
+          - "14"
           - t6
         nbits: 32
         value: 0
@@ -281,7 +281,7 @@ components:
           - read
           - write
       - name:
-          - r15
+          - "15"
           - t7
         nbits: 32
         value: 0
@@ -291,7 +291,7 @@ components:
           - read
           - write
       - name:
-          - r16
+          - "16"
           - s0
         nbits: 32
         value: 0
@@ -302,7 +302,7 @@ components:
           - write
           - saved
       - name:
-          - r17
+          - "17"
           - s1
         nbits: 32
         value: 0
@@ -313,7 +313,7 @@ components:
           - write
           - saved
       - name:
-          - r18
+          - "18"
           - s2
         nbits: 32
         value: 0
@@ -324,7 +324,7 @@ components:
           - write
           - saved
       - name:
-          - r19
+          - "19"
           - s3
         nbits: 32
         value: 0
@@ -335,7 +335,7 @@ components:
           - write
           - saved
       - name:
-          - r20
+          - "20"
           - s4
         nbits: 32
         value: 0
@@ -346,7 +346,7 @@ components:
           - write
           - saved
       - name:
-          - r21
+          - "21"
           - s5
         nbits: 32
         value: 0
@@ -357,7 +357,7 @@ components:
           - write
           - saved
       - name:
-          - r22
+          - "22"
           - s6
         nbits: 32
         value: 0
@@ -368,7 +368,7 @@ components:
           - write
           - saved
       - name:
-          - r23
+          - "23"
           - s7
         nbits: 32
         value: 0
@@ -379,7 +379,7 @@ components:
           - write
           - saved
       - name:
-          - r24
+          - "24"
           - t8
         nbits: 32
         value: 0
@@ -389,7 +389,7 @@ components:
           - read
           - write
       - name:
-          - r25
+          - "25"
           - t9
         nbits: 32
         value: 0
@@ -399,7 +399,7 @@ components:
           - read
           - write
       - name:
-          - r26
+          - "26"
           - k0
         nbits: 32
         value: 0
@@ -409,7 +409,7 @@ components:
           - read
           - write
       - name:
-          - r27
+          - "27"
           - k1
         nbits: 32
         value: 0
@@ -419,7 +419,7 @@ components:
           - read
           - write
       - name:
-          - r28
+          - "28"
           - gp
         nbits: 32
         value: 0
@@ -430,18 +430,18 @@ components:
           - write
           - global_pointer
       - name:
-          - r29
+          - "29"
           - sp
         nbits: 32
-        value: 268435452
-        default_value: 268435452
+        value: 0x0FFFFFFC
+        default_value: 0x0FFFFFFC
         encoding: 29
         properties:
           - read
           - write
           - stack_pointer
       - name:
-          - r30
+          - "30"
           - fp
         nbits: 32
         value: 0
@@ -452,11 +452,11 @@ components:
           - write
           - frame_pointer
       - name:
-          - r31
+          - "31"
           - ra
         nbits: 32
-        value: 4294967295
-        default_value: 4294967295
+        value: -1
+        default_value: -1
         encoding: 31
         properties:
           - read
@@ -467,6 +467,7 @@ components:
     elements:
       - name:
           - f0
+          - FP0
         nbits: 32
         value: 0
         default_value: 0
@@ -485,6 +486,7 @@ components:
           - write
       - name:
           - f2
+          - FP2
         nbits: 32
         value: 0
         default_value: 0
@@ -503,6 +505,7 @@ components:
           - write
       - name:
           - f4
+          - FP4
         nbits: 32
         value: 0
         default_value: 0
@@ -521,6 +524,7 @@ components:
           - write
       - name:
           - f6
+          - FP6
         nbits: 32
         value: 0
         default_value: 0
@@ -539,6 +543,7 @@ components:
           - write
       - name:
           - f8
+          - FP8
         nbits: 32
         value: 0
         default_value: 0
@@ -557,6 +562,7 @@ components:
           - write
       - name:
           - f10
+          - FP10
         nbits: 32
         value: 0
         default_value: 0
@@ -575,6 +581,7 @@ components:
           - write
       - name:
           - f12
+          - FP12
         nbits: 32
         value: 0
         default_value: 0
@@ -593,6 +600,7 @@ components:
           - write
       - name:
           - f14
+          - FP14
         nbits: 32
         value: 0
         default_value: 0
@@ -611,6 +619,7 @@ components:
           - write
       - name:
           - f16
+          - FP16
         nbits: 32
         value: 0
         default_value: 0
@@ -629,6 +638,7 @@ components:
           - write
       - name:
           - f18
+          - FP18
         nbits: 32
         value: 0
         default_value: 0
@@ -647,6 +657,7 @@ components:
           - write
       - name:
           - f20
+          - FP20
         nbits: 32
         value: 0
         default_value: 0
@@ -665,6 +676,7 @@ components:
           - write
       - name:
           - f22
+          - FP22
         nbits: 32
         value: 0
         default_value: 0
@@ -683,6 +695,7 @@ components:
           - write
       - name:
           - f24
+          - FP24
         nbits: 32
         value: 0
         default_value: 0
@@ -701,6 +714,7 @@ components:
           - write
       - name:
           - f26
+          - FP26
         nbits: 32
         value: 0
         default_value: 0
@@ -719,6 +733,7 @@ components:
           - write
       - name:
           - f28
+          - FP28
         nbits: 32
         value: 0
         default_value: 0
@@ -737,6 +752,7 @@ components:
           - write
       - name:
           - f30
+          - FP30
         nbits: 32
         value: 0
         default_value: 0
@@ -1019,13 +1035,36 @@ instructions:
       fields:
         - field: function
           value: "000101"
+        - field: fmt
+          type: cop
+          value: "00000"
         - field: ft
           order: null
           value: "00000"
       preoperation: |
-        let fsValue = CAPI.FS.uint2float32(registers[fs]);
+        let fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
+      definition: |
+        let result = Math.abs(fsValue);
+    - name: abs.d
+      type: Arithmetic floating point
+      template: FPU_R
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000101"
+        - field: fmt
+          type: cop
+          value: "00001"
+        - field: ft
+          order: null
+          value: "00000"
+      preoperation: |
+        let fsValue = CAPI.ARCH.readDouble(fs);
+      postoperation: |
+        CAPI.ARCH.writeDouble(result, fd)
       definition: |
         let result = Math.abs(fsValue);
 
@@ -1058,10 +1097,10 @@ instructions:
           value: "00000"
           type: cop
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(registers[fs]);
-        ftValue = CAPI.FS.uint2float32(registers[ft]);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |
         let result = fsValue + ftValue;
 
@@ -1151,7 +1190,7 @@ instructions:
         - field: opcode
           value: "001100"
       definition: |
-        registers[rt] = registers[rs] & (imm & 0xFFFF);
+        registers[rt] = registers[rs] & (imm & 0xFFFFn);
 
     - name: bc
       template: Custom
@@ -1169,6 +1208,7 @@ instructions:
           order: 1
       definition: |
         // Not implemented
+        CAPI.VALIDATION.raise('bc not implemented');
 
     - name: bc1eqz
       template: FPU_I
@@ -1322,7 +1362,9 @@ instructions:
           type: offset_bytes
       definition: |
         if (CAPI.FP.uint2int(registers[rs]) >= 0) {
-          registers.PC = registers.PC - 4n + imm;
+          const pc = registers.PC
+          registers.ra = pc
+          registers.PC = pc - 4n + imm;
           CAPI.STACK.beginFrame(registers[rs]);
         }
 
@@ -1675,7 +1717,9 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100001"
-      definition: registers[fd] = registers[fs];
+      definition: |
+        let val = CAPI.FP.uint2float32(registers[fs]);
+        CAPI.ARCH.writeDouble(val, fd);
     - name: cvt.d.w
       template: Custom
       type: Arithmetic floating point
@@ -1696,7 +1740,7 @@ instructions:
           stopbit: 21
           value: "00001"
         - field: fs
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 2
@@ -1714,7 +1758,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100001"
-      definition: registers[fd] = registers[fs];
+      definition: CAPI.ARCH.writeDouble(Number(CAPI.FP.uint2int(registers[fs])), fd);
     - name: cvt.s.d
       template: Custom
       type: Arithmetic floating point
@@ -1754,8 +1798,8 @@ instructions:
           stopbit: 0
           value: "100000"
       definition: |
-        let val = CAPI.FS.uint2float32(registers[fs]);
-        CAPI.ARCH.writeDouble(val, fd);
+        let val = CAPI.ARCH.readDouble(fs);
+        registers[fd] = CAPI.FP.float322uint(val, fd);
     - name: cvt.s.w
       template: Custom
       type: Arithmetic floating point
@@ -1776,7 +1820,7 @@ instructions:
           stopbit: 21
           value: "00010"
         - field: fs
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 2
@@ -1794,7 +1838,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100000"
-      definition: registers[fd] = parseFloat(float2int_v2(registers[fs]));
+      definition: registers[fd] = CAPI.FP.float322uint(Number(CAPI.FP.uint2int(registers[fs])));
     - name: cvt.w.d
       template: Custom
       type: Arithmetic floating point
@@ -1822,7 +1866,7 @@ instructions:
           prefix: $
           suffix: ","
         - field: fd
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 10
           stopbit: 6
           order: 1
@@ -1835,7 +1879,7 @@ instructions:
           value: "100100"
       definition: |
         let val = CAPI.ARCH.readDouble(fs);
-        CAPI.REG.write(BigInt(Math.trunc(val)), fd);
+        CAPI.REG.write(CAPI.FP.int2uint(BigInt(Math.trunc(val))), fd);
     - name: cvt.w.s
       template: Custom
       type: Arithmetic floating point
@@ -1863,7 +1907,7 @@ instructions:
           prefix: $
           suffix: ","
         - field: fd
-          type: SFP-Reg
+          type: INT-Reg
           startbit: 10
           stopbit: 6
           order: 1
@@ -1874,7 +1918,9 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "100100"
-      definition: registers[fd] = parseInt(registers[fs]);
+      definition: |
+        let val = CAPI.FP.uint2float32(registers[fs]);
+        CAPI.REG.write(CAPI.FP.int2uint(BigInt(Math.trunc(val))), fd);
     - name: div
       template: Custom
       type: Arithmetic integer
@@ -2077,10 +2123,10 @@ instructions:
           stopbit: 0
           value: "000011"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        fd = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (ftValue != 0)
@@ -2132,7 +2178,7 @@ instructions:
           value: "011011"
       definition: |-
         if (registers[rt] != 0)
-         { registers[rd] = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt])); }
+         { registers[rd] = CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -2168,9 +2214,9 @@ instructions:
           value: "011011"
       definition: |-
         if (registers[rt] != 0)
-         { registers.LO = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]));
-        registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
-         else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
+         { registers.LO = CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]);
+           registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
+        else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: j
       template: Custom
       type: Unconditional bifurcation
@@ -2279,8 +2325,10 @@ instructions:
           stopbit: 0
           value: "001000"
       definition: |-
-        registers.PC = registers[rs];
-        CAPI.STACK.endFrame();
+        const pc = registers[rs]
+        registers.PC = pc;
+        if (BigInt.asIntN(32, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
     - name: lb
       template: Custom
       type: Memory access
@@ -2316,7 +2364,8 @@ instructions:
           suffix: )
           order: 3
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1);
+        const result = CAPI.MEM.read(registers[reg2]+val, 1, reg1, false);
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 8));
     - name: lbu
       template: Custom
       type: Memory access
@@ -2352,7 +2401,7 @@ instructions:
           order: 2
           space: false
       definition: |
-        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt);
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt, false);
     - name: ldc1
       template: Custom
       type: Memory access
@@ -2392,11 +2441,11 @@ instructions:
       postoperation: |
         CAPI.ARCH.writeDouble(doubleValue, ft);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be aligned');
-        }
-        let high = CAPI.MEM.read(registers[base] + off, 4);
-        let low = CAPI.MEM.read(registers[base] + off + 4n, 4, ft);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        let high = CAPI.MEM.read(addr, 4, false);
+        let low = CAPI.MEM.read(addr + 4n, 4, ft, false);
         let doubleValue = CAPI.FP.uint2float64(Number(low), Number(high));
     - name: lh
       template: Custom
@@ -2433,7 +2482,11 @@ instructions:
           prefix: ($
           suffix: )
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 2, reg1);
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        const result = CAPI.MEM.read(addr, 2, reg1, false);
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 16));
     - name: lhu
       template: Custom
       type: Memory access
@@ -2469,7 +2522,10 @@ instructions:
           order: 2
           space: false
       definition: |
-        registers[rt] = CAPI.MEM.read(registers[base]+off, 2, rt);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rt] = CAPI.MEM.read(addr, 2, rt, false);
     - name: lui
       template: Custom
       type: Other
@@ -2533,7 +2589,10 @@ instructions:
           suffix: )
           order: 3
       definition: |
-        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 4, reg1);
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[reg1] = CAPI.MEM.read(addr, 4, reg1, false);
     - name: lwc1
       template: Custom
       type: Memory access
@@ -2569,7 +2628,10 @@ instructions:
           order: 2
           space: false
       definition: |-
-        registers[ft] = CAPI.MEM.read(registers[base]+off, 4, ft);
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[ft] = CAPI.MEM.read(addr, 4, ft, false);
     - name: mfc1
       template: Custom
       type: Transfer between registers
@@ -2821,9 +2883,9 @@ instructions:
           stopbit: 0
           value: "000110"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(fs);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: let result = fsValue;
     - name: mtc1
       template: Custom
@@ -2857,7 +2919,7 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
-      definition: registers[fs] = CAPI.FP.uint2float32(registers[rt]);
+      definition: registers[fs] = registers[rt];
     - name: mthi
       template: Custom
       type: Transfer between registers
@@ -3046,10 +3108,10 @@ instructions:
           stopbit: 0
           value: "000010"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |
         let result = fsValue * ftValue;
     - name: mult
@@ -3086,8 +3148,8 @@ instructions:
           value: "011000"
       definition: |-
         let result = CAPI.FP.uint2int(registers[rs]) * CAPI.FP.uint2int(registers[rt]);
-        registers.HI = Math.floor(result / Math.pow (2, 32));
-        registers.LO = result % Math.pow(2, 32);
+        registers.HI = CAPI.FP.int2uint(result >> 32n);
+        registers.LO = CAPI.FP.int2uint(result & 0xFFFFFFFFn);
     - name: multu
       template: Custom
       type: Arithmetic integer
@@ -3122,10 +3184,8 @@ instructions:
           value: "011001"
       definition: |-
         let result = CAPI.FP.int2uint(registers[rs]) * CAPI.FP.int2uint(registers[rt]);
-        registers.HI = Math.floor(result / Math.pow(2, 32));
-        registers.HI = registers.HI >>> 0; // TODO: This is broken with bigints.
-        registers.LO = result % Math.pow(2, 32);
-        registers.LO = registers.LO >>> 0;
+        registers.HI = CAPI.FP.int2uint(result >> 32n);
+        registers.LO = CAPI.FP.int2uint(result & 0xFFFFFFFFn);
     - name: nop
       template: Custom
       type: Logic
@@ -3304,7 +3364,7 @@ instructions:
           stopbit: 0
           value: "000010"
       definition: |
-        registers[rd] = CAPI.FP.int2uint((registers[rt] >>> sa) | (registers[rt] << (32 - sa))); // TODO: This is broken with bigints.
+        registers[rd] = CAPI.FP.int2uint((CAPI.FP.int2uint(registers[rt]) >> sa) | (registers[rt] << (32n - sa)));
     - name: rsqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3391,9 +3451,9 @@ instructions:
           stopbit: 0
           value: "010110"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (fsValue >= 0) { 
@@ -3435,7 +3495,7 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt);"
+      definition: "CAPI.MEM.write(registers[base]+off, 1, BigInt.asUintN(8, registers[rt]), rt, 'byte', false);"
     - name: sdc1
       template: Custom
       type: Memory access
@@ -3473,12 +3533,12 @@ instructions:
       preoperation: |
         let doubleValue = CAPI.ARCH.readDouble(ft);
         let parts = CAPI.FP.float642uint(doubleValue);
+        let value = (BigInt(parts[1]) << 32n) | BigInt(parts[0])
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be aligned');
-        }
-        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[0]), ft);
-        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[1]));
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 8, value, ft, 'float64', false);
     - name: sh
       template: Custom
       type: Memory access
@@ -3513,7 +3573,11 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 2, registers[rt], rt);"
+      definition: |
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 2, BigInt.asUintN(16, registers[rt]), rt, 'half', false);
     - name: sll
       template: Custom
       type: Arithmetic integer
@@ -3552,7 +3616,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "111111"
-      definition: rd = CAPI.FP.int2uint(registers[rt] << sa);
+      definition: registers[rd] = CAPI.FP.int2uint(registers[rt] << sa);
     - name: slt
       template: Custom
       type: Logic
@@ -3700,7 +3764,7 @@ instructions:
           startbit: 5
           stopbit: 0
           value: "101011"
-      definition: "registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;"
+      definition: "registers[rd] = registers[rs] < registers[rt] ? 1n : 0n;"
     - name: sqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3787,9 +3851,9 @@ instructions:
           stopbit: 0
           value: "000100"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: |-
         let result;
         if (fsValue >= 0) {
@@ -3836,7 +3900,7 @@ instructions:
           stopbit: 0
           value: "000011"
       definition: |
-        registers[rd] = CAPI.FP.int2uint(registers[rt] >> sa);
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[rt]) >> sa);
     - name: srl
       template: Custom
       type: Arithmetic integer
@@ -3881,7 +3945,7 @@ instructions:
           stopbit: 0
           value: "000010"
       definition: |
-        registers[rd] = registers[rt] >>> sa; // TODO:broken with bigints.
+        registers[rd] = CAPI.FP.int2uint(registers[rt]) >> sa;
     - name: sub
       template: Custom
       type: Arithmetic integer
@@ -4019,10 +4083,10 @@ instructions:
           stopbit: 0
           value: "000001"
       preoperation: |
-        fsValue = CAPI.FS.uint2float32(fs);
-        ftValue = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FP.uint2float32(registers[fs]);
+        ftValue = CAPI.FP.uint2float32(registers[ft]);
       postoperation: |
-        registers[fd] = CAPI.FS.float322uint(result);
+        registers[fd] = CAPI.FP.float322uint(result);
       definition: let result = fsValue - ftValue;
     - name: subu
       template: Custom
@@ -4099,7 +4163,11 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: "CAPI.MEM.write(val+registers[reg2], 4, registers[reg1], reg1);"
+      definition: |
+        let addr = registers[reg2] + val;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, registers[reg1], reg1, 'word', false);
     - name: swc1
       template: Custom
       type: Memory access
@@ -4134,7 +4202,11 @@ instructions:
           stopbit: 0
           order: 2
           space: false
-      definition: "CAPI.MEM.write(registers[base]+off, 4, registers[ft], ft);"
+      definition: |
+        let addr = registers[base] + off;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, registers[ft], ft, 'float32', false);
     - name: syscall
       template: Custom
       type: Syscall
@@ -4156,6 +4228,7 @@ instructions:
           value: "001100"
       definition: |-
         let FP0 = CAPI.ARCH.readDouble('f0');
+        let f12 = CAPI.FP.uint2float32(registers.f12);
         let FP12 = CAPI.ARCH.readDouble('f12');
         switch(registers["v0"]) {
           case 1n:
@@ -4174,10 +4247,10 @@ instructions:
             CAPI.SYSCALL.read('v0', 'int32');
             break;
           case 6n:
-            CAPI.SYSCALL.read(f0, 'float');
+            CAPI.SYSCALL.read('f0', 'float');
             break;
           case 7n:
-            CAPI.SYSCALL.read(FP0, 'double');
+            CAPI.SYSCALL.read('FP0', 'double');
             break;
           case 8n:
             CAPI.SYSCALL.read('a0', 'string', 'a1');
@@ -4981,18 +5054,24 @@ pseudoinstructions:
         - field: val
           type: imm-signed
       definition: |-
-        no_ret_op{tmp0=Field.2.(63,32).double;
-        tmp_low0=tmp0&0x0000FFFF;
-        tmp_hi0=tmp0>>>16;
-        tmp1=Field.2.(31,0).double;
-        tmp_low1=tmp1&0x0000FFFF;
-        tmp_hi1=tmp1>>>16};
+        no_ret_op{
+          tmp0=Field.2.(63,32).double;
+          tmp_low0=tmp0&0x0000FFFF;
+          tmp_hi0=tmp0>>>16;
+          tmp1=Field.2.(31,0).double;
+          tmp_low1=tmp1&0x0000FFFF;
+          tmp_hi1=tmp1>>>16;
+          tmp_reg=reg_name{1};
+          regNumber=parseInt(tmp_reg.substring(2), 10);
+          reg0="f" + regNumber;
+          reg1="f" + (regNumber + 1);
+        };
         lui $at, op{tmp_hi1};
         ori $at, $at, op{tmp_low1};
-        mtc1 $at, $aliasDouble(rd;1);
+        mtc1 $at, $op{reg1};
         lui $at, op{tmp_hi0};
         ori $at, $at, op{tmp_low0};
-        mtc1 $at, $aliasDouble(rd;0);
+        mtc1 $at, $op{reg0};
     - name: li.s
       help: ""
       properties: []

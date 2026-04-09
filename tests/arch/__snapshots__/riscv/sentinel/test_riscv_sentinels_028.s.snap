@@ -1,0 +1,33 @@
+export const snapshot = {};
+
+snapshot[`riscv/sentinel/test_riscv_sentinels_028.s 1`] = `
+{
+  display: "",
+  error: "Error decoding instruction: Illegal Instruction: 0x00000000",
+  keyboard: "",
+  memory: {
+    "1": 80,
+    "10": 8,
+    "11": 147,
+    "15": 115,
+    "18": 16,
+    "19": 183,
+    "20": 8,
+    "21": 160,
+    "22": 128,
+    "23": 147,
+    "26": 128,
+    "27": 103,
+    "3": 147,
+    "5": 192,
+    "7": 239,
+    "9": 160,
+  },
+  registers: {
+    "x1,ra": "0x108a",
+    mtime: "0x5",
+    pc: "0x108a",
+  },
+  sentinel_errors: [],
+}
+`;

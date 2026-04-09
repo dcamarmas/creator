@@ -5,4 +5,5 @@
 
 .data
   example:   .half 0x12345
-    
+.text
+main: nop

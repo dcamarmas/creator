@@ -16,4 +16,5 @@ main:
     xor x11, x5, x8
     xor x12, x6, x9
     xor x13, x7, x10
-    
+
+    jr ra

@@ -15,3 +15,5 @@ main:
     mulhsu x10, x6, x7
     mulhsu x11, x7, x8
     mulhsu x12, x8, x5
+
+    jr ra

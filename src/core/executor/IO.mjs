@@ -33,6 +33,13 @@ import { coreEvents, CoreEventTypes } from "../events.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import { Memory } from "../memory/Memory.mts";
 
+/** Keyboard data override. Intended exclusively for running interactive tests */
+export const testKeyboard = {
+    enable: false,
+    /** @type {string[]} */
+    data: [],
+}
+
 export function display_print(info) {
     if (typeof document !== "undefined" && document.app) {
         document.app.$data.display += info;
@@ -42,7 +49,8 @@ export function display_print(info) {
         if (typeof info !== "string") {
             info = info.toString();
         }
-        process.stdout.write(info);
+        if (!testKeyboard.enable) // Don't print in tests
+            process.stdout.write(info);
     }
 
     status.display += info;
@@ -54,11 +62,11 @@ export function kbd_read_char(keystroke, params) {
         sailexec._send_char_to_C(value);
 
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
-        document.app.$data.last_execution_mode_run = -1;    
+        document.app.$data.last_execution_mode_run = -1;
     }
     writeRegister(BigInt(value), params.indexComp, params.indexElem);
 
-    return value;
+    return keystroke[0] || "";
 }
 
 export function kbd_read_int(keystroke, params) {
@@ -84,7 +92,7 @@ export function kbd_read_int(keystroke, params) {
         sailexec._send_int_to_C(value);
 
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
-        document.app.$data.last_execution_mode_run = -1;    
+        document.app.$data.last_execution_mode_run = -1;
     }
     value = BigInt(value);
 
@@ -109,14 +117,21 @@ export function kbd_read_float(keystroke, params) {
 
 
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
-        document.app.$data.last_execution_mode_run = -1;    
+        document.app.$data.last_execution_mode_run = -1;
     }
 
-    const buffer =  new ArrayBuffer(4);
-    const view = new DataView(buffer);
-    view.setFloat32(0,value, false);
-    const bits = view.getUint32(0, false);
-    writeRegister(BigInt(("0x" + bits.toString(16).padStart(8, "0"))), params.indexComp, params.indexElem);
+    // If the current architecture has a write float specialization, use it.
+    // Otherwise, fallback to writing the bits directly
+    if (CAPI.ARCH.writeFloat !== undefined) {
+        const reg = architecture.components[params.indexComp].elements[params.indexElem]
+        CAPI.ARCH.writeFloat(value, reg.name[0])
+    } else  {
+        const buffer = new ArrayBuffer(4);
+        const view = new DataView(buffer);
+        view.setFloat32(0,value, false);
+        const bits = BigInt(view.getUint32(0, false));
+        writeRegister(bits, params.indexComp, params.indexElem);
+    }
 
     return value;
 }
@@ -125,7 +140,7 @@ export function kbd_read_double(keystroke, params) {
     const value = parseFloat(keystroke, 10);
 
     // validate input
-    if (typeof document.app !== "undefined" && isNaN(value)) {
+    if (typeof document !== "undefined" && document.app && isNaN(value)) {
         show_notification(
             `Invalid input: '${keystroke}' is not a double`,
             "danger",
@@ -137,9 +152,20 @@ export function kbd_read_double(keystroke, params) {
         sailexec._send_double_to_C(value);
 
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
-        document.app.$data.last_execution_mode_run = -1;      
+        document.app.$data.last_execution_mode_run = -1;
     }
-    writeRegister(value, params.indexComp, params.indexElem, "DFP-Reg");
+    // If the current architecture has a write float specialization, use it.
+    // Otherwise, fallback to writing the bits directly
+    if (CAPI.ARCH.writeDouble !== undefined) {
+        const reg = architecture.components[params.indexComp].elements[params.indexElem]
+        CAPI.ARCH.writeDouble(value, reg.name[0])
+    } else  {
+        const buffer = new ArrayBuffer(8);
+        const view = new DataView(buffer);
+        view.setFloat64(0, value, false);
+        const bits = view.getBigUint64(0, false);
+        writeRegister(bits, params.indexComp, params.indexElem);
+    }
 
     return value;
 }
@@ -149,8 +175,8 @@ export function kbd_read_string(keystroke, params) {
 
     const bytes = new TextEncoder().encode(keystroke);
     // Write the string to memory byte by byte
-    for (let i = 0n; i < keystroke.length && i < params.size; i++) {
-        main_memory.write(BigInt(addr + BigInt(i)), bytes[i]);
+    for (let i = 0n; i < bytes.length && i < params.size; i++) {
+        main_memory.write(addr + i, bytes[i]);
     }
 
     if (architecture.config.name.includes("SRV")) {
@@ -170,7 +196,7 @@ export function kbd_read_string(keystroke, params) {
         }
 
         document.app.$data.execution_mode_run = document.app.$data.last_execution_mode_run;
-        document.app.$data.last_execution_mode_run = -1; 
+        document.app.$data.last_execution_mode_run = -1;
     }
     return keystroke;
 }
@@ -192,6 +218,10 @@ function checkEnter(buf) {
  * @returns {string} - The user input without extra space or newline
  */
 function rawPrompt() {
+    if (testKeyboard.enable) {
+        const data = testKeyboard.data.shift() || ""
+        return data
+    }
     // Build input character by character until we hit Enter
     const chunks = [];
     const decoder = new TextDecoder();
@@ -247,7 +277,7 @@ export function keyboard_parseInt(fn_post_read, fn_post_params) {
     const addr = readRegister(ret1.indexComp, ret1.indexElem);
     // Get the memory instance
     const memory = main_memory;
-    
+
     // Validate address is within memory bounds
     if (addr >= BigInt(memory.getSize())) {
         throw packExecute(
@@ -278,10 +308,10 @@ export function keyboard_parseInt(fn_post_read, fn_post_params) {
         var regex = new RegExp("^\\s*(-?\\d+)");
 
     }
-    
 
 
-    // Deno / CLI mode 
+
+    // Deno / CLI mode
     if (typeof Deno !== "undefined") {
         let keystroke = rawPrompt();
         var match = regex.exec(keystroke);
@@ -385,7 +415,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     if (typeof Deno !== "undefined") {
         const keystroke = rawPrompt();
         const value = fn_post_read(keystroke, fn_post_params);
-        status.keyboard = status.keyboard + " " + value;
+        status.keyboard += " " + value;
         status.run_program = 0; // Reset run_program status
 
         return null;
@@ -400,8 +430,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     const val = fn_post_read(document.app.$data.keyboard, fn_post_params);
-    // Important: Final line char (/=) couns also as a char in lenght
-    writeRegister(BigInt(val.length), fn_post_params.indexComp, fn_post_params.indexElem);
 
     document.app.$data.keyboard = ""; // clear input
 
@@ -485,9 +513,9 @@ export function keyboard_read_until(fn_post_read, fn_post_params, fn_post_until)
             if (idx !== -1) {
                 keystroke = keystroke.slice(0, idx);
             }
-            
+
         }
-        // console.log("Extracted keystroke until 'until':", `"${keystroke}"`);    
+        // console.log("Extracted keystroke until 'until':", `"${keystroke}"`);
         const value = fn_post_read(keystroke, fn_post_params);
         status.keyboard = status.keyboard + " " + value;
         status.run_program = 0; // Reset run_program status
@@ -590,7 +618,7 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
     const addr = readRegister(ret1.indexComp, ret1.indexElem);
     // Get the memory instance
     const memory = main_memory;
-    
+
     // Validate address is within memory bounds
     if (addr >= BigInt(memory.getSize())) {
         throw packExecute(
@@ -623,6 +651,9 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
             );
         }
         length = readRegister(ret2.indexComp, ret2.indexElem);
+        if (length <= 0) {
+            length = Infinity; // No length limit
+        }
     }
 
 
@@ -659,25 +690,26 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
                 memoryAddr++;
             }
 
-        // console.log("Until string: ", until);    
+        // console.log("Until string: ", until);
         }
 
-    // Deno / CLI mode 
+    // Deno / CLI mode
     if (typeof Deno !== "undefined") {
         let keystroke = rawPrompt();
 
-        if (until && typeof until === "string") {
+        if (until && typeof until === "string" && until !== "" ) {
             const idx = keystroke.indexOf(until);
             if (idx !== -1) {
                 keystroke = keystroke.substring(0, idx);
             }
         }
-
-        if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+        if (keystroke.includes(target) && keystroke.length <= length) {
             writeRegister(1n, ret1.indexComp, ret1.indexElem);
         } else {
             writeRegister(0n, ret1.indexComp, ret1.indexElem);
         }
+
+
 
         status.run_program = 0;
         return packExecute(
@@ -706,7 +738,13 @@ export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,f
     // Find logic
     // console.log("keystroke:", `"${keystroke}"`, keystroke.length);
     // console.log("until:", `"${until}"`, until.length);
-    if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+    if (until && typeof until === "string" && until !== "" ) {
+        const idx = keystroke.indexOf(until);
+        if (idx !== -1) {
+            keystroke = keystroke.substring(0, idx);
+        }
+    }
+    if (keystroke.includes(target) && keystroke.length <= length) {
         writeRegister(1n, ret1.indexComp, ret1.indexElem);
     } else {
         writeRegister(0n, ret1.indexComp, ret1.indexElem);

@@ -20,7 +20,7 @@
 import { architecture, status, REGISTERS } from "../core.mjs";
 import { writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
-import { sentinel } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mts";
 import { packExecute } from "../utils/utils.mjs";
 import { coreEvents } from "../events.mts";
 import { setRegisterGlow } from "./registerGlowState.mjs";
@@ -119,12 +119,7 @@ export function writeRegister(value, indexComp, indexElem) {
         }
         draw.danger.push(status.execution_index);
 
-        throw packExecute(
-            true,
-            "The register " + elementName + " is not writeable",
-            "danger",
-            null,
-        );
+        throw new Error(`The register ${elementName} is not writeable`);
     }
 
     element.value = value;

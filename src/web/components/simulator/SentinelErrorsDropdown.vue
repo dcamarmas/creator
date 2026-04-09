@@ -20,16 +20,16 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { ref, computed } from "vue";
-
-interface SentinelViolation {
-  rule: string;
-  register?: string;
-  message: string;
-}
+import {
+  coreEvents,
+  CoreEventTypes,
+  type SentinelErrorData,
+  type SentinelErrorEvent,
+} from "../../../core/events.mts";
 
 interface SentinelError {
   functionName: string;
-  violations: SentinelViolation[];
+  violations: SentinelErrorData[];
   timestamp: string;
 }
 
@@ -105,50 +105,8 @@ const getRuleDescription = (rule: string): string => {
   }
 };
 
-const parseErrorMessage = (msg: string): SentinelViolation[] => {
-  const violations: SentinelViolation[] = [];
-  const lines = msg.split("\n").filter(line => line.trim().startsWith("-"));
-
-  for (const line of lines) {
-    const message = line.replace(/^\s*-\s*/, "").trim();
-
-    // Try to determine the rule type from the message
-    let rule = "UNKNOWN";
-    let register: string | undefined = undefined;
-
-    if (message.includes("saved but never restored")) {
-      rule = "RESTORE_REQUIRED";
-    } else if (message.includes("used but never saved")) {
-      rule = "SAVE_BEFORE_USE";
-    } else if (message.includes("modified before being saved")) {
-      rule = "SAVE_BEFORE_USE";
-    } else if (
-      message.includes("saved at") &&
-      message.includes("restored from")
-    ) {
-      rule = "RESTORE_ADDRESS_MISMATCH";
-    } else if (message.includes("bytes but restored with")) {
-      rule = "SIZE_MISMATCH";
-    } else if (message.includes("value changed but not properly restored")) {
-      rule = "VALUE_NOT_RESTORED";
-    } else if (message.includes("Stack pointer not restored")) {
-      rule = "STACK_NOT_RESTORED";
-    }
-
-    // Extract register name if present
-    const registerMatch = message.match(/Register (\w+)/);
-    if (registerMatch) {
-      register = registerMatch[1];
-    }
-
-    violations.push({ rule, register, message });
-  }
-
-  return violations;
-};
-
 // Methods
-const addError = (functionName: string, violations: SentinelViolation[]) => {
+const addError = (functionName: string, violations: SentinelErrorData[]) => {
   const timestamp = new Date().toLocaleTimeString();
 
   errors.value.unshift({
@@ -167,20 +125,15 @@ const clearErrors = () => {
   errors.value = [];
 };
 
-const getViolationsByFunction = (functionName: string): SentinelViolation[] => {
+const getViolationsByFunction = (functionName: string): SentinelErrorData[] => {
   const error = errors.value.find(e => e.functionName === functionName);
   return error ? error.violations : [];
 };
 
 // Public method to be called from parent when sentinel.leave() is called
-const checkForErrors = (
-  result: { ok: boolean; msg: string },
-  functionName: string,
-) => {
-  if (!result.ok && result.msg) {
-    // Parse the error message to extract violations
-    const violations = parseErrorMessage(result.msg);
-    addError(functionName, violations);
+const checkForErrors = (result: SentinelErrorEvent) => {
+  if (!result.ok) {
+    addError(result.functionName, result.errors);
   }
 };
 
@@ -316,7 +269,7 @@ defineExpose({
                           variant="secondary"
                           class="ms-2"
                         >
-                          {{ violation.register }}
+                          {{ violation.register.join(" | ") }}
                         </b-badge>
                       </div>
 

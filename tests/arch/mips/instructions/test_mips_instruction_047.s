@@ -10,3 +10,5 @@ main:
     li $t1, 4567
     nop
     li $t2, -9486
+
+    jr $ra

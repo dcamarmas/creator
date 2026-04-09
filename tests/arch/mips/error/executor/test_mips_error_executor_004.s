@@ -6,3 +6,4 @@
 .text
 main:
     li $sp, 0x00200000
+    jr $ra

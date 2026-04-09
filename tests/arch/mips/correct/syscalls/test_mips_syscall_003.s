@@ -15,4 +15,5 @@ main:
     
     li.d $FP12, 1.1
     syscall
-    
+
+    jr $ra

@@ -16,7 +16,7 @@ var Module = (() => {
   var insn_number;
 
   return function (Module) {
-    document.app.$data.is_breakpoint = instructions[0].Break;
+    document.app.$data.is_breakpoint = (instructions.length !== 0) ? instructions[0].Break : false;
     var pc_sail = crex_findReg_bytag("program_counter");
     var pc_min = architecture.memory_layout.text.start;
     var pc_max = architecture.memory_layout.text.end;
@@ -1194,8 +1194,7 @@ var Module = (() => {
       console.warn(message);
     }
 
-    var out = Module["print"] /*|| console.log.bind(console)*/;
-    // var out = console.log.bind(console);
+    var out = (document.app.$data.testing === true ) ? console.log.bind(console) : Module["print"];
     var err = Module["printErr"] /*|| console.warn.bind(console)*/;
 
     Object.assign(Module, moduleOverrides);
@@ -7824,27 +7823,33 @@ var Module = (() => {
       }
       if (keepRuntimeAlive()) {
         if (!implicit) {
-
-          for (let i = 0; i < instructions.length; i++){
-            instructions[i]._rowVariant = '';
-          }
-          status.run_program = -1; // program finished
-          if (statusw !== 0){
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: true,
-              run_disable: true,
-              stop_disable: false,
-            });
-            show_notification("Your program has finished with errors.", "danger");
+          if (!document.app.$data.testing) {
+            for (let i = 0; i < instructions.length; i++){
+              instructions[i]._rowVariant = '';
+            }
+            status.run_program = -1; // program finished
+            if (statusw !== 0){
+              coreEvents.emit("executor-buttons-update", {
+                reset_disable: false,
+                instruction_disable: true,
+                run_disable: true,
+                stop_disable: false,
+              });
+              show_notification("Your program has finished with errors.", "danger");
+            } else {
+              coreEvents.emit("executor-buttons-update", {
+                reset_disable: false,
+                instruction_disable: false,
+                run_disable: false,
+                stop_disable: true,
+                isFinished: true,
+              });
+            }
           } else {
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: false,
-              run_disable: false,
-              stop_disable: true,
-              isFinished: true,
-            });
+            if (statusw === 0)
+              document.app.$data.passed_test += 1;
+            else 
+              document.app.$data.failed_test += 1;
           }
           var msg =
             "program exited (with status: " +

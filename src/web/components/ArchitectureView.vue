@@ -30,6 +30,8 @@ import Instructions from "./architecture/instructions/Instructions.vue";
 import Directives from "./architecture/directives/Directives.vue";
 import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue";
 import CacheMemory from "./architecture/cache_memory/CacheMemory.vue";
+import { SailTest32, SailTest64 } from "@/core/executor/sailSimRV/sailExecutor.mjs";
+import { coreEvents } from "@/core/events.mts";
 export default defineComponent({
   props: {
     browser: { type: String, required: true },
@@ -55,6 +57,12 @@ export default defineComponent({
     return {
       architecture,
       activeTab: "instructions",
+      validate: false,
+      showValidationModal: false,
+      running: false,
+      runned: 0,
+      result_test: 0,
+      result_log: ""
     };
   },
   computed: {
@@ -70,6 +78,42 @@ export default defineComponent({
     archCodeWSchema() {
       return `# yaml-language-server: $schema=${document.URL.replace(/\/#$/, "/")}schema/architecture.json\n${this.arch_code}`;
     },
+  },
+  methods:{
+    runValidationTest(arch_type: Number){
+      this.runned = 0;
+      this.result_test = 0;
+      this.running = true;
+      this.result_log = "";
+      if (arch_type === 32){
+        SailTest32();
+      } else {
+        SailTest64();
+      }
+    },
+    updateState(){
+      this.result_test = document.app.$data.passed_test;
+      if (this.result_test + document.app.$data.failed_test === ((architecture.config.name === 'SRV32' ? 89 : 122)) ){
+        this.result_log = "Validation completed.\n Your architecture passed the " + (this.result_test / (architecture.config.name === 'SRV32' ? 89 : 122)) * 100 + "%\n of the validation tests.";
+      }
+        
+    },
+    resetValidationState(){
+      this.runned = 0;
+      this.result_test = 0;
+      this.running = true;
+      this.result_log = "";
+      document.app.$data.passed_test = 0;
+      document.app.$data.failed_test = 0;
+      document.app.$data.testing = false;
+    },
+  },
+  mounted(){
+    coreEvents.on("update-validation", this.updateState);
+  },
+  beforeUnmount() {
+    coreEvents.off("update-validation", this.updateState);
+    
   },
 });
 </script>
@@ -174,6 +218,19 @@ export default defineComponent({
               <!-- <font-awesome-icon :icon="['fas', 'layer-group']" /> -->
               <span>Cache Memory</span>
             </button>
+
+            <!-- Validation Architecture Tab -->
+            <button
+              v-if="
+                architecture.config.name === 'SRV32' || architecture.config.name === 'SRV64'
+              "
+              :class="['tab', { active: validate === true }]"
+              v-b-modal.showValidationModal
+            >
+              <font-awesome-icon :icon="['fas', 'check']" />
+              <!-- <font-awesome-icon :icon="['fas', 'layer-group']" /> -->
+              <span>Validation</span>
+            </button>
           </div>
         </div>
 
@@ -222,6 +279,36 @@ export default defineComponent({
                 :cache_policy="$root.$data.cache_policy"
             ></CacheMemory>
           </div>
+          <b-modal
+            id="showValidationModal"
+            :title="'Validation test for ' + (architecture.config.name === 'SRV32' ? 32 : 64) + ' bits architecture'"
+            @ok="resetValidationState">
+            This validation test runs {{(architecture.config.name === 'SRV32' ? 89 : 122)}} RISC-V programs. <br>
+            These programs are taken from the official RISC-V test repository (<a href="https://github.com/riscv-software-src/riscv-tests" target="_blank" rel="noopener noreferrer">riscv-tests</a>), where the correct operation <br> 
+            of the full instruction set of the RISC-V specification is verified.
+            <br><br>
+            <b-container>
+              <b-row>
+                <b-col cols="4">
+                  <b-button variant="outline-primary"
+                  v-on:click="runValidationTest(architecture.config.name === 'SRV32' ? 32 : 64)"
+                  >Run tests</b-button>
+                </b-col>
+                <b-col cols="8">
+                  <b-progress animated
+                  v-if="running"
+                  :value="result_test"
+                  :max="architecture.config.name === 'SRV32' ? 89 : 122"
+                  >
+                  </b-progress><br>
+                  <div v-if="result_log !== ''" style="white-space: pre-line;">{{ result_log }}</div>
+                </b-col>
+              </b-row>
+
+            </b-container>
+        
+        </b-modal>
+          
         </div>
       </div>
     </div>

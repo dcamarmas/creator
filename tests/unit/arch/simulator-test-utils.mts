@@ -24,6 +24,7 @@ export interface ArchResult {
 export interface CompileResult {
     status: string;
     msg?: string;
+    linter?: { errorText: string, line: number, column: number }
 }
 
 export interface ExecutionResult {
@@ -98,24 +99,13 @@ export function getByteAtAddress(address: bigint): bigint {
 }
 
 /**
- * Setup function to initialize simulator state with architecture from YAML file
- * @param testAssembly - Assembly code to compile and load
+ * Load an architecture from YAML file into the simulator
  * @param yamlPath - Path to the YAML architecture configuration file
- * @returns Setup results including architecture and compilation status
+ * @returns Architecture loading result
  */
-export async function setupSimulator(
-    testAssembly: string,
-    yamlPath: string,
-    assembler: string = "default",
-): Promise<{
-    archResult: ArchResult;
-    compileResult: CompileResult;
-}> {
-    logger.disable();
-
+export function loadArchitecture(yamlPath: string|URL): ArchResult {
     // Load architecture configuration from file synchronously
-    const archPath = new URL(yamlPath, import.meta.url);
-    const architectureConfigContent = fs.readFileSync(archPath, "utf8");
+    const architectureConfigContent = fs.readFileSync(yamlPath, "utf8");
     // yaml.load returns unknown; narrow its type and validate at runtime
     const archObject = yaml.load(architectureConfigContent) as
         | { config?: { plugin?: string } }
@@ -145,26 +135,59 @@ export async function setupSimulator(
             `Failed to load architecture from ${yamlPath}: ${archResult.token}`,
         );
     }
-    const compilerKey = assembler || "default";
+    return archResult;
+}
 
-    if (!isValidCompilerKey(compilerKey)) {
+/**
+ * Setup function to initialize simulator state with architecture from YAML file
+ * @param testAssembly - Assembly code to compile and load
+ * @param assembler - Name of the assembler to use
+ * @returns Setup results including architecture and compilation status
+ */
+export async function compileAssembly(
+    testAssembly: string,
+    assembler: string = "default",
+): Promise<CompileResult> {
+    if (!isValidCompilerKey(assembler)) {
         throw new Error(
-            `Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
+            `Invalid assembler: ${assembler}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
         );
     }
 
-    const compilerFunction = compiler_map[compilerKey];
+    creator.reset();
+
+    const compilerFunction = compiler_map[assembler];
     // Compile assembly code
     const compileResult = (await creator.assembly_compile(
         testAssembly,
         compilerFunction,
+        true,
     )) as CompileResult;
     if (compileResult.status !== "ok") {
         throw new Error(`Failed to compile assembly: ${compileResult.msg}`);
     }
 
-    creator.reset();
+    return compileResult;
+}
 
+/**
+ * Setup function to initialize simulator state with architecture from YAML file
+ * @param testAssembly - Assembly code to compile and load
+ * @param yamlPath - Path to the YAML architecture configuration file
+ * @returns Setup results including architecture and compilation status
+ */
+export async function setupSimulator(
+    testAssembly: string,
+    yamlPath: string,
+    assembler: string = "default",
+): Promise<{
+    archResult: ArchResult;
+    compileResult: CompileResult;
+}> {
+    logger.disable();
+    const archPath = new URL(yamlPath, import.meta.url);
+    const archResult = loadArchitecture(archPath)
+    const compileResult = await compileAssembly(testAssembly, assembler)
     return { archResult, compileResult };
 }
 
@@ -382,5 +405,30 @@ export function assertSimulatorState(
             expected.keyboard,
             messages.keyboardMessage,
         );
+    }
+}
+
+/**
+ * Verifies the execution of an assembly code
+ * @param arch - Architecture file to use
+ * @param code - Assembly code to execute
+ * @param expected - Object containing expected values for registers, memory, display, and keyboard
+ */
+export function assertExecution(
+    arch: string,
+    code: string,
+    expected: ExpectedState,
+): () => Promise<void> {
+    return async () => {
+        const ARCH_PATH = "../../../architecture/" + arch;
+        await setupSimulator(code, ARCH_PATH);
+        const result = executeN(1000);
+        assertEquals(
+            result.error,
+            false,
+            `Execution should not error. ${result.output}`,
+        );
+        assertSimulatorState(expected)
+        cleanupSimulator();
     }
 }

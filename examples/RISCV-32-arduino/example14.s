@@ -1,47 +1,96 @@
-# Creatino example:readBytes
+# Creatino example: GPIO Interrupts
 .data
-    space:   .zero 100 #Buffer to place the string
-    print:  .string "%s\n"
-    char: .byte 65 #A
-
+	ledPin: .byte 4
+    interruptpin: .byte 6
+    state: .byte 0 #LOW
+    change: .byte 0x04
 .text
-setup:
-    li a0, 11520
+blink:
+    la t1, ledPin
+    lb a0, 0(t1)
+    li a1, 1
     addi sp, sp, -4
-    sw   ra, 0(sp)
-    jal ra, serial_begin
-    lw   ra, 0(sp)
+    sw ra,0(sp)
+    jal ra, digitalWrite# digitalWrite(ledPin, state)
+    lw ra,0(sp)
     addi sp, sp, 4
     jr ra
+
+    
 loop:
+    la t1, ledPin
+    lb a0, 0(t1)
+    li a1,0
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, digitalWrite# digitalWrite(ledPin, state)
+    lw ra,0(sp)
+    addi sp, sp, 4
+    
+    li a0, 100
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, delay # delay(1000)
+    lw ra,0(sp)
+    addi sp, sp, 4
+    j loop
 
-    # read int
-    la a0, char
-    lb a0, 0(a0)
-    la a1, space
-    la a2, 5 # number of letters it will have
+setup:
+	#Start pins
+	la t1, ledPin
+    lb a0, 0(t1) 
+    li a1, 0x03 #OUTPUT
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, pinMode #pinMode(ledPin, OUTPUT);
+    lw ra,0(sp)
+    addi sp, sp, 4
+    la t1, interruptpin
+    lb a0, 0(t1) 
+    li a1, 0x05  #INPUT_PULLUP
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, pinMode# pinMode(ledPin, INPUT_PULLUP);
+    lw ra,0(sp)
+    addi sp, sp, 4
+    
+    la t1, interruptpin
+    lb a0, 0(t1) 
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, digitalPinToInterrupt #digitalPinToInterrupt(interruptpin);
+    lw ra,0(sp)
+    addi sp, sp, 4
+    
+    la a1, blink
 
+    la t1, change
+    lb a2, 0(t1)
+    
+    addi sp, sp, -4
+    sw ra,0(sp)
+    jal ra, attachInterrupt #attachInterrupt(digitalPinToInterrupt(interruptPin), blink, CHANGE);
+    lw ra,0(sp)
+    addi sp, sp, 4
+    jr ra
+    
+main:
+    # Llamar a cr_initArduino()
     addi sp, sp, -4
     sw   ra, 0(sp)
-    jal ra, serial_readBytesUntil
+    jal  ra, initArduino
     lw   ra, 0(sp)
     addi sp, sp, 4
 
-    # print: 
-    la a0, space
+    # Llamar a setup()
     addi sp, sp, -4
     sw   ra, 0(sp)
-    jal ra, serial_printf
+    jal  ra, setup
     lw   ra, 0(sp)
-    addi sp, sp, 4 
+    addi sp, sp, 4
 
-    # return
+    # Bucle infinito
     j loop
-main:
-    addi sp, sp, -16       
-    sw ra, 12(sp)          
-    jal ra, initArduino    
-    jal ra, setup
-    lw ra, 12(sp)          
-    addi sp, sp, 16              
-    j loop
+
+
+	

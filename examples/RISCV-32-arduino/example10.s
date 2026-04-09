@@ -18,16 +18,16 @@ not_found:
     lw ra, 0(sp)          
     addi sp, sp, 4 
     
-    #li a0, 10000
-    #addi sp, sp, -4     
-    #sw ra, 0(sp)
-    #jal ra, delay
-    #lw ra, 0(sp)          
-    #addi sp, sp, 4
+    li a0, 10000
+    addi sp, sp, -4     
+    sw ra, 0(sp)
+    jal ra, delay
+    lw ra, 0(sp)          
+    addi sp, sp, 4
     
     jal ra, loop
 
-founded:
+found_text:
     la a0, found
     addi sp, sp, -4       
     sw ra, 0(sp)          
@@ -35,12 +35,12 @@ founded:
     lw ra, 0(sp)          
     addi sp, sp, 4 
     
-    #li a0, 10000
-    #addi sp, sp, -4     
-    #sw ra, 0(sp)
-    #jal ra, delay
-    #lw ra, 0(sp)          
-    #addi sp, sp, 4
+    li a0, 10000
+    addi sp, sp, -4     
+    sw ra, 0(sp)
+    jal ra, delay
+    lw ra, 0(sp)          
+    addi sp, sp, 4
     
     jal ra, loop
 
@@ -75,7 +75,7 @@ loop:
     addi sp, sp, 4       
 
     beqz a0, not_found
-    jal ra, founded
+    jal ra, found_text
     
     
 

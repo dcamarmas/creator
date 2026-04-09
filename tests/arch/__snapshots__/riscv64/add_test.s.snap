@@ -1,0 +1,32 @@
+export const snapshot = {};
+
+snapshot[`riscv64/add_test.s 1`] = `
+{
+  display: "",
+  error: false,
+  keyboard: "",
+  memory: {
+    "0": 255,
+    "1": 240,
+    "10": 2,
+    "11": 179,
+    "14": 128,
+    "15": 103,
+    "2": 3,
+    "3": 19,
+    "4": 255,
+    "5": 240,
+    "6": 3,
+    "7": 147,
+    "9": 115,
+  },
+  registers: {
+    "x5,t0": "0xfffffffffffffffe",
+    "x6,t1": "0xffffffffffffffff",
+    "x7,t2": "0xffffffffffffffff",
+    mtime: "0x4",
+    pc: "0xfffffffffffffffe",
+  },
+  sentinel_errors: [],
+}
+`;

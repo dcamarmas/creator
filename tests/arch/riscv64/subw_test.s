@@ -17,3 +17,4 @@ main:
     # Test 4: Edge case - max 32-bit value
     lui s11, 0x7FFF0      # s11 = 0x7FFF0000
     subw s7, s11, x0      # Expected s7 = 0x7FFF0000
+    jr ra

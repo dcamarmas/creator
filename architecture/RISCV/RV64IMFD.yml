@@ -167,8 +167,8 @@ components:
           - x1
           - ra
         nbits: 64
-        value: 18446744073709551615
-        default_value: 18446744073709551615
+        value: -1
+        default_value: -1
         encoding: 1
         properties:
           - read
@@ -177,8 +177,8 @@ components:
           - x2
           - sp
         nbits: 64
-        value: 268435452
-        default_value: 268435452
+        value: 0x0FFFFFFC
+        default_value: 0x0FFFFFFC
         encoding: 2
         properties:
           - read
@@ -1516,7 +1516,7 @@ instructions:
         - field: funct3
           value: "111"
       definition: |
-        if (CAPI.FP.int2uint(registers[rs1]) > CAPI.FP.int2uint(registers[rs2]))
+        if (CAPI.FP.int2uint(registers[rs1]) >= CAPI.FP.int2uint(registers[rs2]))
             registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using unsigned comparison.
@@ -1619,8 +1619,10 @@ instructions:
           value: "000"
       definition: |
         registers[rd] = registers.pc + 4n;
-        registers.pc = (registers[rs1] + imm) & ~1n;
-        CAPI.STACK.endFrame();
+        const pc = registers[rs1] + imm;
+        registers.pc = pc & ~1n;
+        if (BigInt.asIntN(64, pc) === -1n) CAPI.SYSCALL.exit();
+        else CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
 
     - name: lb
@@ -1633,7 +1635,7 @@ instructions:
           value: "000"
       definition: |
         let addr = registers[rs1] + imm;
-        const result = CAPI.MEM.read(addr, 1, rd);
+        const result = CAPI.MEM.read(addr, 1, rd, false);
         registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 8));
       help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
@@ -1647,8 +1649,8 @@ instructions:
           value: "100"
       definition: |
         let addr = CAPI.FP.int2uint(registers[rs1]) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 1, rd);
-        registers[rd] = CAPI.FP.int2uint(registers[rd]);
+        let result = CAPI.MEM.read(addr, 1, rd, false);
+        registers[rd] = CAPI.FP.int2uint(result);
       help: Loads a 8-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lh
@@ -1661,7 +1663,9 @@ instructions:
           value: "001"
       definition: |
         let addr = registers[rs1] + imm;
-        const result = CAPI.MEM.read(addr, 2, rd);
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        const result = CAPI.MEM.read(addr, 2, rd, false);
         registers[rd] = CAPI.FP.int2uint(CAPI.FP.uint2int(result, 16));
       help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
@@ -1674,9 +1678,11 @@ instructions:
         - field: funct3
           value: "101"
       definition: |
-        let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 2, rd);
-        registers[rd] = CAPI.FP.int2uint(registers[rd]);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        let result = CAPI.MEM.read(addr, 2, rd, false);
+        registers[rd] = CAPI.FP.int2uint(result);
       help: Loads a 16-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lw
@@ -1688,8 +1694,10 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 4, rd);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rd] = CAPI.MEM.read(addr, 4, rd, false);
       help: Loads a 32-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lwu
@@ -1701,9 +1709,11 @@ instructions:
         - field: funct3
           value: "110"
       definition: |
-        var addr = CAPI.FP.int2uint(registers[rs1]) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 4, rd);
-        registers[rd] = CAPI.FP.int2uint(registers[rd]);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        result = CAPI.MEM.read(addr, 4, rd, false);
+        registers[rd] = CAPI.FP.int2uint(result);
       help: Loads a 32-bit value from memory and zero-extends this to 64 bits before storing it in register rd.
 
     - name: ld
@@ -1715,8 +1725,10 @@ instructions:
         - field: funct3
           value: "011"
       definition: |
-        let addr = CAPI.FP.int2uint(registers[rs1]) + imm;
-        registers[rd] = CAPI.MEM.read(addr, 8, rd);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rd] = CAPI.MEM.read(addr, 8, rd, false);
       help: Loads a 64-bit value from memory into register rd for RV64I.
 
     - name: ori
@@ -1832,7 +1844,7 @@ instructions:
         - field: funct7
           value: "0000000"
       definition: |
-        if (shamt > 0) rd = (rs1 >> shamt);
+        if (shamt > 0) registers[rd] = CAPI.FP.int2uint(registers[rs1] >> shamt);
       help: Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: srliw
@@ -1848,7 +1860,7 @@ instructions:
       definition: |
         if (shamt > 0) {
           const temp =
-            ((BigInt(registers[rs1]) & 0xffffffffn) >> BigInt(shamt)) & 0xffffffffn;
+            ((registers[rs1] & 0xffffffffn) >> shamt) & 0xffffffffn;
           registers[rd] = temp & 0x80000000n ? temp | 0xffffffff00000000n : temp;
           registers[rd] = CAPI.FP.int2uint(registers[rd]);
         }
@@ -2100,8 +2112,8 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        const temp = (BigInt(rs1) + BigInt(rs2)) & 0xFFFFFFFFn;
-        rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp;
+        const temp = (registers[rs1] + registers[rs2]) & 0xFFFFFFFFn;
+        registers[rd] = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp;
       help: Subtract the 32-bit of registers rs1 and 32-bit of register rs2 and
         stores the result in rd. Arithmetic overflow is ignored and the low
         32-bits of the result is sign-extended to 64-bits and written to the
@@ -2136,7 +2148,7 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        CAPI.MEM.write(registers[rs1] + imm, 1, BigInt.asUintN(8, registers[rs2]), rs2, 'byte');
+        CAPI.MEM.write(registers[rs1] + imm, 1, BigInt.asUintN(8, registers[rs2]), rs2, 'byte', false);
       help: Store 8-bit, values from the low bits of register rs2 to memory.
 
     - name: sh
@@ -2147,7 +2159,10 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        CAPI.MEM.write(imm + registers[rs1], 2, BigInt.asUintN(16, registers[rs2]), rs2, 'half');
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 2))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 2, BigInt.asUintN(16, registers[rs2]), rs2, 'half', false);
       help: Store 16-bit, values from the low bits of register rs2 to memory.
 
     # The check for the
@@ -2159,7 +2174,10 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        CAPI.MEM.write(imm + registers[rs1], 4, BigInt.asUintN(32, registers[rs2]), rs2, 'word');
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, BigInt.asUintN(32, registers[rs2]), rs2, 'word', false);
       help: Store 32-bit, values from the low bits of register rs2 to memory.
 
     - name: sd
@@ -2170,12 +2188,16 @@ instructions:
         - field: funct3
           value: "011"
       definition: |
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
         CAPI.MEM.write(
-          imm + registers[rs1],
+          addr,
           8,
           BigInt.asUintN(64, registers[rs2]),
           rs2,
-          "double",
+          "float64",
+          false,
         );
       help: Loads a 64-bit value from memory into register rd for RV64I.
 
@@ -2295,10 +2317,11 @@ instructions:
         - field: funct3
           value: "101"
       definition: |
-        if (registers[rs2] != 0) {
+        const div = registers[rs2]
+        if (div != 0) {
           registers[rd] = BigInt.asIntN(
             32,
-            (BigInt.asUintN(32, BigInt(registers[rs1])) / BigInt.asUintN(32, BigInt(registers[rs2])))
+            (BigInt.asUintN(32, registers[rs1]) / BigInt.asUintN(32, div))
           );
         }
          else CAPI.VALIDATION.raise('Division by zero not allowed');
@@ -2329,7 +2352,7 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        registers[rd] = BigInt.asIntN(
+        registers[rd] = BigInt.asUintN(
           32,
           BigInt.asIntN(
             64,
@@ -2426,7 +2449,10 @@ instructions:
         - field: rd
           type: SFP-Reg
       definition: |
-        registers[rd] = CAPI.MEM.read(registers[rs1] + imm, 4, rd);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rd] = CAPI.MEM.read(addr, 4, rd, false);
       postoperation: |
         registers[rd] = CAPI.ARCH.NaNBox(registers[rd]);
       help: Load a single-precision floating-point value from memory into floating-point register rd.
@@ -2505,9 +2531,9 @@ instructions:
           optional: true
           order: 3
       postoperation: |
-        registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
+        registers[rd] = CAPI.ARCH.toBigInt(result,'NaNBfloat32_64');
       definition: |
-        registers[rd] = CAPI.FP.uint2int(registers[rs1])
+        result = CAPI.FP.uint2int(registers[rs1])
       help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.s.wu
@@ -2623,17 +2649,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number === rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number === rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between floating-point registers
         rs1 and rs2 and record the Boolean result in integer register rd. Only
         signaling NaN inputs cause an Invalid Operation exception. The result is
@@ -2651,17 +2671,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between floating-point registers
         rs1 and rs2 and record the Boolean result in integer register rd. Only
         signaling NaN inputs cause an Invalid Operation exception. The result is
@@ -2679,17 +2693,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
-        }
       definition: |
-        result = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
       help: Performs a quiet less or equal comparison between floating-point
         registers rs1 and rs2 and record the Boolean result in integer register
         rd. Only signaling NaN inputs cause an Invalid Operation exception. The
@@ -2908,9 +2916,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -2922,7 +2929,7 @@ instructions:
           result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
-            'Square root of a negative number is not allowed.'
+            "Square root of a negative number is not allowed."
           );
         }
       help: Perform single-precision square root.
@@ -2969,7 +2976,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -2996,7 +3003,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3023,7 +3030,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3050,7 +3057,7 @@ instructions:
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
@@ -3072,7 +3079,10 @@ instructions:
           type: SFP-Reg
       definition: |
         let value = registers[rs2] & 0xFFFFFFFFn;
-        CAPI.MEM.write(registers[rs1] + imm, 4, value, rs2, 'float32');
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 4))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 4, value, rs2, 'float32', false);
       help: Store a single-precision value from floating-point register rs2 to memory.
 
   D:
@@ -3094,10 +3104,10 @@ instructions:
         - field: rd
           type: DFP-Reg
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(registers[rs1] + imm, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be aligned');
-        }
-        registers[rd] = CAPI.MEM.read(registers[rs1] + imm, 8, rd);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        registers[rd] = CAPI.MEM.read(8, 8, rd, false);
       help: Load a double-precision floating-point value from memory into floating-point register rd.
 
     - name: fadd.d
@@ -3215,8 +3225,8 @@ instructions:
         - field: rs1
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, type_rs1;
-        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        let result, rs1Number;
+        rs1Number = registers[rs1];
       postoperation: |
         registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
@@ -3389,17 +3399,11 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number == rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number === rs2Number)? 1n : 0n;
       help: Performs a quiet equal comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3420,14 +3424,8 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number <= rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number <= rs2Number)? 1n : 0n;
       help: Performs a quiet less or equal comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3448,14 +3446,8 @@ instructions:
         let rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
-      postoperation: |
-        if (CAPI.FP.isNaN(result)) {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
-        }
       definition: |
-        registers[rd] = (rs1Number < rs2Number) ? 1 : 0;
+        registers[rd] = (rs1Number < rs2Number)? 1n : 0n;
       help: Performs a quiet less comparison between double-precision
         floating-point registers rs1 and rs2 and record the Boolean result in
         integer register rd. Only signaling NaN inputs cause an Invalid
@@ -3576,7 +3568,7 @@ instructions:
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
-        registers[rd] = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
+        result = (rs2Number > 0) ? -Math.abs(rs1Number) : +Math.abs(rs1Number);
       help: Produce a result that takes all bits except the sign bit from rs1.
         The result's sign bit is opposite of rs2's sign bit.
 
@@ -3602,7 +3594,7 @@ instructions:
       definition: |
         let a = rs1Number < 0;
         let b = rs2Number < 0;
-        registers[rd] = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
+        result = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
       help: Produce a result that takes all bits except the sign bit from rs1.
         The result's sign bit is XOR of sign bit of rs1 and rs2.
 
@@ -3623,9 +3615,8 @@ instructions:
           optional: true
           order: 3
       preoperation: |
-        let result, rs1Number, rs2Number, type_rs1, type_rs2;
+        let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
@@ -3634,7 +3625,7 @@ instructions:
         }
       definition: |
         if (rs1Number >= 0) {
-          registers[rd] = Math.sqrt(rs1Number);
+          result = Math.sqrt(rs1Number);
         } else {
           CAPI.VALIDATION.raise(
             "Square root of a negative number is not allowed."
@@ -3790,11 +3781,10 @@ instructions:
         - field: rs2
           type: DFP-Reg
       definition: |
-        let val = BigInt("0x" + CAPI.FP.split_double(registers[rs2], 0));
-        CAPI.MEM.write(registers[rs1] + imm, 4, val, rs2);
-        val = BigInt("0x" + CAPI.FP.split_double(registers[rs2], 1));
-        CAPI.MEM.write(registers[rs1] + imm + 4n, 4, val, rs2);
-        CAPI.MEM.addHint(registers[rs1] + imm, "float64", 64);
+        let addr = registers[rs1] + imm;
+        if (CAPI.VALIDATION.isMisaligned(addr, 8))
+            CAPI.VALIDATION.raise('The memory must be aligned');
+        CAPI.MEM.write(addr, 8, registers[rs2], rs2, 'float64', false);
       help: Store a double-precision value from the floating-point registers to memory.
 
   Priv:
@@ -3915,7 +3905,7 @@ pseudoinstructions:
         - field: off
           type: offset_bytes
       definition: |
-        bge reg1, x0, off;
+        bge rs1, x0, off;
       help: Take the branch if the value in register rs1 is zero.
 
     - name: bgt
@@ -4257,6 +4247,7 @@ interrupts:
           break;
       }
       CAPI.INTERRUPTS.clearHighlight();
+      CAPI.STACK.endFrame();
 
     custom: |
       CAPI.INTERRUPTS.globalDisable();

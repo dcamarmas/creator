@@ -5,18 +5,14 @@
 
 .text
     main:
-      li  $t0, 1
-      li  $t1, 0
-      li  $t2, -1
-      beqz $t0, jump1
-      beqz $t2, jump1
-      beqz $t1, jump1
+      li  $s0, -10
+      li  $s1,  15
 
-    jump2:
-      li $t6, 34
-      li $v0, 10
-      syscall
+      beqz $s0, j0
+      li $t0, 1
+j0:   beqz $s1, j1
+      li $t1, 1
+j1:   beqz $0, end
+      li $t2, 1
 
-    jump1:
-      li $t4, 0
-      beqz $t4, jump2
+end:  jr $ra

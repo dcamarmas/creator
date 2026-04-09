@@ -796,10 +796,10 @@ export function cr_digitalPinToInterrupt() {
     });
 }
 export function cr_interrupts() {
-    //TODO
+    coreEvents.emit("arduino-interrupts-enabled", true);
 }
 export function cr_nointerrupts() {
-    // TODO
+    coreEvents.emit("arduino-interrupts-enabled", false);
 }
 export function cr_isDigit() {
     var ret1 = crex_findReg("a0");
@@ -1301,11 +1301,9 @@ export function cr_serial_flush() {
     });
     if (serial_begin != 0 && initArduino != 0) {
         status.keyboard = "";
-        status.display = "";
         const root = (document as any).app;
         if (root) {
             root.keyboard = "";
-            root.display = "";
             root.enter = null;
         }
     }

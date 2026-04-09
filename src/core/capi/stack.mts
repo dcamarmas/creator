@@ -19,7 +19,7 @@
 
 import { architecture, REGISTERS, getPC, stackTracker } from "../core.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
-import { sentinel } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mts";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { coreEvents, CoreEventTypes } from "../events.mts";
 
@@ -47,17 +47,13 @@ export const STACK = {
         }
     },
     endFrame() {
-        // stack tracker: pop both frames
-        stackTracker.popFrame();
+        // stack tracker: pop frame
         stackTracker.popFrame();
 
         // sentinel
         if (!architecture.config.passing_convention) {
             return;
         }
-
-        // get function name
-        const currentFunction = sentinel.getCurrentFunction() || "unknown";
 
         const ret = sentinel.leave();
 
@@ -66,17 +62,13 @@ export const STACK = {
         }
 
         // emit event for GUI
-        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, {
-            functionName: currentFunction,
-            message: ret.msg,
-            ok: false,
-        });
+        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, ret);
 
         // Google Analytics
         creator_ga(
             "execute",
             "execute.exception",
-            "execute.exception.protection_jrra" + ret.msg,
+            "execute.exception.protection_jrra",
         );
     },
 

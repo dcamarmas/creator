@@ -15,4 +15,5 @@ main:
     
     li.s $f12, 1.1
     syscall
-    
+
+    jr $ra

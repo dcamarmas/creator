@@ -1,0 +1,48 @@
+export const snapshot = {};
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_023.s 1`] = `
+{
+  column: 20,
+  errorText: "[E10] Error: Incorrect amount of arguments, expected at least 1 but found 0",
+  line: 9,
+}
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_023.s 2`] = `
+"[E10] Error: Incorrect amount of arguments, expected at least 1 but found 0
+   ╭─[ assembly:9:20 ]
+   │
+ 9 │    example2:    .half
+   │                       │ 
+   │                       ╰─ This directive has 0 arguments
+   │ 
+   │ Help: Consider adding the missing 1 argument
+───╯
+"
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_023.s 3`] = `
+"<span style='color:var(--err-red,#a00)'>[E10] Error:</span> Incorrect amount of arguments, expected at least <span style='color:var(--err-bright-blue,#55f)'>1</span> but found <span style='color:var(--err-red,#a00)'>0</span>
+   <span style='color:#949494'>╭─[</span> assembly:9:20 <span style='color:#949494'>]</span>
+   <span style='color:#949494'>│</span>
+ <span style='color:#949494'>9 │</span> <span style='color:#b2b2b2'>   example2:    .half</span>
+ <span style='color:#585858'>  │</span>                       <span style='color:var(--err-red,#a00)'>│</span> 
+ <span style='color:#585858'>  │</span>                       <span style='color:var(--err-red,#a00)'>╰─</span> This directive has <span style='color:var(--err-red,#a00)'>0</span> arguments
+ <span style='color:#585858'>  │</span> 
+ <span style='color:#585858'>  │</span> <span style='color:#87d7af'>Help</span>: Consider adding the missing <span style='color:var(--err-green,#0a0)'>1</span> argument
+<span style='color:#949494'>───╯</span>
+"
+`;
+
+snapshot[`mips/error/compiler/test_mips_error_compiler_023.s 4`] = `
+"[31m[E10] Error:[0m Incorrect amount of arguments, expected at least [94m1[0m but found [31m0[0m
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m assembly:9:20 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m9 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249me[0m[38;5;249mx[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m2[0m[38;5;249m:[0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m.[0m[38;5;249mh[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249mf[0m
+ [38;5;240m  │[0m                       [31m│[0m 
+ [38;5;240m  │[0m                       [31m╰[0m[31m─[0m This directive has [31m0[0m arguments
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: Consider adding the missing [32m1[0m argument
+[38;5;246m───╯[0m
+"
+`;
