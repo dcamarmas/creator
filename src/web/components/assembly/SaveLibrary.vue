@@ -54,7 +54,7 @@ export default defineComponent({
         }
       >,
 
-      compiler: architecture.config.name,
+      compiler: architecture?.config?.name,
 
       /*Binary data*/
       binaryHex: "",
@@ -202,7 +202,7 @@ export default defineComponent({
      */
     async handleShown() {
       // Compile as library
-      if (!this.compiler.includes("SRV")){
+      if (!this.compiler?.includes("SRV")){
         const compiled = await this.compileAsLibrary();
         if (!compiled) {
           // Close modal if compilation failed
@@ -230,7 +230,7 @@ export default defineComponent({
      */
     handleOk(evt: any) {
       evt.preventDefault();
-      if (this.compiler.includes("SRV"))
+      if (this.compiler?.includes("SRV"))
         this.library_save_sail();
       else 
         this.library_save();
@@ -464,7 +464,7 @@ export default defineComponent({
           title="File name"
         />
         <small class="form-text text-muted"
-          >File will be saved as {{ name_binary_save || "library" }} {{ (compiler.includes("SRV")) ? ".o" : ".yml" }}</small
+          >File will be saved as {{ name_binary_save || "library" }} {{ (compiler?.includes("SRV")) ? ".o" : ".yml" }}</small
         >
       </b-form-group>
       <hr class="my-4" />

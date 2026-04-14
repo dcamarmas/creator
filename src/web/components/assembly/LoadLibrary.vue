@@ -27,21 +27,21 @@ export default defineComponent({
   },
 
   data() {
-    return { 
+    return {
       library: null,
-      compiler: architecture.config.name
-     };
+      compiler: architecture?.config?.name,
+    };
   },
   computed: {
     file_accept() {
-      return (this.compiler.includes("SRV") ? ".o" : ".yml");
-    }
+      return this.compiler?.includes("SRV") ? ".o" : ".yml";
+    },
   },
 
   methods: {
     load() {
       // read file
-      if (!this.compiler.includes("SRV")) {
+      if (!this.compiler?.includes("SRV")) {
         show_loading();
         const reader = new FileReader();
         reader.onload = _event => {
@@ -61,7 +61,7 @@ export default defineComponent({
       } else {
         show_loading();
         const reader = new FileReader();
-        var arrayBuffer;
+        let arrayBuffer;
         reader.onload = _event => {
           try {
             load_library_sail(new Uint8Array(reader.result), document.getElementById("binary_file").files[0].name);
@@ -70,8 +70,6 @@ export default defineComponent({
           }
         };
         reader.readAsArrayBuffer(this.library!);
-
-
       }
     },
   },
