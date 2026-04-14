@@ -130,7 +130,7 @@ const usesCreatorAssembler = computed(() => {
 });
 
 const showLibraryButton = computed(() => {
-  return ((usesCreatorAssembler.value && libraryLoaded.value) || architecture.config.name.includes("SRV"));
+  return ((usesCreatorAssembler.value && libraryLoaded.value) || architecture?.config?.name?.includes("SRV"));
 });
 
 // Watch for architecture changes
