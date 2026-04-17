@@ -504,7 +504,7 @@ watch(
 <template> 
  <!-- Editor monaco  -->
   <div class="editor-wrapper" :style="{ height: height }">
-    <div v-if="architecture.config.name.includes('SRV') && files.length >= 0" class="tabs-editor">
+    <div v-if="architecture?.config?.name?.includes('SRV') && files.length >= 0" class="tabs-editor">
       <b-tabs content-class="mt-3" v-model="activeTabIndex">
         <b-tab v-for="(tab, i) in files" 
                :key="tab.filename"
@@ -538,7 +538,7 @@ watch(
 
       </b-tabs>
     </div>
-    <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture.config.name.includes('SRV')"/>
+    <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture?.config?.name?.includes('SRV')"/>
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
     <b-modal v-model="renameModalOpen" class="rename-button" :class="{ 'rename-button-dark': dark }" title="Rename file" @ok="confirmRename">

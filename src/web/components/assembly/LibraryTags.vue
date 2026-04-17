@@ -38,7 +38,7 @@ export default {
   computed: {
     libraryLoaded() {
       // Access libraryVersion to make this reactive to library changes
-      if (architecture.config.name.includes("SRV"))
+      if (architecture?.config?.name?.includes("SRV"))
         return (
           this.libraryVersion >= 0 &&
           loadedLibrary && (libtags32.length !== 0 || libtags64.length !== 0) &&
