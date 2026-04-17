@@ -65,9 +65,9 @@ export default defineComponent({
       <b-row cols="3" class="text-center" align-v="center">
         <b-col cols="4"></b-col>
         <b-col cols="4">
-          <a target="_blank" href="https://www.uclm.es/">
+          <a target="_blank" href="https://www.upm.es/">
             <img
-              alt="Universidad de Castilla La - Mancha Logo"
+              alt="Universidad Politecnica de Madrid Logo"
               class="p-0"
               style="width: 100%"
               src="@/web/assets/img/institutions/upm.webp"
