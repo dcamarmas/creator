@@ -60,6 +60,24 @@ export default defineComponent({
             />
           </a>
         </b-col>
+      </b-row>
+
+      <b-row cols="3" class="text-center" align-v="center">
+        <b-col cols="4"></b-col>
+        <b-col cols="4">
+          <a target="_blank" href="https://www.upm.es/">
+            <img
+              alt="Universidad Politecnica de Madrid Logo"
+              class="p-0"
+              style="width: 100%"
+              src="@/web/assets/img/institutions/upm.webp"
+            />
+          </a>
+        </b-col>
+        <b-col cols="4"></b-col>
+      </b-row>
+
+      <b-row cols="1" class="text-center" align-v="center">
         <b-col cols="12">
           <b-list-group class="my-3">
             <b-list-group-item style="text-align: center">

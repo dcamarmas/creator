@@ -538,7 +538,8 @@ See [`docs/dev.md`](https://github.com/creatorsim/creator/blob/master/docs/dev.m
   <p align="center">
     <img src="https://github.com/user-attachments/assets/681e1f79-d019-40d1-89da-e45326d84ab1" height="100" alt="Universidad Carlos III de Madrid Logo"/>
     <img src="https://github.com/user-attachments/assets/c31a97e8-eaf7-4440-9f2a-dc7ca773b5a2" height="100" alt="Universidad Carlos III de Madrid Logo"/>
-    <img src="https://github.com/user-attachments/assets/28ae0396-852c-4c4c-8812-bc7dc494e3c3" height="100" alt="Universidad de Leon Logo"/
+    <img src="https://github.com/user-attachments/assets/28ae0396-852c-4c4c-8812-bc7dc494e3c3" height="100" alt="Universidad de Leon Logo"/>
+    <img src="https://github.com/user-attachments/assets/a9941cad-e999-4368-8ef9-489565d697b8" height="100" alt="Universidad Politécnica de Madrid Logo"/>
   </p>
 </div>
 
