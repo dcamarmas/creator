@@ -289,7 +289,8 @@ export class InterruptManager {
 
     /** Checks if a type of interrupt is globally enabled */
     public isGlobalEnabled(): boolean {
-        return this.handler.isGlobalEnabled(this.status);
+        this.handler.isGlobalEnabled(this.status);
+        return this.status.globalEnabled ;
     }
 
     /** Clears a specific interrupt type */
