@@ -3819,6 +3819,7 @@ instructions:
         CAPI.STACK.endFrame();
         CAPI.INTERRUPTS.setUserMode();
         CAPI.INTERRUPTS.clearHighlight();
+        CAPI.INTERRUPTS.globalEnable();
       help: Return from traps in M-mode, and mret copies mpie into mie, then
         sets mpie.
       properties:
