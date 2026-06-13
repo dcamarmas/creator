@@ -119,6 +119,27 @@
 ### 2026
 
 <details>
+<summary>:newspaper: CREATOR: An integrated development environment for programming assembly in RISC-V architectures</summary>
+
+  * Journal paper: SoftwareX
+  * Authors: Diego Camarmas-Alonso, Félix García-Carballeira, Alejandro Calderón-Mateos, Elías Del-Pozo-Puñal, Juan Carlos Cano-Resa, Elisa Utrilla-Arroyo
+  * [:link: Open publication](https://doi.org/10.1016/j.softx.2026.102792)
+  ```bibtex
+  @article{CAMARMASALONSO2026102792,
+  	title = {CREATOR: An integrated development environment for programming assembly in RISC-V architectures},
+  	journal = {SoftwareX},
+  	volume = {35},
+  	pages = {102792},
+  	year = {2026},
+  	issn = {2352-7110},
+  	doi = {https://doi.org/10.1016/j.softx.2026.102792},
+  	url = {https://www.sciencedirect.com/science/article/pii/S2352711026002840},
+  	author = {Diego Camarmas-Alonso and Felix Garcia-Carballeira and Alejandro Calderon-Mateos and Elias Del-Pozo-Puñal and Juan Carlos Cano-Resa and Elisa Utrilla-Arroyo}
+  }
+  ```
+</details>
+
+<details>
 <summary>:newspaper: CREATOR-Sail: A RISC-V web simulator based on Sail ISA specification</summary>
 
   * Journal paper: Journal of Systems Architecture
