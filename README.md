@@ -161,6 +161,14 @@
   ```
 </details>
 
+<details>
+<summary>:newspaper: CREATOR: entorno de desarrollo integrado para la docencia y la investigación en arquitecturas RISC-V</summary>
+
+  * Seminar: Jornadas Sarteco
+  * Authors: Félix García-Carballeira, Diego Camarmas-Alonso, Alejandro Calderón-Mateos
+  * [:link: Open publication](https://creatorsim.github.io/content/publications/creator_sarteco_2026.pdf)
+</details>
+
 ### 2025
 
 <details>
