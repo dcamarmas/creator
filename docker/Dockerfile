@@ -20,23 +20,6 @@ RUN apt update && apt-get install -y \
         build-essential
 
 
-# OpenSSH: Install
-RUN apt-get install -y --no-install-recommends openssh-client openssh-server
-RUN mkdir -p /var/run/sshd
-
-# OpenSSH: Allow Root login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-RUN sed -i 's/PermitRootLogin prohibit-password/#PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
-RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-# OpenSSH: Allow to talk to containers without asking for confirmation
-RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
-    echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
-    mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
-# OpenSSH: keygen
-RUN ssh-keygen -q -t rsa -N "" -f /root/.ssh/id_rsa
-RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
-
-
 RUN apt update && apt-get install -y \
         nodejs \
         npm
