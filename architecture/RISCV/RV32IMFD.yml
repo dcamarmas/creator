@@ -2295,7 +2295,7 @@ instructions:
         registers[rd] = BigInt(CAPI.FP.check_ieee(
           a[0],
           a.slice(1, 9),
-          a.slice(10),
+          a.slice(9),
         ));
       help: Examines the value in floating-point register rs1 and writes to
         integer register rd a 10-bit mask that indicates the class of the
@@ -2946,7 +2946,7 @@ instructions:
         registers[rd] = CAPI.FP.check_ieee(
           a[0],
           a.slice(1, 12),
-          a.slice(13),
+          a.slice(12),
         );
       help: Examines the value in double-precision floating-point register rs1
         and writes to integer register rd a 10-bit mask that indicates the class
