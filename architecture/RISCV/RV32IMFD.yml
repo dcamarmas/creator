@@ -2287,7 +2287,7 @@ instructions:
           type: INT-Reg
       preoperation: |
         let rs1Value, type_rs1;
-        [rs1Value, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs1Value, type_rs1] = CAPI.ARCH.toJSNumberS(registers[rs1]);
       postoperation: |
         registers[rs1] = CAPI.ARCH.toBigInt(rs1Value, type_rs1);
       definition: |
