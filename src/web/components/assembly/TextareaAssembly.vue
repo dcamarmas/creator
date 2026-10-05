@@ -17,11 +17,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler, reactive } from "vue";
+import {
+  ref,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  type PropType,
+  computed,
+  registerRuntimeCompiler,
+  reactive,
+  nextTick,
+} from "vue";
 import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
-import { assembly_files, DeleteFile, showFileEditor, createFile, renameFile, switchApplyFile } from "@/web/components/assembly/MultifileEditor.mjs";
+import {
+  assembly_files,
+  DeleteFile,
+  showFileEditor,
+  createFile,
+  renameFile,
+  switchApplyFile,
+  getOrCreateFileModel,
+  renameFileModel,
+} from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
 import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
@@ -32,7 +51,6 @@ import {
 } from "@/web/monaco/validation";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
 import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
-import { nextTick } from "vue";
 
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
@@ -84,7 +102,6 @@ self.MonacoEnvironment = {
 };
 
 // Register custom themes once (using IIFE to avoid lint warning)
-
 registerCreatorThemes();
 
 function syncFiles(event?: { files: any[]; currentTab: number }) {
@@ -102,7 +119,6 @@ const props = defineProps({
   height: { type: String, required: true },
   dark: { type: Boolean, required: true },
 });
-
 
 // List of current files created
 const files = ref<any>([]);
@@ -125,50 +141,49 @@ const openTabMenu = (e: MouseEvent, tab: any) => {
   tabMenu.tab = tab;
 
   nextTick(() => {
-    window.addEventListener("click", closeTabMenu, {once: true});
+    window.addEventListener("click", closeTabMenu, { once: true });
   });
-}
-
-
+};
 
 const onRenameClick = () => {
-  if (!tabMenu.tab) 
-    return;
+  if (!tabMenu.tab) return;
 
-    tabToRename.value = tabMenu.tab;
-    renameValue.value = tabMenu.tab.filename ?? "";
-    renameModalOpen.value = true;
+  tabToRename.value = tabMenu.tab;
+  renameValue.value = tabMenu.tab.filename ?? "";
+  renameModalOpen.value = true;
 
-    closeTabMenu();
-}
+  closeTabMenu();
+};
 
 const confirmRename = () => {
   const tab = tabToRename.value;
-  if (!tab)
-    return;
+  if (!tab) return;
 
   const newName = renameValue.value.trim();
+
+  // Rename the file in the global state and update the Monaco model map
+  if (tab.filename) {
+    renameFileModel(tab.filename, newName);
+  }
+
   renameFile(tab.filename, newName);
 
   renameModalOpen.value = false;
   tabToRename.value = null;
-
-}
+};
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (e.key === "Escape") {
     closeTabMenu();
   }
-}
+};
 
 window.addEventListener("keydown", onKeyDown);
 
 onBeforeUnmount(() => {
   coreEvents.off(CoreEventTypes.ASSEMBLY_FILES_UPDATED, syncFiles);
-
   window.removeEventListener("keydown", onKeyDown);
 });
-
 
 const editorContainer = ref<HTMLDivElement | null>(null);
 let editor: monaco.editor.IStandaloneCodeEditor | null = null;
@@ -181,6 +196,13 @@ const tabMenu = reactive({
   tab: null as any | null,
 });
 
+// Helper to get the language ID based on the architecture's syntax or name
+const getLanguageId = () => {
+  const architectureName = (architecture?.config as any)?.name || "Assembly";
+  return (architecture?.config as any)?.syntax
+    ? (architecture?.config as any).syntax
+    : architectureName.toLowerCase().replace(/\s+/g, "-");
+};
 
 // Get the selected compiler from the architecture or use default
 const getSelectedCompiler = () => {
@@ -194,9 +216,7 @@ const getSelectedCompiler = () => {
   return selectedCompiler;
 };
 
-/**
- * Handler for the Ctrl-s keydown event that disables its default action
- */
+//Handler for the Ctrl-s keydown event that disables its default action
 const ctrlSHandler = (e: KeyboardEvent) => {
   if (
     e.key === "s" &&
@@ -252,15 +272,10 @@ let vimMode: any;
 const setVimMode = (enabled: boolean) => {
   if (enabled) {
     // enable Vim
-    vimMode = initVimMode(
-      editor,
-      // initVimMode requires an ICoreEditor, so...
-      // editor!.getEditors().at(0),
-      document.getElementById("vim-statusbar"),
-    );
+    vimMode = initVimMode(editor, document.getElementById("vim-statusbar"));
 
     // add commands
-    VimMode.Vim.defineEx("write", "w", assemble); // TODO: don't change view
+    VimMode.Vim.defineEx("write", "w", assemble);
     VimMode.Vim.defineEx("xit", "x", assemble);
 
     // add keybindings
@@ -274,33 +289,55 @@ const setVimMode = (enabled: boolean) => {
 };
 
 const showFile = (filename: String) => {
-  if (editor && filename !== "")
-    editor.setValue(showFileEditor(filename, editor.getValue()));
-}
+  if (editor && filename !== "") {
+    // Sincronize the editor with the selected file's content
+    showFileEditor(filename, editor.getValue());
+
+    // Get the file object from the files array to retrieve its code
+    const fileObj = files.value.find((f: any) => f.filename === filename);
+    const code = fileObj ? fileObj.code : "";
+
+    const languageId = getLanguageId();
+    const model = getOrCreateFileModel(String(filename), code, languageId);
+
+    // Conmute the editor's model to the selected file's model, preserving undo/redo history
+    if (editor.getModel() !== model) {
+      editor.setModel(model);
+    }
+  }
+};
 
 const scrollableTab = async () => {
   await nextTick();
 
   const tab = document.querySelector(".tab-editor .nav-tabs .nav-link-active");
-  (tab as HTMLElement | null)?.scrollIntoView({ behavior: "smooth", inline: "nearest"});
-}
+  (tab as HTMLElement | null)?.scrollIntoView({
+    behavior: "smooth",
+    inline: "nearest",
+  });
+};
 
 const addFile = () => {
-  
+  let i = files.value.findIndex((file: any) => file.editing_now);
+  let newFilename: string;
 
-  let i = files.value.findIndex(file => file.editing_now);
-  if (i !== -1)
-    editor?.setValue(createFile(files.value[i].code));
-  else 
-    editor?.setValue(createFile());
+  if (i !== -1) {
+    newFilename = createFile(files.value[i].code);
+  } else {
+    newFilename = createFile();
+  }
 
   nextTick(() => {
     const n = files.value.length;
-    if (n > 0) activeTabIndex.value = n - 1; 
+    if (n > 0) activeTabIndex.value = n - 1;
+
+    if (newFilename) {
+      showFile(newFilename);
+    }
+
     scrollableTab();
   });
-
-}
+};
 
 onMounted(() => {
   coreEvents.on(CoreEventTypes.ASSEMBLY_FILES_UPDATED, syncFiles);
@@ -313,19 +350,28 @@ onMounted(() => {
   // Register language support dynamically from architecture
   // Cast to any to handle extended properties not in the type definition
   registerAssemblyLanguages(architecture as any);
+  const languageId = getLanguageId();
 
-  // Determine language ID (same logic as in registerAssemblyLanguages):
-  // 1. If syntax is explicitly set, use it (could be custom language or "plaintext")
-  // 2. Otherwise, use architecture name
-  const architectureName = (architecture?.config as any)?.name || "Assembly";
-  const languageId = (architecture?.config as any)?.syntax
-    ? (architecture?.config as any).syntax
-    : architectureName.toLowerCase().replace(/\s+/g, "-");
+  // Determine the initial active tab index based on localStorage or default to 0
+  const saved = Number(localStorage.getItem("activeTabEditor"));
+  const arr = files.value;
+  const idx = saved && saved >= 0 && saved < arr.length ? saved : 0;
+  activeTabIndex.value = arr.length > 0 ? idx : 0;
+
+  const currentFile = arr[activeTabIndex.value];
+  const initialFilename = currentFile?.filename || "main.s";
+  const initialCode = currentFile?.code || props.assembly_code;
+
+  // Get or create the persistent ITextModel for the initial file
+  const initialModel = getOrCreateFileModel(
+    initialFilename,
+    initialCode,
+    languageId,
+  );
 
   // Create Monaco Editor instance
   editor = monaco.editor.create(editorContainer.value, {
-    value: props.assembly_code,
-    language: languageId,
+    model: initialModel,
     theme: props.dark ? "creator-dark" : "creator-light",
     automaticLayout: true,
     fontSize: 14,
@@ -375,15 +421,7 @@ onMounted(() => {
     1500, // 1.5 second debounce
   );
 
-  // vim mode
   setVimMode(props.vim_mode);
-
-  const saved = Number(localStorage.getItem("activeTabEditor"));
-  const arr = files.value;
-  if (!arr.length) return;
-
-  const idx = saved ? saved : -1;
-  activeTabIndex.value = idx >= 0 ? idx : 0;
 });
 
 onBeforeUnmount(() => {
@@ -394,9 +432,10 @@ onBeforeUnmount(() => {
     validationDisposable.dispose();
   }
 
-  // Dispose editor - no need to save since onDidChangeModelContent already handles it
+  // Destroy Monaco editor instance
   if (editor) {
     editor.dispose();
+    editor = null;
   }
 });
 
@@ -415,16 +454,24 @@ watch(
   { immediate: true, deep: true },
 );
 
-watch( activeTabIndex, i => {
-
+watch(activeTabIndex, i => {
   const arr = files.value;
   let tab;
   let tabindex = i;
-  if (!arr || arr.length === 0){
-    editor?.setValue("");
+
+  if (!arr || arr.length === 0) {
+    if (editor) {
+      const emptyModel = getOrCreateFileModel(
+        "empty_default",
+        "",
+        getLanguageId(),
+      );
+      editor.setModel(emptyModel);
+    }
     return;
   }
-  if (typeof i === "number"){
+
+  if (typeof i === "number") {
     tab = arr[tabindex];
     if (!tab || !tab.filename) return;
   } else {
@@ -432,6 +479,7 @@ watch( activeTabIndex, i => {
     tab = arr[tabindex];
     if (!tab || !tab.filename) return;
   }
+
   localStorage.setItem("activeTabEditor", String(tabindex));
   showFile(tab.filename);
 });
@@ -440,12 +488,23 @@ watch( activeTabIndex, i => {
 watch(
   () => props.assembly_code,
   newCode => {
-    if (editor && editor.getValue() !== newCode) {
-      // Preserve cursor position if possible
-      const position = editor.getPosition();
-      editor.setValue(newCode);
-      if (position) {
-        editor.setPosition(position);
+    if (editor) {
+      const model = editor.getModel();
+      if (model && model.getValue() !== newCode) {
+        const position = editor.getPosition();
+        model.pushEditOperations(
+          [],
+          [
+            {
+              range: model.getFullModelRange(),
+              text: newCode,
+            },
+          ],
+          () => null,
+        );
+        if (position) {
+          editor.setPosition(position);
+        }
       }
     }
   },
@@ -472,13 +531,7 @@ watch(
       // Register new language support
       registerAssemblyLanguages(newArchitecture as any);
 
-      // Determine language ID (same logic as above)
-      const architectureName =
-        (newArchitecture?.config as any)?.name || "Assembly";
-      const languageId = (newArchitecture?.config as any)?.syntax
-        ? (newArchitecture?.config as any).syntax
-        : architectureName.toLowerCase().replace(/\s+/g, "-");
-
+      const languageId = getLanguageId();
       const model = editor.getModel();
       if (model) {
         monaco.editor.setModelLanguage(model, languageId);
@@ -501,18 +554,25 @@ watch(
 );
 </script>
 
-<template> 
- <!-- Editor monaco  -->
+<template>
+  <!-- Editor monaco -->
   <div class="editor-wrapper" :style="{ height: height }">
-    <div v-if="architecture?.config?.name?.includes('SRV') && files.length >= 0" class="tabs-editor">
+    <div
+      v-if="architecture?.config?.name?.includes('SRV') && files.length >= 0"
+      class="tabs-editor"
+    >
       <b-tabs content-class="mt-3" v-model="activeTabIndex">
-        <b-tab v-for="(tab, i) in files" 
-               :key="tab.filename"
-               :id="i"
-               class="tab-editor">
+        <b-tab
+          v-for="(tab, i) in files"
+          :key="tab.filename"
+          :id="i"
+          class="tab-editor"
+        >
           <template #title>
-            <span class="tab-title d-inline-flex align-items-center gap-2"
-            @contextmenu.prevent.stop="openTabMenu($event, tab)">
+            <span
+              class="tab-title d-inline-flex align-items-center gap-2"
+              @contextmenu.prevent.stop="openTabMenu($event, tab)"
+            >
               <span class="me-1">{{ tab.filename }}</span>
               <b-form-checkbox
                 switch
@@ -520,28 +580,37 @@ watch(
                 class="mb-0"
                 @update:model-value="switchApplyFile(tab.filename)"
               />
-              <b-button size="sm" 
-                        class="close-button" 
-                        :class="{ 'close-button-dark': dark }"
-                        @click.stop="DeleteFile(tab.filename)"
-              >X</b-button>
+              <b-button
+                size="sm"
+                class="close-button"
+                :class="{ 'close-button-dark': dark }"
+                @click.stop="DeleteFile(tab.filename)"
+                >X</b-button
+              >
             </span>
-
-
-          </template>      
+          </template>
         </b-tab>
         <template #tabs-end>
           <li class="nav-item">
             <a class="nav-link" @click.prevent.stop="addFile">+</a>
           </li>
         </template>
-
       </b-tabs>
     </div>
-    <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture?.config?.name?.includes('SRV')"/>
+    <div
+      ref="editorContainer"
+      class="monaco-editor-container"
+      v-show="files.length > 0 || !architecture?.config?.name?.includes('SRV')"
+    />
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
-    <b-modal v-model="renameModalOpen" class="rename-button" :class="{ 'rename-button-dark': dark }" title="Rename file" @ok="confirmRename">
+    <b-modal
+      v-model="renameModalOpen"
+      class="rename-button"
+      :class="{ 'rename-button-dark': dark }"
+      title="Rename file"
+      @ok="confirmRename"
+    >
       <b-form-input
         v-model="renameValue"
         autofocus
@@ -555,7 +624,7 @@ watch(
     <div
       v-show="tabMenu.visible"
       class="tab-context-menu rename-button"
-      :class="{ 'rename-button-dark': dark }" 
+      :class="{ 'rename-button-dark': dark }"
       :style="{ left: tabMenu.x + 'px', top: tabMenu.y + 'px' }"
       @click.stop
       @contextmenu.prevent
@@ -688,9 +757,9 @@ watch(
   z-index: 99999;
   min-width: 180px;
   background: white;
-  border: 1px solid rgba(0,0,0,.15);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   padding: 6px;
 }
 
@@ -705,7 +774,7 @@ watch(
 }
 
 .tab-context-item:hover {
-  background: rgba(0,0,0,.06);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .rename-button {
@@ -731,7 +800,7 @@ watch(
     background-color: rgb(83, 83, 83);
 
     &:hover:not(:disabled) {
-    background-color: rgb(61, 61, 61);
+      background-color: rgb(61, 61, 61);
     }
 
     &:active:not(:disabled) {
