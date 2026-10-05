@@ -1,6 +1,5 @@
 // Part of monaco editor to allow user create multiple file to edit in assembly
 import { as } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
-import * as monaco from "monaco-editor";
 import dump64Module, {
     libtags64,
 } from "@/core/assembler/sailAssembler/web/wasm/objdump64.js";
@@ -15,43 +14,6 @@ export var tabCounter = 0;
 export var tabskey = -1;
 export var currentTab = -1;
 let libdump = null;
-
-//Global map to store the monaco instances for each file
-export const fileModels = new Map();
-
-// Get or create a monaco model for a given file
-export function getOrCreateFileModel(
-    filename,
-    initialCode = "",
-    languageId = "plaintext",
-) {
-    if (fileModels.has(filename)) {
-        const model = fileModels.get(filename);
-        if (languageId) {
-            monaco.editor.setModelLanguage(model, languageId);
-        }
-        return model;
-    }
-
-    const uri = monaco.Uri.parse(`inmemory://creator/assembly/${filename}`);
-    let model = monaco.editor.getModel(uri);
-
-    if (!model) {
-        model = monaco.editor.createModel(initialCode, languageId, uri);
-    }
-
-    fileModels.set(filename, model);
-    return model;
-}
-
-// Renames the key of a model in the map when a file is renamed.
-export function renameFileModel(oldFilename, newFilename) {
-    if (fileModels.has(oldFilename)) {
-        const model = fileModels.get(oldFilename);
-        fileModels.delete(oldFilename);
-        fileModels.set(newFilename, model);
-    }
-}
 
 function emitAssemblyFilesUpdated() {
     coreEvents.emit(CoreEventTypes.ASSEMBLY_FILES_UPDATED, {
@@ -130,12 +92,6 @@ export function switchApplyFile(filename) {
 }
 
 export function DeleteFile(filename) {
-    if (fileModels.has(filename)) {
-        const model = fileModels.get(filename);
-        model.dispose(); // Destruye el modelo y su pila de undo/redo
-        fileModels.delete(filename);
-    }
-
     let i = assembly_files.findIndex(file => file.filename === filename);
     if (i !== -1) {
         // remove element from assembly_files

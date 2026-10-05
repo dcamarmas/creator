@@ -38,8 +38,6 @@ import {
   createFile,
   renameFile,
   switchApplyFile,
-  getOrCreateFileModel,
-  renameFileModel,
 } from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
@@ -51,6 +49,58 @@ import {
 } from "@/web/monaco/validation";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
 import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
+
+// Global persistent store for Monaco editor models across component mount/unmount cycles
+const fileModelsMap = new Map<string, monaco.editor.ITextModel>();
+
+/**
+ * Retrieves an existing ITextModel or creates a new one for a given file
+ */
+function getOrCreateFileModel(
+  filename: string,
+  initialCode: string = "",
+  languageId: string = "plaintext",
+): monaco.editor.ITextModel {
+  if (fileModelsMap.has(filename)) {
+    const model = fileModelsMap.get(filename)!;
+    if (languageId) {
+      monaco.editor.setModelLanguage(model, languageId);
+    }
+    return model;
+  }
+
+  const uri = monaco.Uri.parse(`inmemory://creator/assembly/${filename}`);
+  let model = monaco.editor.getModel(uri);
+
+  if (!model) {
+    model = monaco.editor.createModel(initialCode, languageId, uri);
+  }
+
+  fileModelsMap.set(filename, model);
+  return model;
+}
+
+/**
+ * Renames a model entry key in the store when a file is renamed
+ */
+function renameFileModel(oldFilename: string, newFilename: string) {
+  if (fileModelsMap.has(oldFilename)) {
+    const model = fileModelsMap.get(oldFilename)!;
+    fileModelsMap.delete(oldFilename);
+    fileModelsMap.set(newFilename, model);
+  }
+}
+
+/**
+ * Disposes and removes a model from the store when a file is deleted
+ */
+function removeFileModel(filename: string) {
+  if (fileModelsMap.has(filename)) {
+    const model = fileModelsMap.get(filename)!;
+    model.dispose();
+    fileModelsMap.delete(filename);
+  }
+}
 
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
@@ -102,6 +152,7 @@ self.MonacoEnvironment = {
 };
 
 // Register custom themes once (using IIFE to avoid lint warning)
+
 registerCreatorThemes();
 
 function syncFiles(event?: { files: any[]; currentTab: number }) {
@@ -161,7 +212,7 @@ const confirmRename = () => {
 
   const newName = renameValue.value.trim();
 
-  // Rename the file in the global state and update the Monaco model map
+  // Rename model key in persistent map
   if (tab.filename) {
     renameFileModel(tab.filename, newName);
   }
@@ -170,6 +221,14 @@ const confirmRename = () => {
 
   renameModalOpen.value = false;
   tabToRename.value = null;
+};
+
+const handleDeleteFile = (filename: string) => {
+  // Remove Monaco model and undo/redo history for this file
+  removeFileModel(filename);
+
+  // Call the original DeleteFile helper
+  DeleteFile(filename);
 };
 
 const onKeyDown = (e: KeyboardEvent) => {
@@ -182,6 +241,7 @@ window.addEventListener("keydown", onKeyDown);
 
 onBeforeUnmount(() => {
   coreEvents.off(CoreEventTypes.ASSEMBLY_FILES_UPDATED, syncFiles);
+
   window.removeEventListener("keydown", onKeyDown);
 });
 
@@ -196,7 +256,7 @@ const tabMenu = reactive({
   tab: null as any | null,
 });
 
-// Helper to get the language ID based on the architecture's syntax or name
+// Helper to determine language ID based on current architecture
 const getLanguageId = () => {
   const architectureName = (architecture?.config as any)?.name || "Assembly";
   return (architecture?.config as any)?.syntax
@@ -216,7 +276,9 @@ const getSelectedCompiler = () => {
   return selectedCompiler;
 };
 
-//Handler for the Ctrl-s keydown event that disables its default action
+/**
+ * Handler for the Ctrl-s keydown event that disables its default action
+ */
 const ctrlSHandler = (e: KeyboardEvent) => {
   if (
     e.key === "s" &&
@@ -272,10 +334,15 @@ let vimMode: any;
 const setVimMode = (enabled: boolean) => {
   if (enabled) {
     // enable Vim
-    vimMode = initVimMode(editor, document.getElementById("vim-statusbar"));
+    vimMode = initVimMode(
+      editor,
+      // initVimMode requires an ICoreEditor, so...
+      // editor!.getEditors().at(0),
+      document.getElementById("vim-statusbar"),
+    );
 
     // add commands
-    VimMode.Vim.defineEx("write", "w", assemble);
+    VimMode.Vim.defineEx("write", "w", assemble); // TODO: don't change view
     VimMode.Vim.defineEx("xit", "x", assemble);
 
     // add keybindings
@@ -290,17 +357,15 @@ const setVimMode = (enabled: boolean) => {
 
 const showFile = (filename: String) => {
   if (editor && filename !== "") {
-    // Sincronize the editor with the selected file's content
     showFileEditor(filename, editor.getValue());
 
-    // Get the file object from the files array to retrieve its code
     const fileObj = files.value.find((f: any) => f.filename === filename);
     const code = fileObj ? fileObj.code : "";
 
     const languageId = getLanguageId();
     const model = getOrCreateFileModel(String(filename), code, languageId);
 
-    // Conmute the editor's model to the selected file's model, preserving undo/redo history
+    // Swap active model on editor to preserve individual undo/redo history per file
     if (editor.getModel() !== model) {
       editor.setModel(model);
     }
@@ -350,9 +415,13 @@ onMounted(() => {
   // Register language support dynamically from architecture
   // Cast to any to handle extended properties not in the type definition
   registerAssemblyLanguages(architecture as any);
+
+  // Determine language ID (same logic as in registerAssemblyLanguages):
+  // 1. If syntax is explicitly set, use it (could be custom language or "plaintext")
+  // 2. Otherwise, use architecture name
   const languageId = getLanguageId();
 
-  // Determine the initial active tab index based on localStorage or default to 0
+  // Determine initial active tab and file
   const saved = Number(localStorage.getItem("activeTabEditor"));
   const arr = files.value;
   const idx = saved && saved >= 0 && saved < arr.length ? saved : 0;
@@ -362,14 +431,14 @@ onMounted(() => {
   const initialFilename = currentFile?.filename || "main.s";
   const initialCode = currentFile?.code || props.assembly_code;
 
-  // Get or create the persistent ITextModel for the initial file
+  // Get or create persistent model for initial active file
   const initialModel = getOrCreateFileModel(
     initialFilename,
     initialCode,
     languageId,
   );
 
-  // Create Monaco Editor instance
+  // Create Monaco Editor instance using persistent model
   editor = monaco.editor.create(editorContainer.value, {
     model: initialModel,
     theme: props.dark ? "creator-dark" : "creator-light",
@@ -421,6 +490,7 @@ onMounted(() => {
     1500, // 1.5 second debounce
   );
 
+  // vim mode
   setVimMode(props.vim_mode);
 });
 
@@ -432,7 +502,7 @@ onBeforeUnmount(() => {
     validationDisposable.dispose();
   }
 
-  // Destroy Monaco editor instance
+  // Dispose editor instance UI, but keep persistent ITextModels intact
   if (editor) {
     editor.dispose();
     editor = null;
@@ -458,7 +528,6 @@ watch(activeTabIndex, i => {
   const arr = files.value;
   let tab;
   let tabindex = i;
-
   if (!arr || arr.length === 0) {
     if (editor) {
       const emptyModel = getOrCreateFileModel(
@@ -470,7 +539,6 @@ watch(activeTabIndex, i => {
     }
     return;
   }
-
   if (typeof i === "number") {
     tab = arr[tabindex];
     if (!tab || !tab.filename) return;
@@ -479,12 +547,11 @@ watch(activeTabIndex, i => {
     tab = arr[tabindex];
     if (!tab || !tab.filename) return;
   }
-
   localStorage.setItem("activeTabEditor", String(tabindex));
   showFile(tab.filename);
 });
 
-// Watch for external code changes (e.g., when loading a new file)
+// Watch for external code changes (using pushEditOperations to keep undo stack)
 watch(
   () => props.assembly_code,
   newCode => {
@@ -532,6 +599,7 @@ watch(
       registerAssemblyLanguages(newArchitecture as any);
 
       const languageId = getLanguageId();
+
       const model = editor.getModel();
       if (model) {
         monaco.editor.setModelLanguage(model, languageId);
@@ -555,7 +623,7 @@ watch(
 </script>
 
 <template>
-  <!-- Editor monaco -->
+  <!-- Editor monaco  -->
   <div class="editor-wrapper" :style="{ height: height }">
     <div
       v-if="architecture?.config?.name?.includes('SRV') && files.length >= 0"
@@ -584,7 +652,7 @@ watch(
                 size="sm"
                 class="close-button"
                 :class="{ 'close-button-dark': dark }"
-                @click.stop="DeleteFile(tab.filename)"
+                @click.stop="handleDeleteFile(tab.filename)"
                 >X</b-button
               >
             </span>
