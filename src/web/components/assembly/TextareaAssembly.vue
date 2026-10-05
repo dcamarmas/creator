@@ -53,9 +53,7 @@ import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs"
 // Global persistent store for Monaco editor models across component mount/unmount cycles
 const fileModelsMap = new Map<string, monaco.editor.ITextModel>();
 
-/**
- * Retrieves an existing ITextModel or creates a new one for a given file
- */
+// Retrieves an existing ITextModel or creates a new one for a given file
 function getOrCreateFileModel(
   filename: string,
   initialCode: string = "",
@@ -80,9 +78,7 @@ function getOrCreateFileModel(
   return model;
 }
 
-/**
- * Renames a model entry key in the store when a file is renamed
- */
+// Renames a model entry key in the store when a file is renamed
 function renameFileModel(oldFilename: string, newFilename: string) {
   if (fileModelsMap.has(oldFilename)) {
     const model = fileModelsMap.get(oldFilename)!;
@@ -91,9 +87,7 @@ function renameFileModel(oldFilename: string, newFilename: string) {
   }
 }
 
-/**
- * Disposes and removes a model from the store when a file is deleted
- */
+// Disposes and removes a model from the store when a file is deleted
 function removeFileModel(filename: string) {
   if (fileModelsMap.has(filename)) {
     const model = fileModelsMap.get(filename)!;
@@ -152,7 +146,6 @@ self.MonacoEnvironment = {
 };
 
 // Register custom themes once (using IIFE to avoid lint warning)
-
 registerCreatorThemes();
 
 function syncFiles(event?: { files: any[]; currentTab: number }) {
@@ -276,9 +269,7 @@ const getSelectedCompiler = () => {
   return selectedCompiler;
 };
 
-/**
- * Handler for the Ctrl-s keydown event that disables its default action
- */
+// Handler for the Ctrl-s keydown event that disables its default action
 const ctrlSHandler = (e: KeyboardEvent) => {
   if (
     e.key === "s" &&
