@@ -36,6 +36,12 @@ import { decode } from "@/core/executor/decoder.mjs";
 import { MAXNWORDS } from "@/core/utils/architectureProcessor.mjs";
 import { instructions } from "@/core/assembler/assembler.mjs";
 
+// Variable to store persistent state for the HexViewer component across mounts
+const hexViewerState = {
+  currentPage: 0,
+  pageScrollTop: 0,
+};
+
 export default defineComponent({
   props: {
     main_memory: { type: Object as PropType<Memory>, required: true },
@@ -73,8 +79,8 @@ export default defineComponent({
       // Pagination
       rowHeight: 24,
       rowsPerPage: 100, // Number of rows per page
-      currentPage: 0, // Current page number (0-indexed)
-      pageScrollTop: 0, // Scroll position within the current page
+      currentPage: hexViewerState.currentPage, // Current page number (0-indexed)
+      pageScrollTop: hexViewerState.pageScrollTop, // Scroll position within the current page
 
       // Window width tracking
       windowWidth: window.innerWidth,
@@ -99,6 +105,9 @@ export default defineComponent({
     this.updateSP();
     this.refreshMemory();
 
+    // Restore scroll position after mounting
+    this.restoreScrollPosition();
+
     // Subscribe to register update events
     coreEvents.on("register-updated", this.onRegisterUpdated);
 
@@ -107,10 +116,12 @@ export default defineComponent({
   },
 
   beforeUnmount() {
+    hexViewerState.currentPage = this.currentPage;
+    this.saveScrollPosition();
+    hexViewerState.pageScrollTop = this.pageScrollTop;
+
     coreEvents.off("register-updated", this.onRegisterUpdated);
-
     window.removeEventListener("resize", this.handleResize);
-
     this.hideHintTooltip();
   },
 
@@ -612,11 +623,9 @@ export default defineComponent({
       }
 
       this.$nextTick(() => {
-        // Restore scroll position after render
-        if (hexViewerBody && savedScrollTop > 0) {
-          hexViewerBody.scrollTop = savedScrollTop;
-        } else {
-          this.pageScrollTop = 0;
+        const hexViewerBody = this.$refs.hexViewerBody as HTMLElement;
+        if (hexViewerBody) {
+          hexViewerBody.scrollTop = this.pageScrollTop;
         }
       });
     },
