@@ -754,6 +754,7 @@ export default {
     <div class="app-body">
       <ActivityBar
         v-if="!isMobile && showActivityBar && sidebar_mode !== 'disable'"
+        :key="assemblyCompletedKey"
         v-model="creator_mode"
         :dark="dark"
         :autohide="sidebar_mode === 'autohide'"
