@@ -97,12 +97,13 @@ export default defineComponent({
       // Access render to create a reactive dependency
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.render;
-      if (this.type === "v_registers"){
+      if (this.type === "v_registers") {
         // Only show the first elem of the vector
         let elem_size = document.app.$data.v_length / 4; // hex format
-        return this.show_value(this.value_representation).toString().slice(-elem_size);
-      } else
-        return this.show_value(this.value_representation).toString();
+        return this.show_value(this.value_representation)
+          .toString()
+          .slice(-elem_size);
+      } else return this.show_value(this.value_representation).toString();
     },
   },
 
@@ -124,7 +125,7 @@ export default defineComponent({
     },
 
     showDetails() {
-      this.$emit("register-details", {
+      const details = {
         name: this.register.name,
         type: this.type,
         hex: this.show_value("hex"),
@@ -136,7 +137,13 @@ export default defineComponent({
         ieee64: this.show_value("ieee64"),
         indexComp: this.indexComp,
         indexElem: this.indexElem,
-      });
+      };
+
+      // Emitimos un evento global
+      window.dispatchEvent(
+        new CustomEvent("open-register-space-view", { detail: details }),
+      );
+
       creator_ga("data", "data.view", "data.view.registers_details");
     },
 

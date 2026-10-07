@@ -23,44 +23,68 @@ import { writeRegister } from "@/core/register/registerOperations.mjs";
 import { crex_findReg } from "@/core/register/registerLookup.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { show_notification } from "@/web/utils.mjs";
-import { float2bin, double2bin, hex2float, hex2double } from "@/core/utils/utils.mjs";
+import {
+  float2bin,
+  double2bin,
+  hex2float,
+  hex2double,
+} from "@/core/utils/utils.mjs";
 import { defineComponent, type PropType } from "vue";
 import { architecture } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
     id: { type: String, required: true },
-    item: {
-      type: [Object, null] as PropType<RegisterDetailsItem | null>,
-      required: true,
-    },
   },
 
   // emits: ["update:show"],
 
   data() {
     return {
+      show: false,
+      item: null as RegisterDetailsItem | null,
       newValue: "",
       precision: "single",
-      Sail_arch: (architecture.config.name.includes("SRV")) ? true : false,
-      is_vtype: this.$props.item?.type === "v_registers",
+      Sail_arch: architecture.config.name.includes("SRV") ? true : false,
     };
   },
 
   computed: {
+    is_vtype(): boolean {
+      return this.item?.type === "v_registers";
+    },
     doublePrecision(): boolean {
       // TODO
       return false;
     },
     modalSize() {
-      return (this.item?.type === "v_registers") ? 'modal-xl' : ''
+      return this.item?.type === "v_registers" ? "modal-xl" : "";
     },
-    vectorMaxLength(){
-      return (512 / document.app.$data.v_length) - 1;
-    }
+    vectorMaxLength() {
+      return 512 / document.app.$data.v_length - 1;
+    },
+  },
+
+  mounted() {
+    window.addEventListener(
+      "open-register-space-view",
+      this.handleOpenModal as EventListener,
+    );
+  },
+
+  beforeUnmount() {
+    window.removeEventListener(
+      "open-register-space-view",
+      this.handleOpenModal as EventListener,
+    );
   },
 
   methods: {
+    handleOpenModal(event: CustomEvent) {
+      this.item = event.detail;
+      this.show = true;
+    },
+
     updateRegister(name: string, type: string, doublePrecision: boolean) {
       const reg = crex_findReg(name);
       const regSize =
@@ -106,7 +130,7 @@ export default defineComponent({
       // write and reset
       writeRegister(value!, reg.indexComp!, reg.indexElem!);
       this.newValue = "";
-      // this.showValue = false // close popup
+      this.show = false; // close popup
 
       // Google Analytics
       creator_ga("data", "data.change", "data.change.register_value");
@@ -115,84 +139,94 @@ export default defineComponent({
 
     // function to split in vector register file
     showValues(reg_type, data) {
-
       let size_elem = document.app.$data.v_length;
       var elems = [];
       switch (reg_type) {
         case "Hex":
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
+          for (let i = 0; i < data.length; i += size_elem / 4) {
             if (data.startsWith("0x")) {
-              elems.push("0x" + data.slice((i + 2), (i + 2) + (size_elem / 4)));
-            } else 
-              elems.push("0x" + data.slice(i, i + (size_elem / 4)));
+              elems.push("0x" + data.slice(i + 2, i + 2 + size_elem / 4));
+            } else elems.push("0x" + data.slice(i, i + size_elem / 4));
           }
           break;
-        case "Signed": 
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
-              const singBit = 1n << BigInt(size_elem - 1);
-              const mask = 1n << BigInt(size_elem);  
-              if (data.startsWith("0x")) {
-                const value = BigInt("0x" + data.slice((i + 2), (i + 2) + (size_elem / 4))); 
-                elems.push((value & singBit) ? value - mask : value);
-              } else {
-                const value = BigInt("0x" + data.slice(i, i + (size_elem / 4)));
-                elems.push((value & singBit) ? value - mask : value);
-              }
-              
+        case "Signed":
+          for (let i = 0; i < data.length; i += size_elem / 4) {
+            const singBit = 1n << BigInt(size_elem - 1);
+            const mask = 1n << BigInt(size_elem);
+            if (data.startsWith("0x")) {
+              const value = BigInt(
+                "0x" + data.slice(i + 2, i + 2 + size_elem / 4),
+              );
+              elems.push(value & singBit ? value - mask : value);
+            } else {
+              const value = BigInt("0x" + data.slice(i, i + size_elem / 4));
+              elems.push(value & singBit ? value - mask : value);
+            }
           }
           break;
         case "Unsigned":
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
+          for (let i = 0; i < data.length; i += size_elem / 4) {
             // if (size_elem <= 32) {
             if (data.startsWith("0x")) {
-              elems.push(BigInt("0x" + data.slice((i + 2), (i + 2) + (size_elem / 4))));
-            } else 
-              elems.push(BigInt("0x" + data.slice(i, i + (size_elem / 4))));  
+              elems.push(
+                BigInt("0x" + data.slice(i + 2, i + 2 + size_elem / 4)),
+              );
+            } else elems.push(BigInt("0x" + data.slice(i, i + size_elem / 4)));
           }
           break;
         case "Binary":
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
+          for (let i = 0; i < data.length; i += size_elem / 4) {
             if (data.startsWith("0x")) {
-              elems.push(data.slice((i + 2), (i + 2) + (size_elem / 4)).split('').map(h => parseInt(h, 16).toString(2).padStart(4, '0')).join(''));
+              elems.push(
+                data
+                  .slice(i + 2, i + 2 + size_elem / 4)
+                  .split("")
+                  .map(h => parseInt(h, 16).toString(2).padStart(4, "0"))
+                  .join(""),
+              );
             } else {
-              elems.push(data.slice(i, i + (size_elem / 4)).split('').map(h => parseInt(h, 16).toString(2).padStart(4, '0')).join(''));
+              elems.push(
+                data
+                  .slice(i, i + size_elem / 4)
+                  .split("")
+                  .map(h => parseInt(h, 16).toString(2).padStart(4, "0"))
+                  .join(""),
+              );
             }
           }
           break;
         case "Char":
-          if (data.startsWith("0x"))
-            data = data.slice(2, data.length);
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
-            var elem = data.slice((i + 2), (i + 2) + (size_elem / 4));
+          if (data.startsWith("0x")) data = data.slice(2, data.length);
+          for (let i = 0; i < data.length; i += size_elem / 4) {
+            var elem = data.slice(i + 2, i + 2 + size_elem / 4);
             elems.push(String.fromCharCode(parseInt(elem.slice(-2), 16)));
           }
-          
+
           break;
         case "IEEE 754 32":
-          if (data.startsWith("0x"))
-            data = data.slice(2);
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
-            var elem = data.slice(i, i + (size_elem / 4));
+          if (data.startsWith("0x")) data = data.slice(2);
+          for (let i = 0; i < data.length; i += size_elem / 4) {
+            var elem = data.slice(i, i + size_elem / 4);
             elems.push(hex2float(elem));
           }
           break;
         case "IEEE 754 64":
-          if (data.startsWith("0x"))
-            data = data.slice(2, data.length);
-          for (let i = 0; i < data.length; i+= (size_elem / 4)) {
-            var elem = data.slice(i, i + (size_elem / 4));
+          if (data.startsWith("0x")) data = data.slice(2, data.length);
+          for (let i = 0; i < data.length; i += size_elem / 4) {
+            var elem = data.slice(i, i + size_elem / 4);
             elems.push(hex2double(elem));
           }
           break;
       }
       return elems;
-    }
+    },
   },
 });
 </script>
 
 <template>
   <b-modal
+    v-model="show"
     :id="id"
     responsive
     no-footer
@@ -203,45 +237,88 @@ export default defineComponent({
     <b-table-simple v-if="item" small responsive bordered>
       <b-tbody>
         <b-tr>
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >Hexadecimal <br>(v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">Hexadecimal</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >Hexadecimal <br />(v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >Hexadecimal</b-td
+          >
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('Hex', item.hex)" class="registerPopover" style="margin: 0.5%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('Hex', item.hex)"
+              class="registerPopover"
+              style="margin: 0.5%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
           <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.hex }} </b-badge>
           </b-td>
         </b-tr>
         <b-tr>
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >Binary <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">Binary</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >Binary <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >Binary</b-td
+          >
           <!-- <b-td>Binary</b-td> -->
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('Binary', item.hex)" class="registerPopover" style="margin: 0.5%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('Binary', item.hex)"
+              class="registerPopover"
+              style="margin: 0.5%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
           <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.bin }} </b-badge>
           </b-td>
         </b-tr>
         <b-tr v-if="item.type !== 'float'">
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >Signed <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">Signed</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >Signed <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >Signed</b-td
+          >
           <!-- <b-td>Signed</b-td> -->
 
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('Signed', item.hex)" class="registerPopover" style="margin: 0.3%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('Signed', item.hex)"
+              class="registerPopover"
+              style="margin: 0.3%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
           <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.signed }} </b-badge>
           </b-td>
         </b-tr>
         <b-tr v-if="item.type !== 'float'">
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >Unsigned <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">Unsigned</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >Unsigned <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >Unsigned</b-td
+          >
           <!-- <b-td>Unsigned</b-td> -->
 
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('Unsigned', item.hex)" class="registerPopover" style="margin: 0.3%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('Unsigned', item.hex)"
+              class="registerPopover"
+              style="margin: 0.3%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
           <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.unsigned }} </b-badge>
@@ -249,35 +326,70 @@ export default defineComponent({
         </b-tr>
         <b-tr v-if="item.type !== 'float'">
           <!-- <b-td>Char</b-td> -->
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >Char <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">Char</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >Char <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >Char</b-td
+          >
 
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('Char', item.hex)" class="registerPopover" style="margin: 0.3%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('Char', item.hex)"
+              class="registerPopover"
+              style="margin: 0.3%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
-          <b-td v-if="!Sail_arch|| (Sail_arch && item.type !== 'v_registers')">
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.char }} </b-badge>
           </b-td>
         </b-tr>
         <b-tr>
           <!-- <b-td>IEEE 754 (32 bits)</b-td> -->
-          <b-td style="width: 13% ;" v-if="Sail_arch && item.type === 'v_registers'" >IEEE 754 (32 bits) <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">IEEE 754 (32 bits)</b-td>
+          <b-td
+            style="width: 13%"
+            v-if="Sail_arch && item.type === 'v_registers'"
+            >IEEE 754 (32 bits) <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >IEEE 754 (32 bits)</b-td
+          >
 
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('IEEE 754 32', item.hex)" class="registerPopover" style="margin: 0.3%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('IEEE 754 32', item.hex)"
+              class="registerPopover"
+              style="margin: 0.3%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
-          <b-td v-if="!Sail_arch|| (Sail_arch && item.type !== 'v_registers')">
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.ieee32 }} </b-badge>
           </b-td>
         </b-tr>
         <b-tr>
           <!-- <b-td>IEEE 754 (64 bits)</b-td> -->
-          <b-td  v-if="Sail_arch && item.type === 'v_registers'" >IEEE 754 (64 bits) <br> (v[{{ vectorMaxLength }}] - v[0])</b-td>
-          <b-td  v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers') ">IEEE 754 (64 bits)</b-td>
+          <b-td v-if="Sail_arch && item.type === 'v_registers'"
+            >IEEE 754 (64 bits) <br />
+            (v[{{ vectorMaxLength }}] - v[0])</b-td
+          >
+          <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')"
+            >IEEE 754 (64 bits)</b-td
+          >
 
           <b-td v-if="Sail_arch && item.type === 'v_registers'">
-            <b-badge v-for="value in showValues('IEEE 754 64', item.hex)" class="registerPopover" style="margin: 0.3%;"> {{ value }}</b-badge>
+            <b-badge
+              v-for="value in showValues('IEEE 754 64', item.hex)"
+              class="registerPopover"
+              style="margin: 0.3%"
+            >
+              {{ value }}</b-badge
+            >
           </b-td>
           <b-td v-if="!Sail_arch || (Sail_arch && item.type !== 'v_registers')">
             <b-badge class="registerPopover"> {{ item.ieee64 }} </b-badge>

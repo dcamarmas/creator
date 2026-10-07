@@ -26,9 +26,6 @@ import RegisterSpaceView from "./RegisterSpaceView.vue";
 import { useToggle } from "bootstrap-vue-next";
 import { defineComponent } from "vue";
 
-// Variable to store persistent visualization preferences for each register bank across component mounts
-const persistentBankVisualizations: Record<string, string> = {};
-
 export default defineComponent({
   props: {
     data_mode: { type: String, required: true },
@@ -58,7 +55,7 @@ export default defineComponent({
       collapsedBanks: {} as Record<string, boolean>,
 
       // per-bank visualization preferences
-      bankVisualizations: persistentBankVisualizations,
+      bankVisualizations: {} as Record<string, string>,
 
       // dropdown state
       openDropdown: null as string | null,
@@ -155,7 +152,6 @@ export default defineComponent({
 
     setBankVisualization(bankName: string, value: string) {
       this.bankVisualizations[bankName] = value;
-      persistentBankVisualizations[bankName] = value;
       this.openDropdown = null;
     },
 
