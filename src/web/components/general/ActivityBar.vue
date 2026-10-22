@@ -73,7 +73,10 @@ export default defineComponent({
           <div class="activity-item" v-b-modal.save_assembly title="Save file">
             <font-awesome-icon :icon="['fas', 'download']" size="lg" />
           </div>
-          <div class="activity-item" v-b-modal.make_uri title="Share as url">
+          <div class="activity-item" v-b-modal.make_uri title="Get code as URI">
+            <font-awesome-icon :icon="['fas', 'link']" size="lg" />
+          </div>
+          <div class="activity-item" v-b-modal.load_uri title="Load from URI">
             <font-awesome-icon :icon="['fas', 'link']" size="lg" />
           </div>
           <hr />
