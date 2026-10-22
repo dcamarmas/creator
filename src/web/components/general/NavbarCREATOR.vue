@@ -474,8 +474,11 @@ export default defineComponent({
           URI...
         </b-dropdown-item>
         <b-dropdown-item v-b-modal.load_uri>
-          <font-awesome-icon :icon="['fas', 'link']" class="me-2" /> Load from
-          URI...
+          <font-awesome-icon
+            :icon="['fas', 'arrow-up-right-from-square']"
+            class="me-2"
+          />
+          Load from URI...
         </b-dropdown-item>
       </b-nav-item-dropdown>
 

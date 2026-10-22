@@ -77,7 +77,10 @@ export default defineComponent({
             <font-awesome-icon :icon="['fas', 'link']" size="lg" />
           </div>
           <div class="activity-item" v-b-modal.load_uri title="Load from URI">
-            <font-awesome-icon :icon="['fas', 'link']" size="lg" />
+            <font-awesome-icon
+              :icon="['fas', 'arrow-up-right-from-square']"
+              size="lg"
+            />
           </div>
           <hr />
           <div class="activity-item" v-b-modal.load_binary title="Load library">
