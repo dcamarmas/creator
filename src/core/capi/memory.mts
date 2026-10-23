@@ -229,7 +229,13 @@ export const MEM = {
         if (hint) {
             try {
                 const sizeInBits = bytes * BYTESIZE;
-                memory.addHint(BigInt(address), [], hint, sizeInBits, value);
+                memory.addHint(
+                    BigInt(address),
+                    [],
+                    hint,
+                    sizeInBits,
+                    Number(value),
+                );
             } catch (e) {
                 raise(
                     "Failed to add hint for address '0x" +
